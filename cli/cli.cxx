@@ -1,7 +1,7 @@
 // file      : cli/cli.cxx
 // author    : Boris Kolpackov <boris@codesynthesis.com>
 // copyright : Copyright (c) 2009 Code Synthesis Tools CC
-// license   : TBD
+// license   : MIT; see accompanying LICENSE file
 
 #include <iostream>
 

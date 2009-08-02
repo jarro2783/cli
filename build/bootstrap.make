@@ -1,7 +1,7 @@
 # file      : build/bootstrap.make
 # author    : Boris Kolpackov <boris@codesynthesis.com>
 # copyright : Copyright (c) 2009 Code Synthesis Tools CC
-# license   : TBD
+# license   : MIT; see accompanying LICENSE file
 
 project_name := CLI
 
