@@ -1,0 +1,88 @@
+@@ No support for template ids
+@@ No support for expressions (e.g., 2*2)
+
+Token types:
+      keyword
+      identifier      
+      punctuation (";" "{" "}" "(" ")" "," "|" "=" ":")
+      bracket-literal
+      string-literal     
+      bool-literal
+      int-literal
+      float-literal
+      end-of-stream
+
+def-unit:
+	include-decl-seq(opt) decl-seq(opt)
+
+include-decl-seq:
+	include-decl
+	include-decl-seq include-decl;
+
+include-decl:
+	"include" path ";"
+
+path:
+	string-literal
+	bracket-literal
+
+decl-seq:
+	decl
+	decl-seq decl
+
+decl:
+	namespace-def
+	class-def
+
+namespace-def:
+	"namespace" identifier "{" namespace-body "}"
+
+namespace-body:
+	decl-seq(opt)
+
+class-def:
+	"class" identifier "{" option-def-seq(opt) "};"
+
+option-def-seq:
+	option-def
+	option-def-seq option-def
+
+option-def:
+	type-spec option-name-seq initializer(opt) ";"
+
+type-spec:
+	fundamental-type-spec
+	qualified-name
+
+option-name-seq:
+	option-name
+	option-name-seq "|" option-name;
+
+option-name:
+	identifier
+	string-literal
+
+initializer:
+	"=" argument-expr
+	"(" argument-seq(opt) ")"
+
+argument-seq:
+	argument-expr
+	argument-seq "," argument-expr
+
+argument-expr
+	bool-literal
+	int-literal
+	float-literal
+	string-literal
+	qualified-name
+
+qualified-name:
+	identifier
+	qualified-name "::" identifier
+
+fundamental-type-spec
+	"bool"
+	 ...
+	"long double"
+	
