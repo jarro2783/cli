@@ -1,54 +1,60 @@
-# file      : cli/makefile
+# file      : tests/lexer/makefile
 # author    : Boris Kolpackov <boris@codesynthesis.com>
 # copyright : Copyright (c) 2009 Code Synthesis Tools CC
 # license   : MIT; see accompanying LICENSE file
 
-include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
+include $(dir $(lastword $(MAKEFILE_LIST)))../../build/bootstrap.make
 
-cxx_tun := cli.cxx lexer.cxx
+cxx_tun := driver.cxx
+
+tests := 000 001 002 003 004
 
 #
 #
 cxx_obj  := $(addprefix $(out_base)/,$(cxx_tun:.cxx=.o))
 cxx_od   := $(cxx_obj:.o=.o.d)
 
-cli      := $(out_base)/cli
-dist     := $(out_base)/.dist
+driver   := $(out_base)/driver
+test     := $(out_base)/.test
 clean    := $(out_base)/.clean
-install  := $(out_base)/.install
+
 
 # Build.
 #
-$(cli): $(cxx_obj)
+$(driver): $(cxx_obj) $(out_root)/cli/lexer.o
 
-$(cxx_obj) $(cxx_od): cpp_options := -I$(src_base)
+$(cxx_obj) $(cxx_od): cpp_options := -I$(src_base) -I$(src_root)
 
 $(call include-dep,$(cxx_od))
+
 
 # Alias for default target.
 #
 .PHONY: $(out_base)/
-$(out_base)/: $(cli)
+$(out_base)/: $(driver)
 
-# Dist.
+
+# Test.
 #
-.PHONY: $(dist)
+test_targets := $(addprefix $(out_base)/.test-,$(tests))
 
-# @@ TODO
+.PHONY: $(test)
+$(test): $(test_targets)
 
-# Install.
-#
-.PHONY: $(install)
 
-$(install): $(cli)
-	$(call install-exec,$<,$(install_bin_dir)/cli)
+$(test_targets): driver := $(driver)
+
+.PHONY: $(out_base)/.test-%
+$(out_base)/.test-%: $(driver) $(src_base)/test-%.cli $(src_base)/test-%.std
+	$(call message,test $(out_base)/$*,$(driver) $(src_base)/test-$*.cli | diff -u $(src_base)/test-$*.std -)
+
 
 # Clean.
 #
 .PHONY: $(clean)
 
 $(clean):                            \
-  $(cli).o.clean                    \
+  $(driver).o.clean                  \
   $(addsuffix .cxx.clean,$(cxx_obj)) \
   $(addsuffix .cxx.clean,$(cxx_od))
 
@@ -58,16 +64,20 @@ $(clean):                            \
 ifeq ($(out_base),$(src_base))
 $(cli): | $(out_base)/.gitignore
 
-$(out_base)/.gitignore: files := cli
+$(out_base)/.gitignore: files := driver
 $(clean): $(out_base)/.gitignore.clean
 
 $(call include,$(bld_root)/git/gitignore.make)
 endif
 
 
-# how to
+# How to.
 #
 $(call include,$(bld_root)/cxx/o-e.make)
 $(call include,$(bld_root)/cxx/cxx-o.make)
 $(call include,$(bld_root)/cxx/cxx-d.make)
 $(call include,$(bld_root)/install.make)
+
+# Dependencies.
+#
+$(call import,$(src_root)/cli/makefile)

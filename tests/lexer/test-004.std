@@ -1,0 +1,7 @@
+keyword: include
+path: "foo/abc.hxx"
+;
+keyword: include
+path: <vector>
+;
+<EOS>

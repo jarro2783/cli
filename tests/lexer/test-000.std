@@ -1,0 +1,12 @@
+identifier: help
+identifier: help-me
+identifier: -h
+identifier: --help
+identifier: --help-me
+identifier: --help-me-
+identifier: /h
+identifier: /help-me
+identifier: /help
+identifier: /me
+identifier: --_
+<EOS>

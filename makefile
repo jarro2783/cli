@@ -20,7 +20,7 @@ $(default): $(out_base)/cli/
 
 # Test.
 #
-$(test): #$(out_base)/tests/.test
+$(test): $(out_base)/tests/.test
 
 # Install.
 #
@@ -42,3 +42,4 @@ $(clean): $(out_base)/cli/.clean
 $(call include,$(bld_root)/install.make)
 
 $(call import,$(src_base)/cli/makefile)
+$(call import,$(src_base)/tests/makefile)
