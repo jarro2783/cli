@@ -20,11 +20,7 @@ include-decl-seq:
 	include-decl-seq include-decl;
 
 include-decl:
-	"include" path ";"
-
-path:
-	string-literal
-	bracket-literal
+	"include" path-literal ";"
 
 decl-seq:
 	decl
@@ -59,7 +55,7 @@ option-name-seq:
 	option-name-seq "|" option-name;
 
 option-name:
-	identifier
+	option-identifier
 	string-literal
 
 initializer:
@@ -70,7 +66,7 @@ argument-seq:
 	argument-expr
 	argument-seq "," argument-expr
 
-argument-expr
+argument-expr:
 	bool-literal
 	int-literal
 	float-literal
@@ -81,8 +77,9 @@ qualified-name:
 	identifier
 	qualified-name "::" identifier
 
-fundamental-type-spec
+fundamental-type-spec:
 	"bool"
 	 ...
 	"long double"
 	
+
