@@ -1,0 +1,12 @@
+CLI is a Command Line Interface definition language for C++. This package
+contains the compiler implementation for this language.
+
+See the NEWS file for the user-visible changes from the previous release.
+
+See the LICENSE file for distribution conditions.
+
+See the INSTALL file for prerequisites and installation instructions.
+
+See the doc/ directory for documentation.
+
+Send questions, bug reports, or any other feedback to boris@codesynthesis.com
