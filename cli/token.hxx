@@ -7,7 +7,7 @@
 #define CLI_TOKEN_HXX
 
 #include <string>
-#include <cstddef>
+#include <cstddef> // std::size_t
 
 class Token
 {
@@ -18,8 +18,9 @@ public:
     t_keyword,
     t_identifier,
     t_punctuation,
-    t_bracket_lit,
+    t_path_lit,
     t_string_lit,
+    t_char_lit,
     t_bool_lit,
     t_int_lit,
     t_float_lit
@@ -31,13 +32,13 @@ public:
     return type_;
   }
 
-  size_t
+  std::size_t
   line () const
   {
     return l_;
   }
 
-  size_t
+  std::size_t
   column () const
   {
     return c_;
@@ -51,7 +52,16 @@ public:
     k_include,
     k_namespace,
     k_class,
-    k_bool
+    k_signed,
+    k_unsigned,
+    k_bool,
+    k_char,
+    k_wchar,
+    k_short,
+    k_int,
+    k_long,
+    k_float,
+    k_double
   };
 
   Keyword
@@ -105,31 +115,31 @@ public:
 public:
   // EOS.
   //
-  Token (size_t l, size_t c)
+  Token (std::size_t l, std::size_t c)
       : l_ (l), c_ (c), type_ (t_eos)
   {
   }
 
-  Token (Keyword k, size_t l, size_t c)
+  Token (Keyword k, std::size_t l, std::size_t c)
       : l_ (l), c_ (c), type_ (t_keyword), keyword_ (k)
   {
   }
 
-  Token (Punctuation p, size_t l, size_t c)
+  Token (Punctuation p, std::size_t l, std::size_t c)
       : l_ (l), c_ (c), type_ (t_punctuation), punctuation_ (p)
   {
   }
 
   // Identifier & literals.
   //
-  Token (Type t, std::string const& s, size_t l, size_t c)
+  Token (Type t, std::string const& s, std::size_t l, std::size_t c)
       : l_ (l), c_ (c), type_ (t), str_ (s)
   {
   }
 
 private:
-  size_t l_;
-  size_t c_;
+  std::size_t l_;
+  std::size_t c_;
 
   Type type_;
 
