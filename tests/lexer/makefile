@@ -62,7 +62,7 @@ $(clean):                            \
 # Generated .gitignore.
 #
 ifeq ($(out_base),$(src_base))
-$(cli): | $(out_base)/.gitignore
+$(driver): | $(out_base)/.gitignore
 
 $(out_base)/.gitignore: files := driver
 $(clean): $(out_base)/.gitignore.clean
