@@ -27,22 +27,13 @@ public:
   };
 
   Type
-  type () const
-  {
-    return type_;
-  }
+  type () const;
 
   std::size_t
-  line () const
-  {
-    return l_;
-  }
+  line () const;
 
   std::size_t
-  column () const
-  {
-    return c_;
-  }
+  column () const;
 
   // Keyword
   //
@@ -65,19 +56,13 @@ public:
   };
 
   Keyword
-  keyword () const
-  {
-    return keyword_;
-  }
+  keyword () const;
 
   // Identifier
   //
 public:
   std::string const&
-  identifier () const
-  {
-    return str_;
-  }
+  identifier () const;
 
   // Punctuation
   //
@@ -96,46 +81,27 @@ public:
   };
 
   Punctuation
-  punctuation () const
-  {
-    return punctuation_;
-  }
+  punctuation () const;
 
   // Literals.
   //
 public:
   std::string const&
-  literal () const
-  {
-    return str_;
-  }
+  literal () const;
 
   // C-tors.
   //
 public:
   // EOS.
   //
-  Token (std::size_t l, std::size_t c)
-      : l_ (l), c_ (c), type_ (t_eos)
-  {
-  }
+  Token (std::size_t l, std::size_t c);
 
-  Token (Keyword k, std::size_t l, std::size_t c)
-      : l_ (l), c_ (c), type_ (t_keyword), keyword_ (k)
-  {
-  }
-
-  Token (Punctuation p, std::size_t l, std::size_t c)
-      : l_ (l), c_ (c), type_ (t_punctuation), punctuation_ (p)
-  {
-  }
+  Token (Keyword k, std::size_t l, std::size_t c);
+  Token (Punctuation p, std::size_t l, std::size_t c);
 
   // Identifier & literals.
   //
-  Token (Type t, std::string const& s, std::size_t l, std::size_t c)
-      : l_ (l), c_ (c), type_ (t), str_ (s)
-  {
-  }
+  Token (Type t, std::string const& s, std::size_t l, std::size_t c);
 
 private:
   std::size_t l_;
@@ -147,5 +113,7 @@ private:
   Punctuation punctuation_;
   std::string str_;
 };
+
+#include "token.ixx"
 
 #endif // CLI_TOKEN_HXX
