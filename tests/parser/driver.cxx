@@ -24,10 +24,10 @@ int main (int argc, char* argv[])
     ifs.exceptions (ifstream::failbit | ifstream::badbit);
     ifs.open (argv[1]);
 
-    Parser parser;
-    parser.parse (ifs, argv[1]);
+    parser p;
+    p.parse (ifs, argv[1]);
   }
-  catch (Parser::InvalidInput const&)
+  catch (parser::invalid_input const&)
   {
     return 1;
   }

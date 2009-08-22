@@ -9,19 +9,19 @@
 #include <string>
 #include <istream>
 
-class Token;
-class Lexer;
+class token;
+class lexer;
 
-class Parser
+class parser
 {
 public:
-  struct InvalidInput {};
+  struct invalid_input {};
 
   void
   parse (std::istream& is, std::string const& id);
 
 private:
-  struct Error {};
+  struct error {};
 
   void
   def_unit ();
@@ -30,7 +30,7 @@ private:
   include_decl ();
 
   bool
-  decl (Token&);
+  decl (token&);
 
   void
   namespace_def ();
@@ -39,21 +39,21 @@ private:
   class_def ();
 
   bool
-  option_def (Token&);
+  option_def (token&);
 
   bool
-  qualified_name (Token&);
+  qualified_name (token&);
 
   bool
-  fundamental_type (Token&);
+  fundamental_type (token&);
 
 private:
   void
-  recover (Token& t);
+  recover (token& t);
 
 private:
   bool valid_;
-  Lexer* lexer_;
+  lexer* lexer_;
   std::string const* id_;
 };
 

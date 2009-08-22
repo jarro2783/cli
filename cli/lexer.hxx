@@ -14,30 +14,30 @@
 
 #include "token.hxx"
 
-class Lexer
+class lexer
 {
 public:
-  Lexer (std::istream& is, std::string const& id);
+  lexer (std::istream& is, std::string const& id);
 
-  Token
+  token
   next ();
 
   bool
   valid () const;
 
 protected:
-  class Char
+  class xchar
   {
   public:
-    typedef std::char_traits<char> Traits;
-    typedef Traits::int_type IntType;
-    typedef Traits::char_type CharType;
+    typedef std::char_traits<char> traits_type;
+    typedef traits_type::int_type int_type;
+    typedef traits_type::char_type char_type;
 
-    Char (IntType v, std::size_t l, std::size_t c);
+    xchar (int_type v, std::size_t l, std::size_t c);
 
-    operator CharType () const;
+    operator char_type () const;
 
-    IntType
+    int_type
     value () const;
 
     std::size_t
@@ -47,52 +47,52 @@ protected:
     column () const;
 
   private:
-    IntType v_;
+    int_type v_;
     std::size_t l_;
     std::size_t c_;
   };
 
-  Char
+  xchar
   peek ();
 
-  Char
+  xchar
   get ();
 
   void
-  unget (Char);
+  unget (xchar);
 
 protected:
-  class InvalidInput {};
+  class invalid_input {};
 
   void
   skip_spaces ();
 
-  Token
-  identifier (Char);
+  token
+  identifier (xchar);
 
-  Token
-  int_literal (Char,
+  token
+  int_literal (xchar,
                bool neg = false,
                std::size_t ml = 0,
                std::size_t mc = 0);
 
-  Token
-  char_literal (Char);
+  token
+  char_literal (xchar);
 
-  Token
-  string_literal (Char);
+  token
+  string_literal (xchar);
 
   std::string
   string_literal_trailer ();
 
-  Token
-  path_literal (Char);
+  token
+  path_literal (xchar);
 
-  Token
-  call_expression (Char);
+  token
+  call_expression (xchar);
 
-  Token
-  template_expression (Char);
+  token
+  template_expression (xchar);
 
 protected:
   bool
@@ -114,13 +114,13 @@ protected:
   is_space (char c) const;
 
   bool
-  is_eos (Char const& c) const;
+  is_eos (xchar const& c) const;
 
   char
   to_upper (char c) const;
 
 private:
-  typedef std::map<std::string, Token::Keyword> KeywordMap;
+  typedef std::map<std::string, token::keyword_type> keyword_map;
 
   std::locale loc_;
   std::istream& is_;
@@ -128,13 +128,13 @@ private:
   std::size_t l_;
   std::size_t c_;
 
-  KeywordMap keyword_map_;
+  keyword_map keyword_map_;
 
   bool eos_;
   bool include_;
   bool valid_;
 
-  Char buf_;
+  xchar buf_;
   bool unget_;
 };
 

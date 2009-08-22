@@ -29,15 +29,15 @@ int main (int argc, char* argv[])
 
     ifs.exceptions (ifstream::failbit | ifstream::badbit);
 
-    Parser parser;
-    parser.parse (ifs, argv[1]);
+    parser p;
+    p.parse (ifs, argv[1]);
   }
   catch (std::ios_base::failure const&)
   {
     wcerr << argv[1] << ": error: read failure" << endl;
     return 1;
   }
-  catch (Parser::InvalidInput const&)
+  catch (parser::invalid_input const&)
   {
     // Diagnostics has already been issued by the parser.
     //

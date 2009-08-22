@@ -9,10 +9,10 @@
 #include <string>
 #include <cstddef> // std::size_t
 
-class Token
+class token
 {
 public:
-  enum Type
+  enum token_type
   {
     t_eos,
     t_keyword,
@@ -28,7 +28,7 @@ public:
     t_template_expr // The so called "template expression", e.g., <foo, 3>.
   };
 
-  Type
+  token_type
   type () const;
 
   std::size_t
@@ -40,7 +40,7 @@ public:
   // Keyword
   //
 public:
-  enum Keyword
+  enum keyword_type
   {
     k_include,
     k_namespace,
@@ -60,7 +60,7 @@ public:
 
   // Return the keyword id if type is t_keyword and k_invalid otherwise.
   //
-  Keyword
+  keyword_type
   keyword () const;
 
   // Identifier
@@ -72,7 +72,7 @@ public:
   // Punctuation
   //
 public:
-  enum Punctuation
+  enum punctuation_type
   {
     p_semi,
     p_comma,
@@ -89,7 +89,7 @@ public:
   // Return the punctuation id if type is t_punctuation and p_invalid
   // otherwise.
   //
-  Punctuation
+  punctuation_type
   punctuation () const;
 
   // Literals.
@@ -109,23 +109,22 @@ public:
 public:
   // EOS.
   //
-  Token (std::size_t l, std::size_t c);
+  token (std::size_t l, std::size_t c);
 
-  Token (Keyword k, std::size_t l, std::size_t c);
-  Token (Punctuation p, std::size_t l, std::size_t c);
+  token (keyword_type k, std::size_t l, std::size_t c);
+  token (punctuation_type p, std::size_t l, std::size_t c);
 
   // Identifier, literals, and expressions.
   //
-  Token (Type t, std::string const& s, std::size_t l, std::size_t c);
+  token (token_type t, std::string const& s, std::size_t l, std::size_t c);
 
 private:
   std::size_t l_;
   std::size_t c_;
 
-  Type type_;
-
-  Keyword keyword_;
-  Punctuation punctuation_;
+  token_type type_;
+  keyword_type keyword_;
+  punctuation_type punctuation_;
   std::string str_;
 };
 

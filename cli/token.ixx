@@ -3,74 +3,74 @@
 // copyright : Copyright (c) 2009 Code Synthesis Tools CC
 // license   : MIT; see accompanying LICENSE file
 
-inline Token::Type Token::
+inline token::token_type token::
 type () const
 {
   return type_;
 }
 
-inline std::size_t Token::
+inline std::size_t token::
 line () const
 {
   return l_;
 }
 
-inline std::size_t Token::
+inline std::size_t token::
 column () const
 {
   return c_;
 }
 
-inline Token::Keyword Token::
+inline token::keyword_type token::
 keyword () const
 {
   return type_ == t_keyword ? keyword_ : k_invalid;
 }
 
-inline std::string const& Token::
+inline std::string const& token::
 identifier () const
 {
   return str_;
 }
 
-inline Token::Punctuation Token::
+inline token::punctuation_type token::
 punctuation () const
 {
   return type_ == t_punctuation ? punctuation_ : p_invalid;
 }
 
-inline std::string const& Token::
+inline std::string const& token::
 literal () const
 {
   return str_;
 }
 
-inline std::string const& Token::
+inline std::string const& token::
 expression () const
 {
   return str_;
 }
 
-inline Token::
-Token (std::size_t l, std::size_t c)
+inline token::
+token (std::size_t l, std::size_t c)
     : l_ (l), c_ (c), type_ (t_eos)
 {
 }
 
-inline Token::
-Token (Keyword k, std::size_t l, std::size_t c)
+inline token::
+token (keyword_type k, std::size_t l, std::size_t c)
     : l_ (l), c_ (c), type_ (t_keyword), keyword_ (k)
 {
 }
 
-inline Token::
-Token (Punctuation p, std::size_t l, std::size_t c)
+inline token::
+token (punctuation_type p, std::size_t l, std::size_t c)
     : l_ (l), c_ (c), type_ (t_punctuation), punctuation_ (p)
 {
 }
 
-inline Token::
-Token (Type t, std::string const& s, std::size_t l, std::size_t c)
+inline token::
+token (token_type t, std::string const& s, std::size_t l, std::size_t c)
     : l_ (l), c_ (c), type_ (t), str_ (s)
 {
 }

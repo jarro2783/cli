@@ -9,8 +9,8 @@
 
 using namespace std;
 
-Lexer::
-Lexer (istream& is, string const& id)
+lexer::
+lexer (istream& is, string const& id)
     : loc_ ("C"),
       is_ (is),
       id_ (id),
@@ -22,22 +22,22 @@ Lexer (istream& is, string const& id)
       buf_ (0, 0, 0),
       unget_ (false)
 {
-  keyword_map_["include"]   = Token::k_include;
-  keyword_map_["namespace"] = Token::k_namespace;
-  keyword_map_["class"]     = Token::k_class;
-  keyword_map_["signed"]    = Token::k_signed;
-  keyword_map_["unsigned"]  = Token::k_unsigned;
-  keyword_map_["bool"]      = Token::k_bool;
-  keyword_map_["char"]      = Token::k_char;
-  keyword_map_["wchar_t"]   = Token::k_wchar;
-  keyword_map_["short"]     = Token::k_short;
-  keyword_map_["int"]       = Token::k_int;
-  keyword_map_["long"]      = Token::k_long;
-  keyword_map_["float"]     = Token::k_float;
-  keyword_map_["double"]    = Token::k_double;
+  keyword_map_["include"]   = token::k_include;
+  keyword_map_["namespace"] = token::k_namespace;
+  keyword_map_["class"]     = token::k_class;
+  keyword_map_["signed"]    = token::k_signed;
+  keyword_map_["unsigned"]  = token::k_unsigned;
+  keyword_map_["bool"]      = token::k_bool;
+  keyword_map_["char"]      = token::k_char;
+  keyword_map_["wchar_t"]   = token::k_wchar;
+  keyword_map_["short"]     = token::k_short;
+  keyword_map_["int"]       = token::k_int;
+  keyword_map_["long"]      = token::k_long;
+  keyword_map_["float"]     = token::k_float;
+  keyword_map_["double"]    = token::k_double;
 }
 
-Lexer::Char Lexer::
+lexer::xchar lexer::
 peek ()
 {
   if (unget_)
@@ -45,20 +45,20 @@ peek ()
   else
   {
     if (eos_)
-      return Char (Char::Traits::eof (), l_, c_);
+      return xchar (xchar::traits_type::eof (), l_, c_);
     else
     {
-      Char::IntType i (is_.peek ());
+      xchar::int_type i (is_.peek ());
 
-      if (i == Char::Traits::eof ())
+      if (i == xchar::traits_type::eof ())
         eos_ = true;
 
-      return Char (i, l_, c_);
+      return xchar (i, l_, c_);
     }
   }
 }
 
-Lexer::Char Lexer::
+lexer::xchar lexer::
 get ()
 {
   if (unget_)
@@ -74,7 +74,7 @@ get ()
     // eof. But we can only call peek() on eof once; any subsequent
     // calls will spoil the failbit (even more stupid).
     //
-    Char c (peek ());
+    xchar c (peek ());
 
     if (!is_eos (c))
     {
@@ -93,8 +93,8 @@ get ()
   }
 }
 
-void Lexer::
-unget (Char c)
+void lexer::
+unget (xchar c)
 {
   // Because iostream::unget cannot work once eos is reached,
   // we have to provide our own implementation.
@@ -103,7 +103,7 @@ unget (Char c)
   unget_ = true;
 }
 
-Token Lexer::
+token lexer::
 next ()
 {
   while (true) // Recovery loop.
@@ -113,10 +113,10 @@ next ()
 
     skip_spaces ();
 
-    Char c (get ());
+    xchar c (get ());
 
     if (is_eos (c))
-      return Token (c.line (), c.column ());
+      return token (c.line (), c.column ());
 
     try
     {
@@ -142,28 +142,28 @@ next ()
         }
       case ';':
         {
-          return Token (Token::p_semi, c.line (), c.column ());
+          return token (token::p_semi, c.line (), c.column ());
         }
       case ',':
         {
-          return Token (Token::p_comma, c.line (), c.column ());
+          return token (token::p_comma, c.line (), c.column ());
         }
       case ':':
         {
           if (peek () == ':')
           {
             get ();
-            return Token (Token::p_dcolon, c.line (), c.column ());
+            return token (token::p_dcolon, c.line (), c.column ());
           }
           break;
         }
       case '{':
         {
-          return Token (Token::p_lcbrace, c.line (), c.column ());
+          return token (token::p_lcbrace, c.line (), c.column ());
         }
       case '}':
         {
-          return Token (Token::p_rcbrace, c.line (), c.column ());
+          return token (token::p_rcbrace, c.line (), c.column ());
         }
       case '(':
         {
@@ -171,18 +171,18 @@ next ()
         }
       case '=':
         {
-          return Token (Token::p_eq, c.line (), c.column ());
+          return token (token::p_eq, c.line (), c.column ());
         }
       case '|':
         {
-          return Token (Token::p_or, c.line (), c.column ());
+          return token (token::p_or, c.line (), c.column ());
         }
       case '-':
         {
           // This can be a beginning of an identifier or a an integer
           // literal. Figure out which one it is.
           //
-          Char p (peek ());
+          xchar p (peek ());
 
           if (is_dec_digit (p))
             return int_literal (get (), true, c.line (), c.column ());
@@ -198,7 +198,7 @@ next ()
             //
             cerr << id_ << ':' << c.line () << ':' << c.column ()
                  << ": error: unexpected character '-'" << endl;
-            throw InvalidInput ();
+            throw invalid_input ();
           }
 
           break;
@@ -217,9 +217,9 @@ next ()
 
       cerr << id_ << ':' << c.line () << ':' << c.column ()
            << ": error: unexpected character '" << c << "'" << endl;
-      throw InvalidInput ();
+      throw invalid_input ();
     }
-    catch (InvalidInput const&)
+    catch (invalid_input const&)
     {
       valid_ = false;
     }
@@ -231,15 +231,15 @@ next ()
       c = get ();
 
       if (is_eos (c))
-        return Token (c.line (), c.column ());
+        return token (c.line (), c.column ());
     } while (c != ';');
   }
 }
 
-void Lexer::
+void lexer::
 skip_spaces ()
 {
-  for (Char c (peek ());; c = peek ())
+  for (xchar c (peek ());; c = peek ())
   {
     if (is_eos (c))
       break;
@@ -247,7 +247,7 @@ skip_spaces ()
     if (c == '/')
     {
       c = get ();
-      Char p (peek ());
+      xchar p (peek ());
 
       if (p == '/')
       {
@@ -271,7 +271,7 @@ skip_spaces ()
             cerr << id_ << ':' << c.line () << ':' << c.column ()
                  << ": error: end of stream reached while reading "
                  << "C-style comment" << endl;
-            throw InvalidInput ();
+            throw invalid_input ();
           }
 
           if (c == '*')
@@ -300,8 +300,8 @@ skip_spaces ()
   }
 }
 
-Token Lexer::
-identifier (Char c)
+token lexer::
+identifier (xchar c)
 {
   size_t ln (c.line ()), cl (c.column ());
   string lexeme;
@@ -331,28 +331,28 @@ identifier (Char c)
     {
       cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
            << "invalid character sequence '" << lexeme << "'" << endl;
-      throw InvalidInput ();
+      throw invalid_input ();
     }
   }
 
-  KeywordMap::const_iterator i (keyword_map_.find (lexeme));
+  keyword_map::const_iterator i (keyword_map_.find (lexeme));
 
   if (i != keyword_map_.end ())
   {
-    if (i->second == Token::k_include)
+    if (i->second == token::k_include)
       include_ = true;
 
-    return Token (i->second, ln, cl);
+    return token (i->second, ln, cl);
   }
 
   if (lexeme == "true" || lexeme == "false")
-    return Token (Token::t_bool_lit, lexeme, ln, cl);
+    return token (token::t_bool_lit, lexeme, ln, cl);
 
-  return Token (Token::t_identifier, lexeme, ln, cl);
+  return token (token::t_identifier, lexeme, ln, cl);
 }
 
-Token Lexer::
-int_literal (Char c, bool neg, size_t ml, size_t mc)
+token lexer::
+int_literal (xchar c, bool neg, size_t ml, size_t mc)
 {
   size_t ln (neg ? ml : c.line ()), cl (neg ? mc : c.column ());
   string lexeme;
@@ -368,11 +368,11 @@ int_literal (Char c, bool neg, size_t ml, size_t mc)
     lexeme += c;
   }
 
-  return Token (Token::t_int_lit, lexeme, ln, cl);
+  return token (token::t_int_lit, lexeme, ln, cl);
 }
 
-Token Lexer::
-char_literal (Char c)
+token lexer::
+char_literal (xchar c)
 {
   size_t ln (c.line ()), cl (c.column ());
   string lexeme;
@@ -388,7 +388,7 @@ char_literal (Char c)
     {
       cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
            << "end of stream reached while reading character literal" << endl;
-      throw InvalidInput ();
+      throw invalid_input ();
     }
 
     lexeme += c;
@@ -405,11 +405,11 @@ char_literal (Char c)
       p = c;
   }
 
-  return Token (Token::t_char_lit, lexeme, ln, cl);
+  return token (token::t_char_lit, lexeme, ln, cl);
 }
 
-Token Lexer::
-string_literal (Char c)
+token lexer::
+string_literal (xchar c)
 {
   size_t ln (c.line ()), cl (c.column ());
   string lexeme;
@@ -432,10 +432,10 @@ string_literal (Char c)
     lexeme += " \"";
   }
 
-  return Token (Token::t_string_lit, lexeme, ln, cl);
+  return token (token::t_string_lit, lexeme, ln, cl);
 }
 
-string Lexer::
+string lexer::
 string_literal_trailer ()
 {
   string r;
@@ -443,13 +443,13 @@ string_literal_trailer ()
 
   while (true)
   {
-    Char c = get ();
+    xchar c = get ();
 
     if (is_eos (c))
     {
       cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
            << "end of stream reached while reading string literal" << endl;
-      throw InvalidInput ();
+      throw invalid_input ();
     }
 
     r += c;
@@ -469,8 +469,8 @@ string_literal_trailer ()
   return r;
 }
 
-Token Lexer::
-path_literal (Char c)
+token lexer::
+path_literal (xchar c)
 {
   size_t ln (c.line ()), cl (c.column ());
   string lexeme;
@@ -486,7 +486,7 @@ path_literal (Char c)
     {
       cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
            << "end of stream reached while reading path literal" << endl;
-      throw InvalidInput ();
+      throw invalid_input ();
     }
 
     lexeme += c;
@@ -495,11 +495,11 @@ path_literal (Char c)
       break;
   }
 
-  return Token (Token::t_path_lit, lexeme, ln, cl);
+  return token (token::t_path_lit, lexeme, ln, cl);
 }
 
-Token Lexer::
-call_expression (Char c)
+token lexer::
+call_expression (xchar c)
 {
   size_t ln (c.line ()), cl (c.column ());
   string lexeme;
@@ -514,7 +514,7 @@ call_expression (Char c)
     {
       cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
            << "end of stream reached while reading call expression" << endl;
-      throw InvalidInput ();
+      throw invalid_input ();
     }
 
     lexeme += c;
@@ -534,11 +534,11 @@ call_expression (Char c)
     }
   }
 
-  return Token (Token::t_call_expr, lexeme, ln, cl);
+  return token (token::t_call_expr, lexeme, ln, cl);
 }
 
-Token Lexer::
-template_expression (Char c)
+token lexer::
+template_expression (xchar c)
 {
   size_t ln (c.line ()), cl (c.column ());
   string lexeme;
@@ -554,7 +554,7 @@ template_expression (Char c)
       cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
            << "end of stream reached while reading template expression"
            << endl;
-      throw InvalidInput ();
+      throw invalid_input ();
     }
 
     lexeme += c;
@@ -574,5 +574,5 @@ template_expression (Char c)
     }
   }
 
-  return Token (Token::t_template_expr, lexeme, ln, cl);
+  return token (token::t_template_expr, lexeme, ln, cl);
 }

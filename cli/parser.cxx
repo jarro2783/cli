@@ -33,66 +33,66 @@ const char* punctuation[] = {";", ",", "::", "{", "}", /*"(", ")",*/ "=", "|"};
 // Output the token type and value in a format suitable for diagnostics.
 //
 std::ostream&
-operator<< (std::ostream& os, Token const& t)
+operator<< (std::ostream& os, token const& t)
 {
   switch (t.type ())
   {
-  case Token::t_eos:
+  case token::t_eos:
     {
       os << "end-of-stream";
       break;
     }
-  case Token::t_keyword:
+  case token::t_keyword:
     {
       os << "keyword '" << keywords[t.keyword ()] << "'";
       break;
     }
-  case Token::t_identifier:
+  case token::t_identifier:
     {
       os << "identifier '" << t.identifier () << "'";
       break;
     }
-  case Token::t_punctuation:
+  case token::t_punctuation:
     {
       os << "'" << punctuation[t.punctuation ()] << "'";
       break;
     }
-  case Token::t_path_lit:
+  case token::t_path_lit:
     {
       os << "path literal";
       break;
     }
-  case Token::t_string_lit:
+  case token::t_string_lit:
     {
       os << "string literal";
       break;
     }
-  case Token::t_char_lit:
+  case token::t_char_lit:
     {
       os << "char literal";
       break;
     }
-  case Token::t_bool_lit:
+  case token::t_bool_lit:
     {
       os << "bool literal";
       break;
     }
-  case Token::t_int_lit:
+  case token::t_int_lit:
     {
       os << "integer literal";
       break;
     }
-  case Token::t_float_lit:
+  case token::t_float_lit:
     {
       os << "floating point literal";
       break;
     }
-  case Token::t_call_expr:
+  case token::t_call_expr:
     {
       os << "call expression";
       break;
     }
-  case Token::t_template_expr:
+  case token::t_template_expr:
     {
       os << "template expression";
       break;
@@ -102,17 +102,17 @@ operator<< (std::ostream& os, Token const& t)
   return os;
 }
 
-void Parser::
-recover (Token& t)
+void parser::
+recover (token& t)
 {
   // Recover by skipping past next ';'.
   //
   for (;; t = lexer_->next ())
   {
-    if (t.type () == Token::t_eos)
+    if (t.type () == token::t_eos)
       break;
 
-    if (t.punctuation () == Token::p_semi)
+    if (t.punctuation () == token::p_semi)
     {
       t = lexer_->next ();
       break;
@@ -120,34 +120,34 @@ recover (Token& t)
   }
 }
 
-void Parser::
+void parser::
 parse (std::istream& is, std::string const& id)
 {
-  Lexer lexer (is, id);
-  lexer_ = &lexer;
+  lexer l (is, id);
+  lexer_ = &l;
   id_ = &id;
   valid_ = true;
   def_unit ();
 
-  if (!valid_ || !lexer.valid ())
-    throw InvalidInput ();
+  if (!valid_ || !l.valid ())
+    throw invalid_input ();
 }
 
-void Parser::
+void parser::
 def_unit ()
 {
-  Token t (lexer_->next ());
+  token t (lexer_->next ());
 
   // include-decl-seq
   //
-  while (t.keyword () == Token::k_include)
+  while (t.keyword () == token::k_include)
   {
     try
     {
       include_decl ();
       t = lexer_->next ();
     }
-    catch (Error const&)
+    catch (error const&)
     {
       valid_ = false;
       recover (t);
@@ -156,7 +156,7 @@ def_unit ()
 
   // decl-seq
   //
-  while (t.type () != Token::t_eos)
+  while (t.type () != token::t_eos)
   {
     try
     {
@@ -169,9 +169,9 @@ def_unit ()
       cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
            << "expected namespace or class declaration instead of " << t
            << endl;
-      throw Error ();
+      throw error ();
     }
-    catch (Error const&)
+    catch (error const&)
     {
       valid_ = false;
       break; // Non-recoverable error.
@@ -179,41 +179,41 @@ def_unit ()
   }
 }
 
-void Parser::
+void parser::
 include_decl ()
 {
-  Token t (lexer_->next ());
+  token t (lexer_->next ());
 
-  if (t.type () != Token::t_path_lit)
+  if (t.type () != token::t_path_lit)
   {
     cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected path literal instead of " << t << endl;
-    throw Error ();
+    throw error ();
   }
 
   t = lexer_->next ();
 
-  if (t.punctuation () != Token::p_semi)
+  if (t.punctuation () != token::p_semi)
   {
     cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected ';' instead of " << t << endl;
-    throw Error ();
+    throw error ();
   }
 }
 
-bool Parser::
-decl (Token& t)
+bool parser::
+decl (token& t)
 {
-  if (t.type () == Token::t_keyword)
+  if (t.type () == token::t_keyword)
   {
     switch (t.keyword ())
     {
-    case Token::k_namespace:
+    case token::k_namespace:
       {
         namespace_def ();
         return true;
       }
-    case Token::k_class:
+    case token::k_class:
       {
         class_def ();
         return true;
@@ -225,25 +225,25 @@ decl (Token& t)
   return false;
 }
 
-void Parser::
+void parser::
 namespace_def ()
 {
-  Token t (lexer_->next ());
+  token t (lexer_->next ());
 
-  if (t.type () != Token::t_identifier)
+  if (t.type () != token::t_identifier)
   {
     cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected identifier instead of " << t << endl;
-    throw Error ();
+    throw error ();
   }
 
   t = lexer_->next ();
 
-  if (t.punctuation () != Token::p_lcbrace)
+  if (t.punctuation () != token::p_lcbrace)
   {
     cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected '{' instead of " << t << endl;
-    throw Error ();
+    throw error ();
   }
 
   // decl-seq
@@ -253,34 +253,34 @@ namespace_def ()
   while (decl (t))
     t = lexer_->next ();
 
-  if (t.punctuation () != Token::p_rcbrace)
+  if (t.punctuation () != token::p_rcbrace)
   {
     cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected namespace declaration, class declaration, or '}' "
          << "instead of " << t << endl;
-    throw Error ();
+    throw error ();
   }
 }
 
-void Parser::
+void parser::
 class_def ()
 {
-  Token t (lexer_->next ());
+  token t (lexer_->next ());
 
-  if (t.type () != Token::t_identifier)
+  if (t.type () != token::t_identifier)
   {
     cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected identifier instead of " << t << endl;
-    throw Error ();
+    throw error ();
   }
 
   t = lexer_->next ();
 
-  if (t.punctuation () != Token::p_lcbrace)
+  if (t.punctuation () != token::p_lcbrace)
   {
     cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected '{' instead of " << t << endl;
-    throw Error ();
+    throw error ();
   }
 
   // decl-seq
@@ -296,32 +296,32 @@ class_def ()
 
       t = lexer_->next ();
     }
-    catch (Error const&)
+    catch (error const&)
     {
       valid_ = false;
       recover (t);
     }
   }
 
-  if (t.punctuation () != Token::p_rcbrace)
+  if (t.punctuation () != token::p_rcbrace)
   {
     cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected option declaration or '}' instead of " << t << endl;
-    throw Error ();
+    throw error ();
   }
 
   t = lexer_->next ();
 
-  if (t.punctuation () != Token::p_semi)
+  if (t.punctuation () != token::p_semi)
   {
     cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected ';' instead of " << t << endl;
-    throw Error ();
+    throw error ();
   }
 }
 
-bool Parser::
-option_def (Token& t)
+bool parser::
+option_def (token& t)
 {
   // type-spec
   //
@@ -337,8 +337,8 @@ option_def (Token& t)
   {
     switch (t.type ())
     {
-    case Token::t_identifier:
-    case Token::t_string_lit:
+    case token::t_identifier:
+    case token::t_string_lit:
       {
         break;
       }
@@ -346,13 +346,13 @@ option_def (Token& t)
       {
         cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
              << "option name expected instead of " << t << endl;
-        throw Error ();
+        throw error ();
       }
     }
 
     t = lexer_->next ();
 
-    if (t.punctuation () == Token::p_or)
+    if (t.punctuation () == token::p_or)
       t = lexer_->next ();
     else
       break;
@@ -360,7 +360,7 @@ option_def (Token& t)
 
   // initializer
   //
-  if (t.punctuation () == Token::p_eq)
+  if (t.punctuation () == token::p_eq)
   {
     t = lexer_->next ();
 
@@ -373,12 +373,12 @@ option_def (Token& t)
     {
       switch (t.type ())
       {
-      case Token::t_string_lit:
-      case Token::t_char_lit:
-      case Token::t_bool_lit:
-      case Token::t_int_lit:
-      case Token::t_float_lit:
-      case Token::t_call_expr:
+      case token::t_string_lit:
+      case token::t_char_lit:
+      case token::t_bool_lit:
+      case token::t_int_lit:
+      case token::t_float_lit:
+      case token::t_call_expr:
         {
           t = lexer_->next ();
           break;
@@ -387,56 +387,56 @@ option_def (Token& t)
         {
           cerr << *id_ << ':' << t.line () << ':' << t.column ()
                << ": error: expected intializer instead of " << t << endl;
-          throw Error ();
+          throw error ();
         }
       }
     }
   }
-  else if (t.type () == Token::t_call_expr)
+  else if (t.type () == token::t_call_expr)
   {
     // c-tor initializer
     //
     t = lexer_->next ();
   }
 
-  if (t.punctuation () != Token::p_semi)
+  if (t.punctuation () != token::p_semi)
   {
     cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected ';' instead of " << t << endl;
-    throw Error ();
+    throw error ();
   }
 
   return true;
 }
 
-bool Parser::
-qualified_name (Token& t)
+bool parser::
+qualified_name (token& t)
 {
-  if (t.type () != Token::t_identifier && t.punctuation () != Token::p_dcolon)
+  if (t.type () != token::t_identifier && t.punctuation () != token::p_dcolon)
     return false;
 
-  if (t.punctuation () == Token::p_dcolon)
+  if (t.punctuation () == token::p_dcolon)
     t = lexer_->next ();
 
   while (true)
   {
-    if (t.type () != Token::t_identifier)
+    if (t.type () != token::t_identifier)
     {
       cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
            << "expected identifier after '::'" << endl;
-      throw Error ();
+      throw error ();
     }
 
     t = lexer_->next ();
 
-    if (t.type () == Token::t_template_expr)
+    if (t.type () == token::t_template_expr)
     {
       // Template-id.
       //
       t = lexer_->next ();
     }
 
-    if (t.punctuation () == Token::p_dcolon)
+    if (t.punctuation () == token::p_dcolon)
       t = lexer_->next ();
     else
       break;
@@ -445,21 +445,21 @@ qualified_name (Token& t)
   return true;
 }
 
-bool Parser::
-fundamental_type (Token& t)
+bool parser::
+fundamental_type (token& t)
 {
   switch (t.keyword ())
   {
-  case Token::k_signed:
-  case Token::k_unsigned:
+  case token::k_signed:
+  case token::k_unsigned:
     {
       switch ((t = lexer_->next ()).keyword ())
       {
-      case Token::k_short:
+      case token::k_short:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
-          case Token::k_int:
+          case token::k_int:
             {
               t = lexer_->next ();
             }
@@ -468,20 +468,20 @@ fundamental_type (Token& t)
           }
           break;
         }
-      case Token::k_long:
+      case token::k_long:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
-          case Token::k_int:
+          case token::k_int:
             {
               t = lexer_->next ();
               break;
             }
-          case Token::k_long:
+          case token::k_long:
             {
               switch ((t = lexer_->next ()).keyword ())
               {
-              case Token::k_int:
+              case token::k_int:
                 {
                   t = lexer_->next ();
                 }
@@ -495,20 +495,20 @@ fundamental_type (Token& t)
           }
           break;
         }
-      case Token::k_int:
+      case token::k_int:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
-          case Token::k_short:
+          case token::k_short:
             {
               t = lexer_->next ();
               break;
             }
-          case Token::k_long:
+          case token::k_long:
             {
               switch ((t = lexer_->next ()).keyword ())
               {
-              case Token::k_long:
+              case token::k_long:
                 {
                   t = lexer_->next ();
                 }
@@ -522,7 +522,7 @@ fundamental_type (Token& t)
           }
           break;
         }
-      case Token::k_char:
+      case token::k_char:
         {
           t = lexer_->next ();
           break;
@@ -532,19 +532,19 @@ fundamental_type (Token& t)
       }
       break;
     }
-  case Token::k_short:
-  case Token::k_long:
+  case token::k_short:
+  case token::k_long:
     {
-      bool l (t.keyword () == Token::k_long);
+      bool l (t.keyword () == token::k_long);
 
       switch ((t = lexer_->next ()).keyword ())
       {
-      case Token::k_signed:
-      case Token::k_unsigned:
+      case token::k_signed:
+      case token::k_unsigned:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
-          case Token::k_int:
+          case token::k_int:
             {
               t = lexer_->next ();
             }
@@ -553,16 +553,16 @@ fundamental_type (Token& t)
           }
           break;
         }
-      case Token::k_long:
+      case token::k_long:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
-          case Token::k_signed:
-          case Token::k_unsigned:
+          case token::k_signed:
+          case token::k_unsigned:
             {
               switch ((t = lexer_->next ()).keyword ())
               {
-              case Token::k_int:
+              case token::k_int:
                 {
                   t = lexer_->next ();
                 }
@@ -571,12 +571,12 @@ fundamental_type (Token& t)
               }
               break;
             }
-          case Token::k_int:
+          case token::k_int:
             {
               switch ((t = lexer_->next ()).keyword ())
               {
-              case Token::k_signed:
-              case Token::k_unsigned:
+              case token::k_signed:
+              case token::k_unsigned:
                 {
                   t = lexer_->next ();
                 }
@@ -590,12 +590,12 @@ fundamental_type (Token& t)
           }
           break;
         }
-      case Token::k_int:
+      case token::k_int:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
-          case Token::k_signed:
-          case Token::k_unsigned:
+          case token::k_signed:
+          case token::k_unsigned:
             {
               t = lexer_->next ();
             }
@@ -604,7 +604,7 @@ fundamental_type (Token& t)
           }
           break;
         }
-      case Token::k_double:
+      case token::k_double:
         {
           if (l)
             t = lexer_->next ();
@@ -616,25 +616,25 @@ fundamental_type (Token& t)
       }
       break;
     }
-  case Token::k_int:
+  case token::k_int:
     {
       switch ((t = lexer_->next ()).keyword ())
       {
-      case Token::k_signed:
-      case Token::k_unsigned:
+      case token::k_signed:
+      case token::k_unsigned:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
-          case Token::k_short:
+          case token::k_short:
             {
               t = lexer_->next ();
               break;
             }
-          case Token::k_long:
+          case token::k_long:
             {
               switch ((t = lexer_->next ()).keyword ())
               {
-              case Token::k_long:
+              case token::k_long:
                 {
                   t = lexer_->next ();
                 }
@@ -647,12 +647,12 @@ fundamental_type (Token& t)
           }
           break;
         }
-      case Token::k_short:
+      case token::k_short:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
-          case Token::k_signed:
-          case Token::k_unsigned:
+          case token::k_signed:
+          case token::k_unsigned:
             {
               t = lexer_->next ();
             }
@@ -661,22 +661,22 @@ fundamental_type (Token& t)
           }
           break;
         }
-      case Token::k_long:
+      case token::k_long:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
-          case Token::k_signed:
-          case Token::k_unsigned:
+          case token::k_signed:
+          case token::k_unsigned:
             {
               t = lexer_->next ();
               break;
             }
-          case Token::k_long:
+          case token::k_long:
             {
               switch ((t = lexer_->next ()).keyword ())
               {
-              case Token::k_signed:
-              case Token::k_unsigned:
+              case token::k_signed:
+              case token::k_unsigned:
                 {
                   t = lexer_->next ();
                 }
@@ -695,12 +695,12 @@ fundamental_type (Token& t)
       }
       break;
     }
-  case Token::k_char:
+  case token::k_char:
     {
       switch ((t = lexer_->next ()).keyword ())
       {
-      case Token::k_signed:
-      case Token::k_unsigned:
+      case token::k_signed:
+      case token::k_unsigned:
         {
           t = lexer_->next ();
         }
@@ -709,18 +709,18 @@ fundamental_type (Token& t)
       }
       break;
     }
-  case Token::k_bool:
-  case Token::k_wchar:
-  case Token::k_float:
+  case token::k_bool:
+  case token::k_wchar:
+  case token::k_float:
     {
       t = lexer_->next ();
       break;
     }
-  case Token::k_double:
+  case token::k_double:
     {
       switch ((t = lexer_->next ()).keyword ())
       {
-      case Token::k_long:
+      case token::k_long:
         {
           t = lexer_->next ();
         }

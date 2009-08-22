@@ -42,70 +42,70 @@ int main (int argc, char* argv[])
   ifs.exceptions (ifstream::failbit | ifstream::badbit);
   ifs.open (argv[1]);
 
-  Lexer l (ifs, argv[1]);
+  lexer l (ifs, argv[1]);
 
   while (true)
   {
-    Token t (l.next ());
+    token t (l.next ());
 
     switch (t.type ())
     {
-    case Token::t_eos:
+    case token::t_eos:
       {
         cout << "<EOS>" << endl;
         return 0;
       }
-    case Token::t_keyword:
+    case token::t_keyword:
       {
         cout << "keyword: " << keywords[t.keyword ()] << endl;
         break;
       }
-    case Token::t_identifier:
+    case token::t_identifier:
       {
         cout << "identifier: " << t.identifier () << endl;
         break;
       }
-    case Token::t_punctuation:
+    case token::t_punctuation:
       {
         cout << punctuation[t.punctuation ()] << endl;
         break;
       }
-    case Token::t_path_lit:
+    case token::t_path_lit:
       {
         cout << "path: " << t.literal () << endl;
         break;
       }
-    case Token::t_string_lit:
+    case token::t_string_lit:
       {
         cout << t.literal () << endl;
         break;
       }
-    case Token::t_char_lit:
+    case token::t_char_lit:
       {
         cout << t.literal () << endl;
         break;
       }
-    case Token::t_bool_lit:
+    case token::t_bool_lit:
       {
         cout << t.literal () << endl;
         break;
       }
-    case Token::t_int_lit:
+    case token::t_int_lit:
       {
         cout << t.literal () << endl;
         break;
       }
-    case Token::t_float_lit:
+    case token::t_float_lit:
       {
         cout << t.literal () << endl;
         break;
       }
-    case Token::t_call_expr:
+    case token::t_call_expr:
       {
         cout << t.expression () << endl;
         break;
       }
-    case Token::t_template_expr:
+    case token::t_template_expr:
       {
         cout << t.expression () << endl;
         break;
