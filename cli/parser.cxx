@@ -456,7 +456,6 @@ fundamental_type (Token& t)
       switch ((t = lexer_->next ()).keyword ())
       {
       case Token::k_short:
-      case Token::k_long:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
@@ -469,14 +468,54 @@ fundamental_type (Token& t)
           }
           break;
         }
+      case Token::k_long:
+        {
+          switch ((t = lexer_->next ()).keyword ())
+          {
+          case Token::k_int:
+            {
+              t = lexer_->next ();
+              break;
+            }
+          case Token::k_long:
+            {
+              switch ((t = lexer_->next ()).keyword ())
+              {
+              case Token::k_int:
+                {
+                  t = lexer_->next ();
+                }
+              default:
+                break;
+              }
+              break;
+            }
+          default:
+            break;
+          }
+          break;
+        }
       case Token::k_int:
         {
           switch ((t = lexer_->next ()).keyword ())
           {
           case Token::k_short:
-          case Token::k_long:
             {
               t = lexer_->next ();
+              break;
+            }
+          case Token::k_long:
+            {
+              switch ((t = lexer_->next ()).keyword ())
+              {
+              case Token::k_long:
+                {
+                  t = lexer_->next ();
+                }
+              default:
+                break;
+              }
+              break;
             }
           default:
             break;
@@ -508,6 +547,43 @@ fundamental_type (Token& t)
           case Token::k_int:
             {
               t = lexer_->next ();
+            }
+          default:
+            break;
+          }
+          break;
+        }
+      case Token::k_long:
+        {
+          switch ((t = lexer_->next ()).keyword ())
+          {
+          case Token::k_signed:
+          case Token::k_unsigned:
+            {
+              switch ((t = lexer_->next ()).keyword ())
+              {
+              case Token::k_int:
+                {
+                  t = lexer_->next ();
+                }
+              default:
+                break;
+              }
+              break;
+            }
+          case Token::k_int:
+            {
+              switch ((t = lexer_->next ()).keyword ())
+              {
+              case Token::k_signed:
+              case Token::k_unsigned:
+                {
+                  t = lexer_->next ();
+                }
+              default:
+                break;
+              }
+              break;
             }
           default:
             break;
@@ -550,7 +626,33 @@ fundamental_type (Token& t)
           switch ((t = lexer_->next ()).keyword ())
           {
           case Token::k_short:
+            {
+              t = lexer_->next ();
+              break;
+            }
           case Token::k_long:
+            {
+              switch ((t = lexer_->next ()).keyword ())
+              {
+              case Token::k_long:
+                {
+                  t = lexer_->next ();
+                }
+              default:
+                break;
+              }
+            }
+          default:
+            break;
+          }
+          break;
+        }
+      case Token::k_short:
+        {
+          switch ((t = lexer_->next ()).keyword ())
+          {
+          case Token::k_signed:
+          case Token::k_unsigned:
             {
               t = lexer_->next ();
             }
@@ -559,7 +661,6 @@ fundamental_type (Token& t)
           }
           break;
         }
-      case Token::k_short:
       case Token::k_long:
         {
           switch ((t = lexer_->next ()).keyword ())
@@ -568,6 +669,21 @@ fundamental_type (Token& t)
           case Token::k_unsigned:
             {
               t = lexer_->next ();
+              break;
+            }
+          case Token::k_long:
+            {
+              switch ((t = lexer_->next ()).keyword ())
+              {
+              case Token::k_signed:
+              case Token::k_unsigned:
+                {
+                  t = lexer_->next ();
+                }
+              default:
+                break;
+              }
+              break;
             }
           default:
             break;

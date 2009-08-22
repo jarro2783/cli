@@ -29,6 +29,18 @@ class c
   char signed -i18;
   unsigned char -i19;
   char unsigned -i20;
+
+  long long -ll1;
+  long long int -ll2;
+  long long unsigned -ll3;
+  int long long -ll4;
+  unsigned long long -ll5;
+  long long int unsigned -ll6;
+  long long unsigned int -ll7;
+  unsigned long long int -ll8;
+  unsigned int long long -ll9;
+  int long long unsigned -ll10;
+  int unsigned long long -ll11;
   
   double -d1;
   long double -d2;
