@@ -28,7 +28,7 @@ const char* keywords[] =
   "double"
 };
 
-const char punctuation[] = {';', ',', ':', '{', '}', '(', ')', '=', '|'};
+const char* punctuation[] = {";", ",", "::", "{", "}", /*"(", ")",*/ "=", "|"};
 
 int main (int argc, char* argv[])
 {
@@ -98,6 +98,16 @@ int main (int argc, char* argv[])
     case Token::t_float_lit:
       {
         cout << t.literal () << endl;
+        break;
+      }
+    case Token::t_call_expr:
+      {
+        cout << t.expression () << endl;
+        break;
+      }
+    case Token::t_template_expr:
+      {
+        cout << t.expression () << endl;
         break;
       }
     }

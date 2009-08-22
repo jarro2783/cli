@@ -23,7 +23,9 @@ public:
     t_char_lit,
     t_bool_lit,
     t_int_lit,
-    t_float_lit
+    t_float_lit,
+    t_call_expr,    // The so called "call expression", e.g., (2, a).
+    t_template_expr // The so called "template expression", e.g., <foo, 3>.
   };
 
   Type
@@ -52,9 +54,12 @@ public:
     k_int,
     k_long,
     k_float,
-    k_double
+    k_double,
+    k_invalid
   };
 
+  // Return the keyword id if type is t_keyword and k_invalid otherwise.
+  //
   Keyword
   keyword () const;
 
@@ -71,15 +76,19 @@ public:
   {
     p_semi,
     p_comma,
-    p_colon,
+    p_dcolon,
     p_lcbrace,
     p_rcbrace,
-    p_lparen,
-    p_rparen,
+    // p_lparen,
+    // p_rparen,
     p_eq,
-    p_or
+    p_or,
+    p_invalid
   };
 
+  // Return the punctuation id if type is t_punctuation and p_invalid
+  // otherwise.
+  //
   Punctuation
   punctuation () const;
 
@@ -88,6 +97,12 @@ public:
 public:
   std::string const&
   literal () const;
+
+  // Expressions.
+  //
+public:
+  std::string const&
+  expression () const;
 
   // C-tors.
   //
@@ -99,7 +114,7 @@ public:
   Token (Keyword k, std::size_t l, std::size_t c);
   Token (Punctuation p, std::size_t l, std::size_t c);
 
-  // Identifier & literals.
+  // Identifier, literals, and expressions.
   //
   Token (Type t, std::string const& s, std::size_t l, std::size_t c);
 

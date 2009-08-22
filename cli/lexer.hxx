@@ -22,6 +22,9 @@ public:
   Token
   next ();
 
+  bool
+  valid () const;
+
 protected:
   class Char
   {
@@ -56,7 +59,7 @@ protected:
   peek ();
 
 protected:
-  class invalid_input {};
+  class InvalidInput {};
 
   void
   skip_spaces ();
@@ -81,6 +84,12 @@ protected:
 
   Token
   path_literal (Char);
+
+  Token
+  call_expression (Char);
+
+  Token
+  template_expression (Char);
 
 protected:
   bool
@@ -120,6 +129,7 @@ private:
 
   bool eos_;
   bool include_;
+  bool valid_;
 };
 
 #include "lexer.ixx"

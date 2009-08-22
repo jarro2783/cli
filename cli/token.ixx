@@ -24,7 +24,7 @@ column () const
 inline Token::Keyword Token::
 keyword () const
 {
-  return keyword_;
+  return type_ == t_keyword ? keyword_ : k_invalid;
 }
 
 inline std::string const& Token::
@@ -36,11 +36,17 @@ identifier () const
 inline Token::Punctuation Token::
 punctuation () const
 {
-  return punctuation_;
+  return type_ == t_punctuation ? punctuation_ : p_invalid;
 }
 
 inline std::string const& Token::
 literal () const
+{
+  return str_;
+}
+
+inline std::string const& Token::
+expression () const
 {
   return str_;
 }

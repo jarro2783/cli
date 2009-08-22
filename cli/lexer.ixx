@@ -38,6 +38,12 @@ column () const
 // Lexer
 //
 inline bool Lexer::
+valid () const
+{
+  return valid_;
+}
+
+inline bool Lexer::
 is_alpha (char c) const
 {
   return std::isalpha (c, loc_);

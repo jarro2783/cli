@@ -17,7 +17,8 @@ Lexer (istream& is, string const& id)
       l_ (1),
       c_(1),
       eos_ (false),
-      include_ (false)
+      include_ (false),
+      valid_ (true)
 {
   keyword_map_["include"]   = Token::k_include;
   keyword_map_["namespace"] = Token::k_namespace;
@@ -111,8 +112,8 @@ next ()
         {
           if (include)
             return path_literal (c);
-
-          break;
+          else
+            return template_expression (c);
         }
       case ';':
         {
@@ -124,7 +125,12 @@ next ()
         }
       case ':':
         {
-          return Token (Token::p_colon, c.line (), c.column ());
+          if (peek () == ':')
+          {
+            get ();
+            return Token (Token::p_dcolon, c.line (), c.column ());
+          }
+          break;
         }
       case '{':
         {
@@ -136,11 +142,7 @@ next ()
         }
       case '(':
         {
-          return Token (Token::p_lparen, c.line (), c.column ());
-        }
-      case ')':
-        {
-          return Token (Token::p_rparen, c.line (), c.column ());
+          return call_expression (c);
         }
       case '=':
         {
@@ -171,7 +173,7 @@ next ()
             //
             cerr << id_ << ':' << c.line () << ':' << c.column ()
                  << ": error: unexpected character '-'" << endl;
-            throw invalid_input ();
+            throw InvalidInput ();
           }
 
           break;
@@ -190,9 +192,11 @@ next ()
 
       cerr << id_ << ':' << c.line () << ':' << c.column ()
            << ": error: unexpected character '" << c << "'" << endl;
+      throw InvalidInput ();
     }
-    catch (invalid_input const&)
+    catch (InvalidInput const&)
     {
+      valid_ = false;
     }
 
     // Try to recover.
@@ -245,7 +249,7 @@ identifier (Char c)
     {
       cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
            << "invalid character sequence '" << lexeme << "'" << endl;
-      throw invalid_input ();
+      throw InvalidInput ();
     }
   }
 
@@ -302,7 +306,7 @@ char_literal (Char c)
     {
       cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
            << "end of stream reached while reading character literal" << endl;
-      throw invalid_input ();
+      throw InvalidInput ();
     }
 
     lexeme += c;
@@ -363,7 +367,7 @@ string_literal_trailer ()
     {
       cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
            << "end of stream reached while reading string literal" << endl;
-      throw invalid_input ();
+      throw InvalidInput ();
     }
 
     r += c;
@@ -400,7 +404,7 @@ path_literal (Char c)
     {
       cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
            << "end of stream reached while reading path literal" << endl;
-      throw invalid_input ();
+      throw InvalidInput ();
     }
 
     lexeme += c;
@@ -410,4 +414,83 @@ path_literal (Char c)
   }
 
   return Token (Token::t_path_lit, lexeme, ln, cl);
+}
+
+Token Lexer::
+call_expression (Char c)
+{
+  size_t ln (c.line ()), cl (c.column ());
+  string lexeme;
+  lexeme += c;
+  size_t balance (1);
+
+  while (balance != 0)
+  {
+    c = get ();
+
+    if (is_eos (c))
+    {
+      cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
+           << "end of stream reached while reading call expression" << endl;
+      throw InvalidInput ();
+    }
+
+    lexeme += c;
+
+    switch (c)
+    {
+    case '(':
+      {
+        balance++;
+        break;
+      }
+    case ')':
+      {
+        balance--;
+        break;
+      }
+    }
+  }
+
+  return Token (Token::t_call_expr, lexeme, ln, cl);
+}
+
+Token Lexer::
+template_expression (Char c)
+{
+  size_t ln (c.line ()), cl (c.column ());
+  string lexeme;
+  lexeme += c;
+  size_t balance (1);
+
+  while (balance != 0)
+  {
+    c = get ();
+
+    if (is_eos (c))
+    {
+      cerr << id_ << ':' << c.line () << ':' << c.column () << ": error: "
+           << "end of stream reached while reading template expression"
+           << endl;
+      throw InvalidInput ();
+    }
+
+    lexeme += c;
+
+    switch (c)
+    {
+    case '<':
+      {
+        balance++;
+        break;
+      }
+    case '>':
+      {
+        balance--;
+        break;
+      }
+    }
+  }
+
+  return Token (Token::t_template_expr, lexeme, ln, cl);
 }
