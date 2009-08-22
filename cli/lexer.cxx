@@ -432,7 +432,7 @@ string_literal (Char c)
     lexeme += " \"";
   }
 
-  return Token (Token::t_char_lit, lexeme, ln, cl);
+  return Token (Token::t_string_lit, lexeme, ln, cl);
 }
 
 string Lexer::
