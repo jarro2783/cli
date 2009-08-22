@@ -1,15 +1,15 @@
-@@ No support for template ids
-@@ No support for expressions (e.g., 2*2)
-
 Token types:
       keyword
       identifier      
-      punctuation (";" "{" "}" "(" ")" "," "|" "=" ":")
-      bracket-literal
-      string-literal     
+      punctuation      (";" "{" "}" "(" ")" "," "|" "=" ":")
+      path-literal
+      char-literal     
+      string-literal
       bool-literal
       int-literal
       float-literal
+      call-expr        (e.g., (a, 2))
+      template-expr    (e.g., <a, 2>)
       end-of-stream
 
 def-unit:
@@ -59,27 +59,30 @@ option-name:
 	string-literal
 
 initializer:
-	"=" argument-expr
-	"(" argument-seq(opt) ")"
+	"=" initializer-expr
+        call-expr
 
-argument-seq:
-	argument-expr
-	argument-seq "," argument-expr
-
-argument-expr:
+initializer-expr:
 	bool-literal
 	int-literal
 	float-literal
+        char-literal
 	string-literal
 	qualified-name
+        call-expr
 
 qualified-name:
-	identifier
-	qualified-name "::" identifier
+	"::" qualified-name-trailer
+	qualified-name-trailer
+
+qualified-name-trailer:
+	template-id
+	qualified-name "::" template-id	
+
+template-id:
+	identifier template-expr(opt)
 
 fundamental-type-spec:
 	"bool"
 	 ...
 	"long double"
-	
-
