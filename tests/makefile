@@ -5,7 +5,7 @@
 
 include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
-tests := lexer
+tests := lexer parser
 
 default   := $(out_base)/
 test      := $(out_base)/.test
