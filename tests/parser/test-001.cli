@@ -1,2 +1,4 @@
+// include-decl-seq, include-decl
+//
 include <string>;
 include "types.hxx";

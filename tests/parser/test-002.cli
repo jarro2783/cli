@@ -1,3 +1,5 @@
+// namespace-def, namespace-def-body
+//
 namespace n1 {}
 
 namespace n1

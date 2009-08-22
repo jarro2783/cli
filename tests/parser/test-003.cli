@@ -1,13 +1,9 @@
-namespace n1 {}
-
-namespace n1
+// class-def
+//
+class c1
 {
-  namespace n2 {}
-  class c {};
-  namespace n2 
-  {
-    namespace n3 {}
-  }
-}
+};
 
-namespace n4 {}
+class c2
+{
+};

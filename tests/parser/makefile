@@ -7,7 +7,7 @@ include $(dir $(lastword $(MAKEFILE_LIST)))../../build/bootstrap.make
 
 cxx_tun := driver.cxx
 
-tests := 000 001 002 003 004 005 006
+tests := 000 001 002 003 004 005
 
 #
 #
