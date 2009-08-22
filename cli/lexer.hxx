@@ -53,10 +53,13 @@ protected:
   };
 
   Char
-  get ();
+  peek ();
 
   Char
-  peek ();
+  get ();
+
+  void
+  unget (Char);
 
 protected:
   class InvalidInput {};
@@ -130,6 +133,9 @@ private:
   bool eos_;
   bool include_;
   bool valid_;
+
+  Char buf_;
+  bool unget_;
 };
 
 #include "lexer.ixx"

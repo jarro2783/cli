@@ -18,7 +18,9 @@ Lexer (istream& is, string const& id)
       c_(1),
       eos_ (false),
       include_ (false),
-      valid_ (true)
+      valid_ (true),
+      buf_ (0, 0, 0),
+      unget_ (false)
 {
   keyword_map_["include"]   = Token::k_include;
   keyword_map_["namespace"] = Token::k_namespace;
@@ -36,46 +38,69 @@ Lexer (istream& is, string const& id)
 }
 
 Lexer::Char Lexer::
-get ()
+peek ()
 {
-  // When is_.get () returns eof, the failbit is also set (stupid,
-  // isn't?) which may trigger an exception. To work around this
-  // we will call peek() first and only call get() if it is not
-  // eof. But we can only call peek() on eof once; any subsequent
-  // calls will spoil the failbit (even more stupid).
-  //
-  Char c (peek ());
-
-  if (!is_eos (c))
+  if (unget_)
+    return buf_;
+  else
   {
-    is_.get ();
-
-    if (c == '\n')
-    {
-      l_++;
-      c_ = 1;
-    }
+    if (eos_)
+      return Char (Char::Traits::eof (), l_, c_);
     else
-      c_++;
-  }
+    {
+      Char::IntType i (is_.peek ());
 
-  return c;
+      if (i == Char::Traits::eof ())
+        eos_ = true;
+
+      return Char (i, l_, c_);
+    }
+  }
 }
 
 Lexer::Char Lexer::
-peek ()
+get ()
 {
-  if (eos_)
-    return Char (Char::Traits::eof (), l_, c_);
+  if (unget_)
+  {
+    unget_ = false;
+    return buf_;
+  }
   else
   {
-    Char::IntType i (is_.peek ());
+    // When is_.get () returns eof, the failbit is also set (stupid,
+    // isn't?) which may trigger an exception. To work around this
+    // we will call peek() first and only call get() if it is not
+    // eof. But we can only call peek() on eof once; any subsequent
+    // calls will spoil the failbit (even more stupid).
+    //
+    Char c (peek ());
 
-    if (i == Char::Traits::eof ())
-      eos_ = true;
+    if (!is_eos (c))
+    {
+      is_.get ();
 
-    return Char (i, l_, c_);
+      if (c == '\n')
+      {
+        l_++;
+        c_ = 1;
+      }
+      else
+        c_++;
+    }
+
+    return c;
   }
+}
+
+void Lexer::
+unget (Char c)
+{
+  // Because iostream::unget cannot work once eos is reached,
+  // we have to provide our own implementation.
+  //
+  buf_ = c;
+  unget_ = true;
 }
 
 Token Lexer::
@@ -214,8 +239,65 @@ next ()
 void Lexer::
 skip_spaces ()
 {
-  for (Char c (peek ()); !is_eos (c) && is_space (c); c = peek ())
+  for (Char c (peek ());; c = peek ())
+  {
+    if (is_eos (c))
+      break;
+
+    if (c == '/')
+    {
+      c = get ();
+      Char p (peek ());
+
+      if (p == '/')
+      {
+        get ();
+
+        // C++ comment. Read until newline or eos.
+        //
+        for (c = get (); !is_eos (c) && c != '\n'; c = get ()) ;
+        continue;
+      }
+      else if (p == '*')
+      {
+        get ();
+
+        // C comment.
+        //
+        for (c = get ();; c = get ())
+        {
+          if (is_eos (c))
+          {
+            cerr << id_ << ':' << c.line () << ':' << c.column ()
+                 << ": error: end of stream reached while reading "
+                 << "C-style comment" << endl;
+            throw InvalidInput ();
+          }
+
+          if (c == '*')
+          {
+            c = peek ();
+            if (c == '/')
+            {
+              get ();
+              break;
+            }
+          }
+        }
+        continue;
+      }
+      else
+      {
+        unget (c);
+        break;
+      }
+    }
+
+    if (!is_space (c))
+      break;
+
     get ();
+  }
 }
 
 Token Lexer::
