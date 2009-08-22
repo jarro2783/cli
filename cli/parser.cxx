@@ -335,11 +335,19 @@ option_def (Token& t)
   //
   while (true)
   {
-    if (t.type () != Token::t_identifier)
+    switch (t.type ())
     {
-      cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
-           << "option name expected instead of " << t << endl;
-      throw Error ();
+    case Token::t_identifier:
+    case Token::t_string_lit:
+      {
+        break;
+      }
+    default:
+      {
+        cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+             << "option name expected instead of " << t << endl;
+        throw Error ();
+      }
     }
 
     t = lexer_->next ();
