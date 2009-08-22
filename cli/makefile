@@ -5,7 +5,7 @@
 
 include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
-cxx_tun := cli.cxx lexer.cxx
+cxx_tun := cli.cxx lexer.cxx parser.cxx
 
 #
 #
