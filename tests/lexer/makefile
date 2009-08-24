@@ -76,7 +76,6 @@ endif
 $(call include,$(bld_root)/cxx/o-e.make)
 $(call include,$(bld_root)/cxx/cxx-o.make)
 $(call include,$(bld_root)/cxx/cxx-d.make)
-$(call include,$(bld_root)/install.make)
 
 # Dependencies.
 #
