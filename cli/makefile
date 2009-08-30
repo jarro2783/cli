@@ -17,11 +17,18 @@ dist     := $(out_base)/.dist
 clean    := $(out_base)/.clean
 install  := $(out_base)/.install
 
+# Import.
+#
+$(call import,\
+  $(scf_root)/import/libcutl/stub.make,\
+  l: cutl.l,cpp-options: cutl.l.cpp-options)
+
 # Build.
 #
-$(cli): $(cxx_obj)
+$(cli): $(cxx_obj) $(cutl.l)
 
 $(cxx_obj) $(cxx_od): cpp_options := -I$(src_base)
+$(cxx_obj) $(cxx_od): $(cutl.l.cpp-options)
 
 $(call include-dep,$(cxx_od))
 

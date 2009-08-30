@@ -1,3 +1,18 @@
+General
+-------
+
+Unless you are using the cli+dep package, you will also need to install
+the following dependencies:
+
+  libcutl >= 1.0.0 http://www.codesynthesis.com/projects/libcult/
+
+Additionally for UNIX-like operating systems:
+
+  build   >= 0.3.4 http://kolpackov.net/projects/build/
+
+The cli+dep package comes with the necessary dependencies bundled.
+
+
 UNIX
 ----
 
@@ -5,13 +20,6 @@ Building on UNIX-like operating systems requires GNU make 3.81 or later.
 Most recent GNU/Linux distributions should already have this version
 installed. To check the GNU make version run make (or gmake) with the
 --version option.
-
-Unless you are using the cli+dep package, you will also need to install
-build 0.3.4 or later:
-
-http://kolpackov.net/projects/build/
-
-The cli+dep package comes with the necessary build files bundled.
 
 To build the compiler, tests, and examples simply run make in the root
 directory of the package. To run the automated tests, run 'make test'.
