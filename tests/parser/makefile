@@ -21,9 +21,33 @@ clean    := $(out_base)/.clean
 
 # Build.
 #
-$(driver): $(cxx_obj) $(out_root)/cli/lexer.o $(out_root)/cli/parser.o
+# Import.
+#
+$(call import,\
+  $(scf_root)/import/libcutl/stub.make,\
+  l: cutl.l,cpp-options: cutl.l.cpp-options)
 
-$(cxx_obj) $(cxx_od): cpp_options := -I$(src_base) -I$(src_root)
+# Build.
+#
+cli_obj :=             \
+lexer.o                \
+parser.o               \
+semantics/class.o      \
+semantics/elements.o   \
+semantics/expression.o \
+semantics/namespace.o  \
+semantics/option.o     \
+semantics/unit.o       \
+traversal/class.o      \
+traversal/elements.o   \
+traversal/namespace.o  \
+traversal/option.o     \
+traversal/unit.o
+
+$(driver): $(cxx_obj) $(addprefix $(out_root)/cli/,$(cli_obj)) $(cutl.l)
+
+$(cxx_obj) $(cxx_od): cpp_options := -I$(src_base) -I$(src_root)/cli
+$(cxx_obj) $(cxx_od): $(cutl.l.cpp-options)
 
 $(call include-dep,$(cxx_od))
 

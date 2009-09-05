@@ -6,8 +6,8 @@
 #include <fstream>
 #include <iostream>
 
-#include <cli/token.hxx>
-#include <cli/lexer.hxx>
+#include <token.hxx>
+#include <lexer.hxx>
 
 using namespace std;
 

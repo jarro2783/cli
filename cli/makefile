@@ -7,6 +7,21 @@ include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
 cxx_tun := cli.cxx lexer.cxx parser.cxx
 
+cxx_tun +=               \
+semantics/class.cxx      \
+semantics/elements.cxx   \
+semantics/expression.cxx \
+semantics/namespace.cxx  \
+semantics/option.cxx     \
+semantics/unit.cxx
+
+cxx_tun +=               \
+traversal/class.cxx      \
+traversal/elements.cxx   \
+traversal/namespace.cxx  \
+traversal/option.cxx     \
+traversal/unit.cxx
+
 #
 #
 cxx_obj  := $(addprefix $(out_base)/,$(cxx_tun:.cxx=.o))

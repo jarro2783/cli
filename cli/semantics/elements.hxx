@@ -1,0 +1,421 @@
+// file      : cli/semantics/elements.hxx
+// author    : Boris Kolpackov <boris@codesynthesis.com>
+// copyright : Copyright (c) 2009 Code Synthesis Tools CC
+// license   : MIT; see accompanying LICENSE file
+
+#ifndef CLI_SEMANTICS_ELEMENTS_HXX
+#define CLI_SEMANTICS_ELEMENTS_HXX
+
+#include <map>
+#include <list>
+#include <vector>
+#include <string>
+#include <cstddef> // std::size_t
+#include <cstdlib> // std::abort
+#include <utility> // std::pair
+#include <cassert>
+
+#include <cutl/container/graph.hxx>
+#include <cutl/container/pointer-iterator.hxx>
+
+#include <cutl/compiler/context.hxx>
+
+namespace semantics
+{
+  using namespace cutl;
+
+  using std::size_t;
+  using std::string;
+
+  using container::graph;
+  using container::pointer_iterator;
+
+  using compiler::context;
+
+
+  //
+  //
+  typedef string path;
+  typedef string name;
+
+
+  //
+  //
+  class node;
+  class edge;
+
+
+  //
+  //
+  class edge
+  {
+  public:
+    virtual
+    ~edge () {}
+
+  public:
+    typedef semantics::context context_type;
+
+    context_type&
+    context ()
+    {
+      return context_;
+    }
+
+  public:
+    template <typename X>
+    bool
+    is_a () const
+    {
+      return dynamic_cast<X const*> (this) != 0;
+    }
+
+  protected:
+    friend class graph<node, edge>;
+
+  private:
+    context_type context_;
+  };
+
+  /*
+  inline bool
+  operator== (edge const& x, edge const& y)
+  {
+    return &x == &y;
+  }
+  */
+
+
+  //
+  //
+  class node
+  {
+  public:
+    virtual
+    ~node () {}
+
+  public:
+    typedef semantics::context context_type;
+
+    context_type&
+    context ()
+    {
+      return context_;
+    }
+
+  public:
+    path const&
+    file () const
+    {
+      return file_;
+    }
+
+    size_t
+    line () const
+    {
+      return line_;
+    }
+
+    size_t
+    column () const
+    {
+      return column_;
+    }
+
+  public:
+    template <typename X>
+    bool
+    is_a () const
+    {
+      return dynamic_cast<X const*> (this) != 0;
+    }
+
+  protected:
+    friend class graph<node, edge>;
+
+    node (path const& file, size_t line, size_t column)
+        : file_ (file), line_ (line), column_ (column)
+    {
+    }
+
+    // For virtual inheritance. Should never be actually called.
+    //
+    node ()
+    {
+      std::abort ();
+    }
+
+    // Sink functions that allow extensions in the form of one-way
+    // edges.
+    //
+    void
+    add_edge_right (edge&)
+    {
+    }
+
+  private:
+    context_type context_;
+    path file_;
+    size_t line_;
+    size_t column_;
+  };
+
+  /*
+  inline bool
+  operator== (node const& x, node const& y)
+  {
+    return &x == &y;
+  }
+  */
+
+
+  //
+  //
+  class scope;
+  class nameable;
+
+
+  //
+  //
+  class names: public edge
+  {
+  public:
+    typedef semantics::name name_type;
+    typedef semantics::scope scope_type;
+
+    typedef std::vector<name_type> name_list;
+    typedef name_list::const_iterator name_iterator;
+
+    // First name.
+    //
+    name_type const&
+    name () const
+    {
+      return names_[0];
+    }
+
+    name_iterator
+    name_begin () const
+    {
+      return names_.begin ();
+    }
+
+    name_iterator
+    name_end () const
+    {
+      return names_.end ();
+    }
+
+    scope_type&
+    scope () const
+    {
+      return *scope_;
+    }
+
+    nameable&
+    named () const
+    {
+      return *named_;
+    }
+
+  protected:
+    friend class graph<node, edge>;
+
+    names (name_type const& name)
+    {
+      names_.push_back (name);
+    }
+
+    names (name_list const& names)
+        : names_ (names)
+    {
+    }
+
+    void
+    set_left_node (scope_type& n)
+    {
+      scope_ = &n;
+    }
+
+    void
+    set_right_node (nameable& n)
+    {
+      named_ = &n;
+    }
+
+    void
+    clear_left_node (scope_type& n)
+    {
+      assert (scope_ == &n);
+      scope_ = 0;
+    }
+
+    void
+    clear_right_node (nameable& n)
+    {
+      assert (named_ == &n);
+      named_ = 0;
+    }
+
+  protected:
+    scope_type* scope_;
+    nameable* named_;
+    name_list names_;
+  };
+
+
+  //
+  //
+  class nameable: public virtual node
+  {
+  public:
+    typedef semantics::name name_type;
+    typedef semantics::scope scope_type;
+
+    name_type
+    name () const
+    {
+      return named_->name ();
+    }
+
+    scope_type&
+    scope ()
+    {
+      return named_->scope ();
+    }
+
+    names&
+    named ()
+    {
+      return *named_;
+    }
+
+  protected:
+    friend class graph<node, edge>;
+
+    nameable ()
+        : named_ (0)
+    {
+    }
+
+    void
+    add_edge_right (names& e)
+    {
+      assert (named_ == 0);
+      named_ = &e;
+    }
+
+    void
+    remove_edge_right (names& e)
+    {
+      assert (named_ == &e);
+      named_ = 0;
+    }
+
+    using node::add_edge_right;
+
+  private:
+    names* named_;
+  };
+
+
+  //
+  //
+  class scope: public virtual nameable
+  {
+  protected:
+    typedef std::list<names*> names_list;
+    typedef std::map<names*, names_list::iterator> list_iterator_map;
+    typedef std::map<name_type, names_list> names_map;
+
+  public:
+    typedef pointer_iterator<names_list::iterator> names_iterator;
+    typedef pointer_iterator<names_list::const_iterator> names_const_iterator;
+
+    typedef
+    std::pair<names_const_iterator, names_const_iterator>
+    names_iterator_pair;
+
+  public:
+    names_iterator
+    names_begin ()
+    {
+      return names_.begin ();
+    }
+
+    names_iterator
+    names_end ()
+    {
+      return names_.end ();
+    }
+
+    names_const_iterator
+    names_begin () const
+    {
+      return names_.begin ();
+    }
+
+    names_const_iterator
+    names_end () const
+    {
+      return names_.end ();
+    }
+
+    virtual names_iterator_pair
+    find (name_type const&) const;
+
+    names_iterator
+    find (names&);
+
+  protected:
+    friend class graph<node, edge>;
+
+    scope (path const& file, size_t line, size_t column)
+        : node (file, line, column)
+    {
+    }
+
+    scope ()
+    {
+    }
+
+    void
+    add_edge_left (names&);
+
+    void
+    remove_edge_left (names&);
+
+  protected:
+    using nameable::add_edge_right;
+
+  private:
+    names_list names_;
+    list_iterator_map iterator_map_;
+    names_map names_map_;
+  };
+
+  //
+  //
+  class type: public node
+  {
+  public:
+    string const&
+    name () const
+    {
+      return name_;
+    }
+
+  protected:
+    friend class graph<node, edge>;
+
+    type (path const& file, size_t line, size_t column, string const& name)
+        : node (file, line, column), name_ (name)
+    {
+    }
+
+  private:
+    string name_;
+  };
+}
+
+#endif // CLI_SEMANTICS_ELEMENTS_HXX

@@ -18,12 +18,18 @@ driver   := $(out_base)/driver
 test     := $(out_base)/.test
 clean    := $(out_base)/.clean
 
+# Import.
+#
+$(call import,\
+  $(scf_root)/import/libcutl/stub.make,\
+  l: cutl.l,cpp-options: cutl.l.cpp-options)
 
 # Build.
 #
-$(driver): $(cxx_obj) $(out_root)/cli/lexer.o
+$(driver): $(cxx_obj) $(out_root)/cli/lexer.o $(cutl.l)
 
-$(cxx_obj) $(cxx_od): cpp_options := -I$(src_base) -I$(src_root)
+$(cxx_obj) $(cxx_od): cpp_options := -I$(src_base) -I$(src_root)/cli
+$(cxx_obj) $(cxx_od): $(cutl.l.cpp-options)
 
 $(call include-dep,$(cxx_od))
 

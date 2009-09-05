@@ -6,7 +6,9 @@
 #include <fstream>
 #include <iostream>
 
-#include <cli/parser.hxx>
+#include <parser.hxx>
+#include <semantics.hxx>
+#include <traversal.hxx>
 
 using namespace std;
 
