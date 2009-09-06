@@ -156,7 +156,7 @@ namespace semantics
 
   public:
     cli_unit (path const& file)
-        : namespace_ (file, 1, 1)
+        : node (file, 1, 1)
     {
       // Use a special edge to get this->name() return the global
       // namespace name ("").

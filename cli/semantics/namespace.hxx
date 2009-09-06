@@ -19,6 +19,10 @@ namespace semantics
         : node (file, line, column)
     {
     }
+
+    namespace_ ()
+    {
+    }
   };
 }
 
