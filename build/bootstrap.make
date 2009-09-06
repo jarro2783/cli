@@ -10,7 +10,7 @@ project_name := CLI
 #
 build := build-0.3
 
--include $(dir $(lastword $(MAKEFILE_LIST)))$(build)/bootstrap.make
+-include $(dir $(lastword $(MAKEFILE_LIST)))../../$(build)/bootstrap.make
 
 ifeq ($(patsubst %build/bootstrap.make,,$(lastword $(MAKEFILE_LIST))),)
 include $(build)/bootstrap.make
