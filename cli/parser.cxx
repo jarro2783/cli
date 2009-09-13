@@ -124,15 +124,15 @@ recover (token& t)
 }
 
 auto_ptr<cli_unit> parser::
-parse (std::istream& is, std::string const& id)
+parse (std::istream& is, path const& p)
 {
-  auto_ptr<cli_unit> unit (new cli_unit (id));
+  auto_ptr<cli_unit> unit (new cli_unit (p));
   unit_ = unit.get ();
 
-  lexer l (is, id);
+  lexer l (is, p.string ());
   lexer_ = &l;
 
-  id_ = &id;
+  path_ = &p;
   valid_ = true;
 
   def_unit ();
@@ -179,7 +179,7 @@ def_unit ()
         continue;
       }
 
-      cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+      cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
            << "expected namespace or class declaration instead of " << t
            << endl;
       throw error ();
@@ -201,14 +201,14 @@ include_decl ()
 
   if (t.type () != token::t_path_lit)
   {
-    cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected path literal instead of " << t << endl;
     throw error ();
   }
 
   if (valid_)
   {
-    cxx_unit& n (unit_->new_node<cxx_unit> (*id_, t.line (), t.column ()));
+    cxx_unit& n (unit_->new_node<cxx_unit> (*path_, t.line (), t.column ()));
     unit_->new_edge<cxx_includes> (*unit_, n, t.literal ());
   }
 
@@ -216,7 +216,7 @@ include_decl ()
 
   if (t.punctuation () != token::p_semi)
   {
-    cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected ';' instead of " << t << endl;
     throw error ();
   }
@@ -253,7 +253,7 @@ namespace_def ()
 
   if (t.type () != token::t_identifier)
   {
-    cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected identifier instead of " << t << endl;
     throw error ();
   }
@@ -263,7 +263,7 @@ namespace_def ()
   if (valid_)
   {
     namespace_& n (
-      unit_->new_node<namespace_> (*id_, t.line (), t.column ()));
+      unit_->new_node<namespace_> (*path_, t.line (), t.column ()));
     unit_->new_edge<names> (*scope_, n, t.identifier ());
     scope_ = &n;
   }
@@ -272,7 +272,7 @@ namespace_def ()
 
   if (t.punctuation () != token::p_lcbrace)
   {
-    cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected '{' instead of " << t << endl;
     throw error ();
   }
@@ -288,7 +288,7 @@ namespace_def ()
 
   if (t.punctuation () != token::p_rcbrace)
   {
-    cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected namespace declaration, class declaration, or '}' "
          << "instead of " << t << endl;
     throw error ();
@@ -302,7 +302,7 @@ class_def ()
 
   if (t.type () != token::t_identifier)
   {
-    cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected identifier instead of " << t << endl;
     throw error ();
   }
@@ -311,7 +311,7 @@ class_def ()
 
   if (valid_)
   {
-    class_& n (unit_->new_node<class_> (*id_, t.line (), t.column ()));
+    class_& n (unit_->new_node<class_> (*path_, t.line (), t.column ()));
     unit_->new_edge<names> (*scope_, n, t.identifier ());
     scope_ = &n;
   }
@@ -320,7 +320,7 @@ class_def ()
 
   if (t.punctuation () != token::p_lcbrace)
   {
-    cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected '{' instead of " << t << endl;
     throw error ();
   }
@@ -349,7 +349,7 @@ class_def ()
 
   if (t.punctuation () != token::p_rcbrace)
   {
-    cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected option declaration or '}' instead of " << t << endl;
     throw error ();
   }
@@ -358,7 +358,7 @@ class_def ()
 
   if (t.punctuation () != token::p_semi)
   {
-    cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected ';' instead of " << t << endl;
     throw error ();
   }
@@ -383,8 +383,8 @@ option_def (token& t)
 
   if (valid_)
   {
-    o = &unit_->new_node<option> (*id_, l, c);
-    type& t (unit_->new_type (*id_, l, c, type_name));
+    o = &unit_->new_node<option> (*path_, l, c);
+    type& t (unit_->new_type (*path_, l, c, type_name));
     unit_->new_edge<belongs> (*o, t);
   }
 
@@ -411,7 +411,7 @@ option_def (token& t)
       }
     default:
       {
-        cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+        cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
              << "option name expected instead of " << t << endl;
         throw error ();
       }
@@ -494,7 +494,7 @@ option_def (token& t)
         }
       default:
         {
-          cerr << *id_ << ':' << t.line () << ':' << t.column ()
+          cerr << *path_ << ':' << t.line () << ':' << t.column ()
                << ": error: expected intializer instead of " << t << endl;
           throw error ();
         }
@@ -515,13 +515,13 @@ option_def (token& t)
 
   if (valid_ && !ev.empty ())
   {
-    expression& e (unit_->new_node<expression> (*id_, l, c, et, ev));
+    expression& e (unit_->new_node<expression> (*path_, l, c, et, ev));
     unit_->new_edge<initialized> (*o, e);
   }
 
   if (t.punctuation () != token::p_semi)
   {
-    cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected ';' instead of " << t << endl;
     throw error ();
   }
@@ -547,7 +547,7 @@ qualified_name (token& t, string& r)
   {
     if (t.type () != token::t_identifier)
     {
-      cerr << *id_ << ':' << t.line () << ':' << t.column () << ": error: "
+      cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
            << "expected identifier after '::'" << endl;
       throw error ();
     }

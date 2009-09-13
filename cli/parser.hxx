@@ -22,7 +22,7 @@ public:
   struct invalid_input {};
 
   std::auto_ptr<semantics::cli_unit>
-  parse (std::istream& is, std::string const& id);
+  parse (std::istream& is, semantics::path const& path);
 
 private:
   struct error {};
@@ -57,7 +57,7 @@ private:
 
 private:
   bool valid_;
-  std::string const* id_;
+  semantics::path const* path_;
 
   lexer* lexer_;
 

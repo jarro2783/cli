@@ -30,7 +30,7 @@ namespace semantics
       return *includer_;
     }
 
-    path
+    string const&
     file () const
     {
       return file_;
@@ -39,7 +39,7 @@ namespace semantics
   protected:
     friend class graph<node, edge>;
 
-    includes (path const& file)
+    includes (string const& file)
         : file_ (file)
     {
     }
@@ -51,7 +51,7 @@ namespace semantics
     }
 
   protected:
-    path file_;
+    string file_;
     cli_unit* includer_;
   };
 
@@ -69,7 +69,7 @@ namespace semantics
   protected:
     friend class graph<node, edge>;
 
-    cli_includes (path const& file)
+    cli_includes (string const& file)
         : includes (file)
     {
     }
@@ -98,7 +98,7 @@ namespace semantics
   protected:
     friend class graph<node, edge>;
 
-    cxx_includes (path const& file)
+    cxx_includes (string const& file)
         : includes (file)
     {
     }

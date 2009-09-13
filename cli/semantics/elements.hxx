@@ -15,6 +15,8 @@
 #include <utility> // std::pair
 #include <cassert>
 
+#include <cutl/fs/path.hxx>
+
 #include <cutl/container/graph.hxx>
 #include <cutl/container/pointer-iterator.hxx>
 
@@ -35,8 +37,10 @@ namespace semantics
 
   //
   //
-  typedef string path;
   typedef string name;
+
+  using fs::path;
+  using fs::invalid_path;
 
 
   //
@@ -141,6 +145,7 @@ namespace semantics
     // For virtual inheritance. Should never be actually called.
     //
     node ()
+        : file_ ("")
     {
       std::abort ();
     }

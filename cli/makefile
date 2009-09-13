@@ -8,6 +8,10 @@ include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 cxx_tun := cli.cxx lexer.cxx parser.cxx
 
 cxx_tun +=               \
+context.cxx              \
+generator.cxx
+
+cxx_tun +=               \
 semantics/class.cxx      \
 semantics/elements.cxx   \
 semantics/expression.cxx \
