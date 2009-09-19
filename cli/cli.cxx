@@ -56,4 +56,10 @@ int main (int argc, char* argv[])
     //
     return 1;
   }
+  catch (generator::failed const&)
+  {
+    // Diagnostics has already been issued by the generator.
+    //
+    return 1;
+  }
 }

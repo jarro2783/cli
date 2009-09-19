@@ -13,6 +13,8 @@ class generator
 public:
   generator ();
 
+  class failed {};
+
   void
   generate (semantics::cli_unit&, semantics::path const&);
 
