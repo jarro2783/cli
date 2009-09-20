@@ -13,7 +13,7 @@ namespace semantics
   //
 
   scope::names_iterator_pair scope::
-  find (name_type const& name) const
+  find (string const& name) const
   {
     names_map::const_iterator i (names_map_.find (name));
 

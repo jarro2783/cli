@@ -37,8 +37,6 @@ namespace semantics
 
   //
   //
-  typedef string name;
-
   using fs::path;
   using fs::invalid_path;
 
@@ -185,15 +183,14 @@ namespace semantics
   class names: public edge
   {
   public:
-    typedef semantics::name name_type;
     typedef semantics::scope scope_type;
 
-    typedef std::vector<name_type> name_list;
+    typedef std::vector<string> name_list;
     typedef name_list::const_iterator name_iterator;
 
     // First name.
     //
-    name_type const&
+    string const&
     name () const
     {
       return names_[0];
@@ -226,7 +223,7 @@ namespace semantics
   protected:
     friend class graph<node, edge>;
 
-    names (name_type const& name)
+    names (string const& name)
     {
       names_.push_back (name);
     }
@@ -274,10 +271,9 @@ namespace semantics
   class nameable: public virtual node
   {
   public:
-    typedef semantics::name name_type;
     typedef semantics::scope scope_type;
 
-    name_type
+    string
     name () const
     {
       return named_->name ();
@@ -331,7 +327,7 @@ namespace semantics
   protected:
     typedef std::list<names*> names_list;
     typedef std::map<names*, names_list::iterator> list_iterator_map;
-    typedef std::map<name_type, names_list> names_map;
+    typedef std::map<string, names_list> names_map;
 
   public:
     typedef pointer_iterator<names_list::iterator> names_iterator;
@@ -367,7 +363,7 @@ namespace semantics
     }
 
     virtual names_iterator_pair
-    find (name_type const&) const;
+    find (string const& name) const;
 
     names_iterator
     find (names&);
