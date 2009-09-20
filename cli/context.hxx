@@ -53,4 +53,20 @@ private:
   operator= (context const&);
 };
 
+// Standard namespace traverser.
+//
+struct namespace_: traversal::namespace_, context
+{
+  namespace_ (context& c)
+      : context (c)
+  {
+  }
+
+  virtual void
+  pre (type&);
+
+  virtual void
+  post (type&);
+};
+
 #endif // CLI_CONTEXT_HXX

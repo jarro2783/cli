@@ -178,3 +178,23 @@ escape (string const& name) const
 
   return r;
 }
+
+// namespace
+//
+
+void namespace_::
+pre (type& ns)
+{
+  string name (ns.name ());
+
+  if (!name.empty ())
+    os << "namespace " << escape (name)
+       << "{";
+}
+
+void namespace_::
+post (type& ns)
+{
+  if (!ns.name ().empty ())
+    os << "}";
+}
