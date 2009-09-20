@@ -9,6 +9,7 @@
 #include <map>
 #include <string>
 #include <ostream>
+#include <cstddef> // std::size_t
 
 #include <cutl/shared-ptr.hxx>
 
@@ -20,6 +21,7 @@ using std::endl;
 class context
 {
 public:
+  typedef std::size_t size_t;
   typedef std::string string;
 
 private:
@@ -44,6 +46,19 @@ public:
   //
   string
   escape (string const&) const;
+
+public:
+  static string const&
+  ename (semantics::nameable& n)
+  {
+    return n.context ().get<string> ("name");
+  }
+
+  static string const&
+  emember (semantics::nameable& n)
+  {
+    return n.context ().get<string> ("member");
+  }
 
 public:
   context (std::ostream&,

@@ -19,6 +19,7 @@
 
 #include "context.hxx"
 #include "generator.hxx"
+#include "name-processor.hxx"
 
 using namespace std;
 using namespace cutl;
@@ -97,6 +98,13 @@ generate (semantics::cli_unit& unit, path const& p)
       hxx_path = dir / hxx_path;
       ixx_path = dir / ixx_path;
       cxx_path = dir / cxx_path;
+    }
+
+    // Process names.
+    //
+    {
+      context ctx (cerr, unit);
+      process_names (ctx);
     }
 
     fs::auto_removes auto_rm;

@@ -9,10 +9,11 @@ cxx_tun := cli.cxx lexer.cxx parser.cxx
 
 cxx_tun +=               \
 context.cxx              \
-generator.cxx            \
 header.cxx               \
 inline.cxx               \
-source.cxx
+source.cxx               \
+generator.cxx            \
+name-processor.cxx
 
 cxx_tun +=               \
 semantics/class.cxx      \
