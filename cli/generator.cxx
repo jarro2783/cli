@@ -13,6 +13,10 @@
 #include <cutl/compiler/code-stream.hxx>
 #include <cutl/compiler/cxx-indenter.hxx>
 
+#include "header.hxx"
+#include "source.hxx"
+#include "inline.hxx"
+
 #include "context.hxx"
 #include "generator.hxx"
 
@@ -154,7 +158,7 @@ generate (semantics::cli_unit& unit, path const& p)
     //
     {
       cxx_filter filt (hxx);
-      context ctx (hxx);
+      context ctx (hxx, unit);
 
       string guard (make_guard (hxx_name, "", ctx));
 
@@ -162,6 +166,7 @@ generate (semantics::cli_unit& unit, path const& p)
           << "#define " << guard << endl
           << endl;
 
+      generate_header (ctx);
 
       if (inl)
       {
@@ -177,17 +182,23 @@ generate (semantics::cli_unit& unit, path const& p)
     if (inl)
     {
       cxx_filter filt (ixx);
-      context ctx (ixx);
+      context ctx (ixx, unit);
+      generate_inline (ctx);
     }
 
     // CXX
     //
     {
       cxx_filter filt (cxx);
-      context ctx (cxx);
+      context ctx (cxx, unit);
 
       cxx << "#include \"" << hxx_name << "\"" << endl
           << endl;
+
+      if (!inl)
+        generate_inline (ctx);
+
+      generate_source (ctx);
     }
 
     auto_rm.cancel ();

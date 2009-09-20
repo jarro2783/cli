@@ -10,9 +10,11 @@
 using namespace std;
 
 context::
-context (std::ostream& os_)
+context (std::ostream& os_,
+         semantics::cli_unit& unit_)
     : data_ (new (shared) data),
       os (os_),
+      unit (unit_),
       reserved_name_map (data_->reserved_name_map_)
 {
 }
@@ -21,6 +23,7 @@ context::
 context (context& c)
     : data_ (c.data_),
       os (c.os),
+      unit (c.unit),
       reserved_name_map (c.reserved_name_map)
 {
 }

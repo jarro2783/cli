@@ -28,6 +28,7 @@ private:
 
 public:
   std::ostream& os;
+  semantics::cli_unit& unit;
 
   typedef std::map<string, string> reserved_name_map_type;
   reserved_name_map_type& reserved_name_map;
@@ -45,8 +46,10 @@ public:
   escape (string const&) const;
 
 public:
-  context (std::ostream& os_);
-  context (context& c);
+  context (std::ostream&,
+           semantics::cli_unit&);
+
+  context (context&);
 
 private:
   context&
@@ -57,10 +60,7 @@ private:
 //
 struct namespace_: traversal::namespace_, context
 {
-  namespace_ (context& c)
-      : context (c)
-  {
-  }
+  namespace_ (context& c) : context (c) {}
 
   virtual void
   pre (type&);
