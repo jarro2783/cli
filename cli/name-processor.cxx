@@ -136,11 +136,14 @@ namespace
     traversal::cli_unit unit;
     traversal::names unit_names;
     traversal::namespace_ ns;
+    class_ cl (ctx);
+
+    unit >> unit_names >> ns;
+    unit_names >> cl;
+
     traversal::names ns_names;
 
-    unit >> unit_names >> ns >> ns_names >> ns;
-
-    class_ cl (ctx);
+    ns >> ns_names >> ns;
     ns_names >> cl;
 
     unit.dispatch (ctx.unit);
