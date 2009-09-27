@@ -15,8 +15,13 @@ context (std::ostream& os_,
     : data_ (new (shared) data),
       os (os_),
       unit (unit_),
+      inl (data_->inl_),
       reserved_name_map (data_->reserved_name_map_)
 {
+  //@@ --generate-inline
+  //
+  if (false)
+    inl = "inline ";
 }
 
 context::
@@ -24,6 +29,7 @@ context (context& c)
     : data_ (c.data_),
       os (c.os),
       unit (c.unit),
+      inl (c.inl),
       reserved_name_map (c.reserved_name_map)
 {
 }

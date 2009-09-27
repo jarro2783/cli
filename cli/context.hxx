@@ -32,12 +32,16 @@ public:
   std::ostream& os;
   semantics::cli_unit& unit;
 
+  string& inl;
+
   typedef std::map<string, string> reserved_name_map_type;
   reserved_name_map_type& reserved_name_map;
 
 private:
   struct data
   {
+    string inl_;
+
     reserved_name_map_type reserved_name_map_;
   };
 
