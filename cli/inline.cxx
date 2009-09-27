@@ -7,7 +7,53 @@
 
 namespace
 {
+  //
+  //
+  struct option: traversal::option, context
+  {
+    option (context& c) : context (c) {}
 
+    virtual void
+    traverse (type& o)
+    {
+      string name (ename (o));
+      string type (o.type ().name ());
+      string scope (escape (o.scope ().name ()));
+
+      os << inl << type << " const& " << scope << "::" << endl
+         << name << " () const"
+         << "{"
+         << "return " << emember (o) << ";"
+         << "}";
+    }
+  };
+
+  //
+  //
+  struct class_: traversal::class_, context
+  {
+    class_ (context& c)
+        : context (c), option_ (c)
+    {
+      names_option_ >> option_;
+    }
+
+    virtual void
+    traverse (type& c)
+    {
+      string name (escape (c.name ()));
+
+      os << "// " << name << endl
+         << "//" << endl
+         << endl;
+
+      names (c, names_option_);
+    }
+
+  private:
+    option option_;
+    traversal::names names_option_;
+  };
 }
 
 void
@@ -16,9 +62,15 @@ generate_inline (context& ctx)
   traversal::cli_unit unit;
   traversal::names unit_names;
   namespace_ ns (ctx);
+  class_ cl (ctx);
+
+  unit >> unit_names >> ns;
+  unit_names >> cl;
+
   traversal::names ns_names;
 
-  unit >> unit_names >> ns >> ns_names >> ns;
+  ns >> ns_names >> ns;
+  ns_names >> cl;
 
   unit.dispatch (ctx.unit);
 }
