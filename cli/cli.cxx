@@ -39,9 +39,9 @@ int main (int argc, char* argv[])
     generator g;
     g.generate (*unit, path);
   }
-  catch (semantics::invalid_path const&)
+  catch (semantics::invalid_path const& e)
   {
-    cerr << "error: '" << argv[1] << "' is not a valid filesystem path"
+    cerr << "error: '" << e.path () << "' is not a valid filesystem path"
          << endl;
     return 1;
   }
