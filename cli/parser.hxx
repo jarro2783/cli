@@ -10,8 +10,8 @@
 #include <memory> // std::auto_ptr
 #include <istream>
 
-#include <semantics/elements.hxx>
-#include <semantics/unit.hxx>
+#include "semantics/elements.hxx"
+#include "semantics/unit.hxx"
 
 class token;
 class lexer;
