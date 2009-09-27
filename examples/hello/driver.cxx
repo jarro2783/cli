@@ -9,6 +9,15 @@
 
 using namespace std;
 
+void
+usage ()
+{
+  cerr << "usage: driver <options> <names>" << endl
+       << "  [--help]" << endl
+       << "  [--greeting|-g <string>]" << endl
+       << "  [--exclamations|-e <integer>]" << endl;
+}
+
 int
 main (int argc, char* argv[])
 {
@@ -19,8 +28,15 @@ main (int argc, char* argv[])
 
     if (o.help ())
     {
-      cerr << "hello v. 1.0.0" << endl;
+      usage ();
       return 0;
+    }
+
+    if (end == argc)
+    {
+      cerr << "no names provided" << endl;
+      usage ();
+      return 1;
     }
 
     for (int i = end; i < argc; i++)
@@ -36,6 +52,7 @@ main (int argc, char* argv[])
   catch (const cli::exception& e)
   {
     cerr << e << endl;
+    usage ();
     return 1;
   }
 }
