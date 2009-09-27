@@ -6,7 +6,8 @@
 #ifndef CLI_GENERATOR_HXX
 #define CLI_GENERATOR_HXX
 
-#include <semantics/unit.hxx>
+#include "options.hxx"
+#include "semantics/unit.hxx"
 
 class generator
 {
@@ -16,7 +17,7 @@ public:
   class failed {};
 
   void
-  generate (semantics::cli_unit&, semantics::path const&);
+  generate (options const&, semantics::cli_unit&, semantics::path const&);
 
 private:
   generator (generator const&);

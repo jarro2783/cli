@@ -8,6 +8,7 @@ include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 cxx_tun := cli.cxx lexer.cxx parser.cxx
 
 cxx_tun +=               \
+options.cxx              \
 context.cxx              \
 header.cxx               \
 inline.cxx               \
@@ -32,9 +33,11 @@ traversal/namespace.cxx  \
 traversal/option.cxx     \
 traversal/unit.cxx
 
+cli_tun := options.cli
+
 #
 #
-cxx_obj  := $(addprefix $(out_base)/,$(cxx_tun:.cxx=.o))
+cxx_obj  := $(addprefix $(out_base)/,$(cxx_tun:.cxx=.o) $(cli_tun:.cli=.o))
 cxx_od   := $(cxx_obj:.o=.o.d)
 
 cli      := $(out_base)/cli
@@ -52,8 +55,13 @@ $(call import,\
 #
 $(cli): $(cxx_obj) $(cutl.l)
 
-$(cxx_obj) $(cxx_od): cpp_options := -I$(src_base)
+$(cxx_obj) $(cxx_od): cpp_options := -I$(src_base) -I$(out_base)
 $(cxx_obj) $(cxx_od): $(cutl.l.cpp-options)
+
+genf := $(cli_tun:.cli=.hxx) $(cli_tun:.cli=.ixx) $(cli_tun:.cli=.cxx)
+gen  := $(addprefix $(out_base)/,$(genf))
+
+$(gen): cli := $(out_root)/cli/cli
 
 $(call include-dep,$(cxx_od))
 
@@ -80,7 +88,7 @@ $(install): $(cli)
 .PHONY: $(clean)
 
 $(clean):                            \
-  $(cli).o.clean                    \
+  $(cli).o.clean                     \
   $(addsuffix .cxx.clean,$(cxx_obj)) \
   $(addsuffix .cxx.clean,$(cxx_od))
 
@@ -102,4 +110,5 @@ endif
 $(call include,$(bld_root)/cxx/o-e.make)
 $(call include,$(bld_root)/cxx/cxx-o.make)
 $(call include,$(bld_root)/cxx/cxx-d.make)
+$(call include,$(scf_root)/cli/cli-cxx.make)
 $(call include,$(bld_root)/install.make)

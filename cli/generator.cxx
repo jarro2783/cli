@@ -71,7 +71,7 @@ generator ()
 }
 
 void generator::
-generate (semantics::cli_unit& unit, path const& p)
+generate (options const& ops, semantics::cli_unit& unit, path const& p)
 {
   try
   {
@@ -80,8 +80,6 @@ generate (semantics::cli_unit& unit, path const& p)
     string hxx_suffix (".hxx");
     string ixx_suffix (".ixx");
     string cxx_suffix (".cxx");
-
-    string out_dir;
 
     path file (p.leaf ());
     string base (file.base ().string ());
@@ -94,9 +92,9 @@ generate (semantics::cli_unit& unit, path const& p)
     path ixx_path (ixx_name);
     path cxx_path (cxx_name);
 
-    if (!out_dir.empty ())
+    if (!ops.output_dir ().empty ())
     {
-      path dir (out_dir);
+      path dir (ops.output_dir ());
 
       hxx_path = dir / hxx_path;
       ixx_path = dir / ixx_path;

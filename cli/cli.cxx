@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "options.hxx"
 #include "parser.hxx"
 #include "generator.hxx"
 
@@ -14,7 +15,7 @@ using namespace std;
 
 int main (int argc, char* argv[])
 {
-  if (argc != 2)
+  if (argc < 2)
   {
     cerr << "usage: " << argv[0] << " file.cli" << endl;
     return 1;
@@ -22,7 +23,16 @@ int main (int argc, char* argv[])
 
   try
   {
-    semantics::path path (argv[1]);
+    int end;
+    options ops (argc, argv, end);
+
+    if (end == argc)
+    {
+      cerr << "error: no input file specified" << endl;
+      return 1;
+    }
+
+    semantics::path path (argv[end]);
 
     ifstream ifs (path.string ().c_str ());
     if (!ifs.is_open ())
@@ -37,7 +47,12 @@ int main (int argc, char* argv[])
     auto_ptr<semantics::cli_unit> unit (p.parse (ifs, path));
 
     generator g;
-    g.generate (*unit, path);
+    g.generate (ops, *unit, path);
+  }
+  catch (cli::exception const& e)
+  {
+    cerr << e << endl;
+    return 1;
   }
   catch (semantics::invalid_path const& e)
   {

@@ -1,0 +1,18 @@
+// file      : cli/options.cli
+// author    : Boris Kolpackov <boris@codesynthesis.com>
+// copyright : Copyright (c) 2009 Code Synthesis Tools CC
+// license   : MIT; see accompanying LICENSE file
+
+// NOTE: Make sure you have a working CLI compiler around
+// before modifying this file.
+//
+
+include <string>;
+include <vector>;
+
+class options
+{
+  bool --help;
+  bool --version;
+  std::string --output-dir;
+};
