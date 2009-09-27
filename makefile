@@ -16,7 +16,7 @@ clean    := $(out_base)/.clean
 
 # Build.
 #
-$(default): $(out_base)/cli/ $(out_base)/tests/
+$(default): $(out_base)/cli/ $(out_base)/tests/ $(out_base)/examples/
 
 # Test.
 #
@@ -43,3 +43,4 @@ $(call include,$(bld_root)/install.make)
 
 $(call import,$(src_base)/cli/makefile)
 $(call import,$(src_base)/tests/makefile)
+$(call import,$(src_base)/examples/makefile)
