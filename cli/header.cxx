@@ -25,6 +25,8 @@ namespace
     }
   };
 
+  //
+  //
   struct option_data: traversal::option, context
   {
     option_data (context& c) : context (c) {}
@@ -62,9 +64,61 @@ namespace
          << "public:" << endl
          << endl;
 
+      // c-tors
+      //
+      string um ("::cli::unknown_mode");
+
+      os << name << " (int argc," << endl
+         << "char** argv," << endl
+         << um << " option = " << um << "::fail," << endl
+         << um << " argument = " << um << "::stop);"
+         << endl;
+
+      os << name << " (int start," << endl
+         << "int argc," << endl
+         << "char** argv," << endl
+         << um << " option = " << um << "::fail," << endl
+         << um << " argument = " << um << "::stop);"
+         << endl;
+
+      os << name << " (int argc," << endl
+         << "char** argv," << endl
+         << "int& end," << endl
+         << um << " option = " << um << "::fail," << endl
+         << um << " argument = " << um << "::stop);"
+         << endl;
+
+      os << name << " (int start," << endl
+         << "int argc," << endl
+         << "char** argv," << endl
+         << "int& end," << endl
+         << um << " option = " << um << "::fail," << endl
+         << um << " argument = " << um << "::stop);"
+         << endl;
+
+      //
+      //
+      os << "// Option accessors." << endl
+         << "//" << endl
+         << "public:" << endl
+         << endl;
+
       names (c, names_option_);
 
-      os << "private:" << endl;
+      // _parse()
+      //
+      os << "private:" << endl
+         << "int" << endl
+         << "_parse (int start," << endl
+         << "int argc," << endl
+         << "char** argv," << endl
+         << um << " option," << endl
+         << um << " argument);"
+         << endl;
+
+      // Data members.
+      //
+      os << "public:" << endl; //@@ tmp
 
       names (c, names_option_data_);
 
@@ -101,11 +155,15 @@ generate_header (context& ctx)
   includes includes (ctx);
   traversal::names unit_names;
   namespace_ ns (ctx);
-  traversal::names ns_names;
   class_ cl (ctx);
 
   unit >> includes;
-  unit >> unit_names >> ns >> ns_names >> ns;
+  unit >> unit_names >> ns;
+  unit_names >> cl;
+
+  traversal::names ns_names;
+
+  ns >> ns_names >> ns;
   ns_names >> cl;
 
   unit.dispatch (ctx.unit);

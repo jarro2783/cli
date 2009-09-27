@@ -17,6 +17,9 @@
 #include "source.hxx"
 #include "inline.hxx"
 
+#include "runtime-header.hxx"
+#include "runtime-source.hxx"
+
 #include "context.hxx"
 #include "generator.hxx"
 #include "name-processor.hxx"
@@ -174,7 +177,9 @@ generate (semantics::cli_unit& unit, path const& p)
           << "#define " << guard << endl
           << endl;
 
+      generate_runtime_header_decl (ctx);
       generate_header (ctx);
+      generate_runtime_header_impl (ctx);
 
       if (inl)
       {
@@ -206,6 +211,7 @@ generate (semantics::cli_unit& unit, path const& p)
       if (!inl)
         generate_inline (ctx);
 
+      generate_runtime_source (ctx);
       generate_source (ctx);
     }
 
