@@ -17,11 +17,17 @@ $(cli_pattern): cli_options :=
 
 .PRECIOUS: $(cli_pattern)
 
-$(cli_pattern): $(out_base)/%.cli | $$(dir $$@).
+ifeq ($(out_base),$(src_base))
+
+$(cli_pattern): $(src_base)/%.cli
 	$(call message,cli $<,$(cli) $(cli_options) --output-dir $(dir $@) $<)
 
-ifneq ($(out_base),$(src_base))
+else
+
 $(cli_pattern): $(src_base)/%.cli | $$(dir $$@).
+	$(call message,cli $<,$(cli) $(cli_options) --output-dir $(dir $@) $<)
+
+$(cli_pattern): $(out_base)/%.cli | $$(dir $$@).
 	$(call message,cli $<,$(cli) $(cli_options) --output-dir $(dir $@) $<)
 endif
 
