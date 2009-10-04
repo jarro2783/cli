@@ -26,7 +26,7 @@ gen  := $(addprefix $(out_base)/,$(genf))
 $(gen): cli := $(out_root)/cli/cli
 $(gen): $(out_root)/cli/cli
 
-$(call include-dep,$(dep))
+$(call include-dep,$(dep),$(obj),$(gen))
 
 # Convenience alias for default target.
 #

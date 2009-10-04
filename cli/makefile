@@ -65,7 +65,7 @@ gen  := $(addprefix $(out_base)/,$(genf))
 $(gen): cli := $(out_root)/cli/cli
 $(gen): cli_options := --guard-prefix CLI
 
-$(call include-dep,$(cxx_od))
+$(call include-dep,$(cxx_od),$(cxx_obj),$(gen))
 
 # Alias for default target.
 #
