@@ -23,6 +23,9 @@ class options
   std::string --ixx-suffix = ".ixx";
   std::string --cxx-suffix = ".cxx";
 
+  std::string --option-prefix = "-";
+  std::string --option-separator = "--";
+
   bool --include-with-brackets;
   std::string --include-prefix;
   std::string --guard-prefix;

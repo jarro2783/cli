@@ -16,10 +16,12 @@ context (ostream& os_, semantics::cli_unit& unit_, options_type const& ops)
       unit (unit_),
       options (ops),
       inl (data_->inl_),
+      opt_prefix (options.option_prefix ()),
+      opt_sep (options.option_separator ()),
       reserved_name_map (options.reserved_name ())
 {
   if (!options.suppress_inline ())
-    inl = "inline ";
+    data_->inl_ = "inline ";
 }
 
 context::
@@ -29,6 +31,8 @@ context (context& c)
       unit (c.unit),
       options (c.options),
       inl (c.inl),
+      opt_prefix (c.opt_prefix),
+      opt_sep (c.opt_sep),
       reserved_name_map (c.reserved_name_map)
 {
 }

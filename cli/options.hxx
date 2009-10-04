@@ -227,6 +227,12 @@ class options
   std::string const&
   cxx_suffix () const;
 
+  std::string const&
+  option_prefix () const;
+
+  std::string const&
+  option_separator () const;
+
   bool const&
   include_with_brackets () const;
 
@@ -255,6 +261,8 @@ class options
   std::string hxx_suffix_;
   std::string ixx_suffix_;
   std::string cxx_suffix_;
+  std::string option_prefix_;
+  std::string option_separator_;
   bool include_with_brackets_;
   std::string include_prefix_;
   std::string guard_prefix_;

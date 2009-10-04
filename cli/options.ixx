@@ -47,6 +47,18 @@ cxx_suffix () const
   return cxx_suffix_;
 }
 
+inline std::string const& options::
+option_prefix () const
+{
+  return option_prefix_;
+}
+
+inline std::string const& options::
+option_separator () const
+{
+  return option_separator_;
+}
+
 inline bool const& options::
 include_with_brackets () const
 {

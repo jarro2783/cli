@@ -35,7 +35,9 @@ public:
   semantics::cli_unit& unit;
   options_type const& options;
 
-  string& inl;
+  string const& inl;
+  string const& opt_prefix;
+  string const& opt_sep;
 
   typedef std::map<string, string> reserved_name_map_type;
   reserved_name_map_type const& reserved_name_map;

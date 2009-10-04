@@ -5,6 +5,7 @@
 #include "options.hxx"
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 #include <ostream>
@@ -147,6 +148,19 @@ namespace cli
     }
   };
 
+  template <typename X>
+  struct parser<std::set<X> >
+  {
+    static int
+    parse (std::set<X>& s, char** argv, int n)
+    {
+      X x;
+      int i (parser<X>::parse (x, argv, n));
+      s.insert (x);
+      return i;
+    }
+  };
+
   template <typename K, typename V>
   struct parser<std::map<K, V> >
   {
@@ -231,6 +245,8 @@ options (int argc,
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  option_prefix_ ("-"),
+  option_separator_ ("--"),
   include_with_brackets_ (),
   include_prefix_ (),
   guard_prefix_ (),
@@ -252,6 +268,8 @@ options (int start,
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  option_prefix_ ("-"),
+  option_separator_ ("--"),
   include_with_brackets_ (),
   include_prefix_ (),
   guard_prefix_ (),
@@ -273,6 +291,8 @@ options (int argc,
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  option_prefix_ ("-"),
+  option_separator_ ("--"),
   include_with_brackets_ (),
   include_prefix_ (),
   guard_prefix_ (),
@@ -295,6 +315,8 @@ options (int start,
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  option_prefix_ ("-"),
+  option_separator_ ("--"),
   include_with_brackets_ (),
   include_prefix_ (),
   guard_prefix_ (),
@@ -329,6 +351,10 @@ struct _cli_options_map_init
     &::cli::thunk<options, std::string, &options::ixx_suffix_>;
     _cli_options_map_["--cxx-suffix"] = 
     &::cli::thunk<options, std::string, &options::cxx_suffix_>;
+    _cli_options_map_["--option-prefix"] = 
+    &::cli::thunk<options, std::string, &options::option_prefix_>;
+    _cli_options_map_["--option-separator"] = 
+    &::cli::thunk<options, std::string, &options::option_separator_>;
     _cli_options_map_["--include-with-brackets"] = 
     &::cli::thunk<options, bool, &options::include_with_brackets_>;
     _cli_options_map_["--include-prefix"] = 

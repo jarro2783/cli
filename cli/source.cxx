@@ -193,60 +193,82 @@ namespace
          << "} " << map << "_init_;"
          << endl;
 
+      bool pfx (!opt_prefix.empty ());
+      bool sep (!opt_sep.empty ());
+
       os << "int " << name << "::" << endl
          << "_parse (int start," << endl
          << "int argc," << endl
          << "char** argv," << endl
          << um << " opt_mode," << endl
          << um << " arg_mode)"
+         << "{";
+
+      if (sep)
+        os << "bool opt (true);" // Still recognizing options.
+           << endl;
+
+      os << "for (; start < argc;)"
          << "{"
-         << "bool opt (true);" // Still recognizing options.
-         << endl
-         << "for (; start < argc;)"
-         << "{"
-         << "const char* s (argv[start]);"
-         << endl
-         << "if (std::strcmp (s, \"--\") == 0)"
-         << "{"
-         << "start++;"
-         << "opt = false;"
-         << "continue;"
-         << "}"
-         << map << "::const_iterator i (" << endl
-         << "opt ? " << map << "_.find (s) : " << map << "_.end ());"
-         << endl
+         << "const char* s (argv[start]);";
+
+      if (sep)
+        os << endl
+           << "if (std::strcmp (s, \"" << opt_sep << "\") == 0)"
+           << "{"
+           << "start++;"
+           << "opt = false;"
+           << "continue;"
+           << "}"
+           << map << "::const_iterator i (" << endl
+           << "opt ? " << map << "_.find (s) : " << map << "_.end ());";
+      else
+        os << map << "::const_iterator i (" << map << "_.find (s));";
+
+      os << endl
          << "if (i != " << map << "_.end ())"
          << "{"
          << "start += (*(i->second)) (*this, argv + start, argc - start);"
-         << "}"
-         << "else if (opt && s[0] == '-' && s[1] != '\\0')"
-         << "{"
+         << "}";
 
-        // Unknown option.
-        //
-         << "switch (opt_mode)"
-         << "{"
-         << "case ::cli::unknown_mode::skip:" << endl
-         << "{"
-         << "start++;"
-         << "continue;"
-         << "}"
-         << "case ::cli::unknown_mode::stop:" << endl
-         << "{"
-         << "break;"
-         << "}"
-         << "case ::cli::unknown_mode::fail:" << endl
-         << "{"
-         << "throw ::cli::unknown_option (s);"
-         << "}"
-         << "}" // switch
-         << "break;" // The stop case.
-         << "}"
-         << "else"
-         << "{"
+      // Unknown option.
+      //
+      if (pfx)
+      {
+        size_t n (opt_prefix.size ());
 
-        // Unknown argument.
-        //
+        os << "else if (";
+
+        if (sep)
+          os << "opt && ";
+
+        os << "std::strncmp (s, \"" << opt_prefix << "\", " <<
+          n << ") == 0 && s[" << n << "] != '\\0')"
+           << "{"
+           << "switch (opt_mode)"
+           << "{"
+           << "case ::cli::unknown_mode::skip:" << endl
+           << "{"
+           << "start++;"
+           << "continue;"
+           << "}"
+           << "case ::cli::unknown_mode::stop:" << endl
+           << "{"
+           << "break;"
+           << "}"
+           << "case ::cli::unknown_mode::fail:" << endl
+           << "{"
+           << "throw ::cli::unknown_option (s);"
+           << "}"
+           << "}" // switch
+           << "break;" // The stop case.
+           << "}";
+      }
+
+      // Unknown argument.
+      //
+      os << "else"
+         << "{"
          << "switch (arg_mode)"
          << "{"
          << "case ::cli::unknown_mode::skip:" << endl
