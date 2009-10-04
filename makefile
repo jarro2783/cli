@@ -37,7 +37,9 @@ $(install): $(out_base)/cli/.install           \
 
 # Clean.
 #
-$(clean): $(out_base)/cli/.clean $(out_base)/tests/.clean
+$(clean): $(out_base)/cli/.clean      \
+          $(out_base)/examples/.clean \
+          $(out_base)/tests/.clean
 
 $(call include,$(bld_root)/install.make)
 
