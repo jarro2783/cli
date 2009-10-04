@@ -38,12 +38,9 @@ namespace
   "//\n\n";
 
   string
-  make_guard (string const& file, string const& prefix, context& ctx)
+  make_guard (string const& file, context& ctx)
   {
     string g (file);
-
-    if (!prefix.empty ())
-      g = prefix + '_' + g;
 
     // Split words, e.g., "FooBar" to "Foo_Bar" and convert everything
     // to upper case.
@@ -159,13 +156,25 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
 
     typedef compiler::ostream_filter<compiler::cxx_indenter, char> cxx_filter;
 
+    // Include settings.
+    //
+    bool br (ops.include_with_brackets ());
+    string ip (ops.include_prefix ());
+    string gp (ops.guard_prefix ());
+
+    if (!ip.empty () && ip[ip.size () - 1] != '/')
+      ip.append ("/");
+
+    if (!gp.empty () && gp[gp.size () - 1] != '_')
+      gp.append ("_");
+
     // HXX
     //
     {
       cxx_filter filt (hxx);
       context ctx (hxx, unit, ops);
 
-      string guard (make_guard (hxx_name, "", ctx));
+      string guard (make_guard (gp + hxx_name, ctx));
 
       hxx << "#ifndef " << guard << endl
           << "#define " << guard << endl
@@ -177,7 +186,8 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
 
       if (inl)
       {
-        hxx << "#include \"" << ixx_name << "\"" << endl
+        hxx << "#include " << (br ? '<' : '"') << ip << ixx_name <<
+          (br ? '>' : '"') << endl
             << endl;
       }
 
@@ -199,7 +209,8 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
       cxx_filter filt (cxx);
       context ctx (cxx, unit, ops);
 
-      cxx << "#include \"" << hxx_name << "\"" << endl
+      cxx << "#include " << (br ? '<' : '"') << ip << hxx_name <<
+        (br ? '>' : '"') << endl
           << endl;
 
       if (!inl)

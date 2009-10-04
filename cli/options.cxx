@@ -171,7 +171,10 @@ options (int argc,
   output_dir_ (),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
-  cxx_suffix_ (".cxx")
+  cxx_suffix_ (".cxx"),
+  include_with_brackets_ (),
+  include_prefix_ (),
+  guard_prefix_ ()
 {
   _parse (1, argc, argv, opt, arg);
 }
@@ -188,7 +191,10 @@ options (int start,
   output_dir_ (),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
-  cxx_suffix_ (".cxx")
+  cxx_suffix_ (".cxx"),
+  include_with_brackets_ (),
+  include_prefix_ (),
+  guard_prefix_ ()
 {
   _parse (start, argc, argv, opt, arg);
 }
@@ -205,7 +211,10 @@ options (int argc,
   output_dir_ (),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
-  cxx_suffix_ (".cxx")
+  cxx_suffix_ (".cxx"),
+  include_with_brackets_ (),
+  include_prefix_ (),
+  guard_prefix_ ()
 {
   end = _parse (1, argc, argv, opt, arg);
 }
@@ -223,7 +232,10 @@ options (int start,
   output_dir_ (),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
-  cxx_suffix_ (".cxx")
+  cxx_suffix_ (".cxx"),
+  include_with_brackets_ (),
+  include_prefix_ (),
+  guard_prefix_ ()
 {
   end = _parse (start, argc, argv, opt, arg);
 }
@@ -252,6 +264,12 @@ struct _cli_options_map_init
     &::cli::thunk<options, std::string, &options::ixx_suffix_>;
     _cli_options_map_["--cxx-suffix"] = 
     &::cli::thunk<options, std::string, &options::cxx_suffix_>;
+    _cli_options_map_["--include-with-brackets"] = 
+    &::cli::thunk<options, bool, &options::include_with_brackets_>;
+    _cli_options_map_["--include-prefix"] = 
+    &::cli::thunk<options, std::string, &options::include_prefix_>;
+    _cli_options_map_["--guard-prefix"] = 
+    &::cli::thunk<options, std::string, &options::guard_prefix_>;
   }
 } _cli_options_map_init_;
 

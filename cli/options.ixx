@@ -47,3 +47,21 @@ cxx_suffix () const
   return cxx_suffix_;
 }
 
+inline bool const& options::
+include_with_brackets () const
+{
+  return include_with_brackets_;
+}
+
+inline std::string const& options::
+include_prefix () const
+{
+  return include_prefix_;
+}
+
+inline std::string const& options::
+guard_prefix () const
+{
+  return guard_prefix_;
+}
+

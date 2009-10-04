@@ -2,8 +2,8 @@
 // compiler for C++.
 //
 
-#ifndef OPTIONS_HXX
-#define OPTIONS_HXX
+#ifndef CLI_OPTIONS_HXX
+#define CLI_OPTIONS_HXX
 
 #include <iosfwd>
 #include <string>
@@ -225,6 +225,15 @@ class options
   std::string const&
   cxx_suffix () const;
 
+  bool const&
+  include_with_brackets () const;
+
+  std::string const&
+  include_prefix () const;
+
+  std::string const&
+  guard_prefix () const;
+
   private:
   int
   _parse (int start,
@@ -241,8 +250,11 @@ class options
   std::string hxx_suffix_;
   std::string ixx_suffix_;
   std::string cxx_suffix_;
+  bool include_with_brackets_;
+  std::string include_prefix_;
+  std::string guard_prefix_;
 };
 
 #include "options.ixx"
 
-#endif // OPTIONS_HXX
+#endif // CLI_OPTIONS_HXX
