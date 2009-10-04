@@ -321,6 +321,8 @@ struct _cli_options_map_init
     &::cli::thunk<options, bool, &options::suppress_inline_>;
     _cli_options_map_["--output-dir"] = 
     &::cli::thunk<options, std::string, &options::output_dir_>;
+    _cli_options_map_["-o"] = 
+    &::cli::thunk<options, std::string, &options::output_dir_>;
     _cli_options_map_["--hxx-suffix"] = 
     &::cli::thunk<options, std::string, &options::hxx_suffix_>;
     _cli_options_map_["--ixx-suffix"] = 

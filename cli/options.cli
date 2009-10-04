@@ -18,7 +18,7 @@ class options
 
   bool --suppress-inline;
 
-  std::string --output-dir;
+  std::string --output-dir | -o;
   std::string --hxx-suffix = ".hxx";
   std::string --ixx-suffix = ".ixx";
   std::string --cxx-suffix = ".cxx";

@@ -405,7 +405,20 @@ option_def (token& t)
     case token::t_string_lit:
       {
         if (valid_)
-          nl.push_back (t.literal ());
+        {
+          // Get rid of '"'.
+          //
+          string r;
+          string const& l (t.literal ());
+
+          for (size_t i (0), n (l.size ()); i < n; ++i)
+          {
+            if (l[i] != '"' || (i != 0 && l[i - 1] == '\\'))
+              r += l[i];
+          }
+
+          nl.push_back (r);
+        }
 
         break;
       }

@@ -429,7 +429,7 @@ string_literal (xchar c)
       break;
 
     get ();
-    lexeme += " \"";
+    lexeme += "\"";
   }
 
   return token (token::t_string_lit, lexeme, ln, cl);

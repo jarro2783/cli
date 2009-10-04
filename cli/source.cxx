@@ -65,14 +65,21 @@ namespace
     virtual void
     traverse (type& o)
     {
-      string name (ename (o));
+      using semantics::names;
+
+      string member (emember (o));
       string type (o.type ().name ());
       string scope (escape (o.scope ().name ()));
       string map ("_cli_" + scope + "_map_");
 
-      os << "_cli_" << scope << "_map_[\"" << o.name () << "\"] = " << endl
-         << "&::cli::thunk<" << scope << ", " << type << ", " <<
-        "&" << scope << "::" << emember (o) << ">;";
+      names& n (o.named ());
+
+      for (names::name_iterator i (n.name_begin ()); i != n.name_end (); ++i)
+      {
+        os << "_cli_" << scope << "_map_[\"" << *i << "\"] = " << endl
+           << "&::cli::thunk<" << scope << ", " << type << ", " <<
+          "&" << scope << "::" << member << ">;";
+      }
     }
   };
 
