@@ -12,7 +12,8 @@ generate_runtime_source (context& ctx)
 {
   ostream& os (ctx.os);
 
-  os << "#include <string>" << endl
+  os << "#include <map>" << endl
+     << "#include <string>" << endl
      << "#include <vector>" << endl
      << "#include <ostream>" << endl
      << "#include <sstream>" << endl
@@ -161,6 +162,62 @@ generate_runtime_source (context& ctx)
      << "int i (parser<X>::parse (x, argv, n));"
      << "v.push_back (x);"
      << "return i;"
+     << "}"
+     << "};";
+
+  // parser<std::map<K,V>>
+  //
+  os << "template <typename K, typename V>" << endl
+     << "struct parser<std::map<K, V> >"
+     << "{"
+     << "static int" << endl
+     << "parse (std::map<K, V>& m, char** argv, int n)"
+     << "{"
+     << "if (n > 1)"
+     << "{"
+     << "std::string s (argv[1]);"
+     << "std::string::size_type p (s.find ('='));"
+     << endl
+     << "if (p == std::string::npos)"
+     << "{"
+     << "K k = K ();"
+     << endl
+     << "if (!s.empty ())"
+     << "{"
+     << "std::istringstream ks (s);"
+     << endl
+     << "if (!(ks >> k && ks.eof ()))" << endl
+     << "throw invalid_value (argv[0], argv[1]);"
+     << "}"
+     << "m[k] = V ();"
+     << "}"
+     << "else"
+     << "{"
+     << "K k = K ();"
+     << "V v = V ();"
+     << "std::string kstr (s, 0, p);"
+     << "std::string vstr (s, p + 1);"
+     << endl
+     << "if (!kstr.empty ())"
+     << "{"
+     << "std::istringstream ks (kstr);"
+     << endl
+     << "if (!(ks >> k && ks.eof ()))" << endl
+     << "throw invalid_value (argv[0], argv[1]);"
+     << "}"
+     << "if (!vstr.empty ())"
+     << "{"
+     << "std::istringstream vs (vstr);"
+     << endl
+     << "if (!(vs >> v && vs.eof ()))" << endl
+     << "throw invalid_value (argv[0], argv[1]);"
+     << "}"
+     << "m[k] = v;"
+     << "}"
+     << "return 2;"
+     << "}"
+     << "else" << endl
+     << "throw missing_value (argv[0]);"
      << "}"
      << "};";
 
