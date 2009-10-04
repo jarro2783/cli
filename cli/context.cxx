@@ -16,7 +16,7 @@ context (ostream& os_, semantics::cli_unit& unit_, options_type const& ops)
       unit (unit_),
       options (ops),
       inl (data_->inl_),
-      reserved_name_map (data_->reserved_name_map_)
+      reserved_name_map (options.reserved_name ())
 {
   if (!options.suppress_inline ())
     inl = "inline ";

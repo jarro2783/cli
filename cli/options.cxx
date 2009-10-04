@@ -4,6 +4,7 @@
 
 #include "options.hxx"
 
+#include <map>
 #include <string>
 #include <vector>
 #include <ostream>
@@ -146,6 +147,64 @@ namespace cli
     }
   };
 
+  template <typename K, typename V>
+  struct parser<std::map<K, V> >
+  {
+    static int
+    parse (std::map<K, V>& m, char** argv, int n)
+    {
+      if (n > 1)
+      {
+        std::string s (argv[1]);
+        std::string::size_type p (s.find ('='));
+
+        if (p == std::string::npos)
+        {
+          K k = K ();
+
+          if (!s.empty ())
+          {
+            std::istringstream ks (s);
+
+            if (!(ks >> k && ks.eof ()))
+              throw invalid_value (argv[0], argv[1]);
+          }
+
+          m[k] = V ();
+        }
+        else
+        {
+          K k = K ();
+          V v = V ();
+          std::string kstr (s, 0, p);
+          std::string vstr (s, p + 1);
+
+          if (!kstr.empty ())
+          {
+            std::istringstream ks (kstr);
+
+            if (!(ks >> k && ks.eof ()))
+              throw invalid_value (argv[0], argv[1]);
+          }
+
+          if (!vstr.empty ())
+          {
+            std::istringstream vs (vstr);
+
+            if (!(vs >> v && vs.eof ()))
+              throw invalid_value (argv[0], argv[1]);
+          }
+
+          m[k] = v;
+        }
+
+        return 2;
+      }
+      else
+        throw missing_value (argv[0]);
+    }
+  };
+
   template <typename X, typename T, T X::*P>
   int
   thunk (X& x, char** argv, int n)
@@ -174,7 +233,8 @@ options (int argc,
   cxx_suffix_ (".cxx"),
   include_with_brackets_ (),
   include_prefix_ (),
-  guard_prefix_ ()
+  guard_prefix_ (),
+  reserved_name_ ()
 {
   _parse (1, argc, argv, opt, arg);
 }
@@ -194,7 +254,8 @@ options (int start,
   cxx_suffix_ (".cxx"),
   include_with_brackets_ (),
   include_prefix_ (),
-  guard_prefix_ ()
+  guard_prefix_ (),
+  reserved_name_ ()
 {
   _parse (start, argc, argv, opt, arg);
 }
@@ -214,7 +275,8 @@ options (int argc,
   cxx_suffix_ (".cxx"),
   include_with_brackets_ (),
   include_prefix_ (),
-  guard_prefix_ ()
+  guard_prefix_ (),
+  reserved_name_ ()
 {
   end = _parse (1, argc, argv, opt, arg);
 }
@@ -235,7 +297,8 @@ options (int start,
   cxx_suffix_ (".cxx"),
   include_with_brackets_ (),
   include_prefix_ (),
-  guard_prefix_ ()
+  guard_prefix_ (),
+  reserved_name_ ()
 {
   end = _parse (start, argc, argv, opt, arg);
 }
@@ -270,6 +333,8 @@ struct _cli_options_map_init
     &::cli::thunk<options, std::string, &options::include_prefix_>;
     _cli_options_map_["--guard-prefix"] = 
     &::cli::thunk<options, std::string, &options::guard_prefix_>;
+    _cli_options_map_["--reserved-name"] = 
+    &::cli::thunk<options, std::map<std::string, std::string>, &options::reserved_name_>;
   }
 } _cli_options_map_init_;
 

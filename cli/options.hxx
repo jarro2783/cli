@@ -168,6 +168,8 @@ namespace cli
   };
 }
 
+#include <map>
+
 #include <string>
 
 #include <vector>
@@ -234,6 +236,9 @@ class options
   std::string const&
   guard_prefix () const;
 
+  std::map<std::string, std::string> const&
+  reserved_name () const;
+
   private:
   int
   _parse (int start,
@@ -253,6 +258,7 @@ class options
   bool include_with_brackets_;
   std::string include_prefix_;
   std::string guard_prefix_;
+  std::map<std::string, std::string> reserved_name_;
 };
 
 #include "options.ixx"

@@ -65,3 +65,9 @@ guard_prefix () const
   return guard_prefix_;
 }
 
+inline std::map<std::string, std::string> const& options::
+reserved_name () const
+{
+  return reserved_name_;
+}
+
