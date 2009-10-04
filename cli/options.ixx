@@ -2,6 +2,89 @@
 // compiler for C++.
 //
 
+namespace cli
+{
+  // unknown_mode
+  //
+  inline unknown_mode::
+  unknown_mode (value v)
+  : v_ (v)
+  {
+  }
+
+  // exception
+  //
+  inline std::ostream&
+  operator<< (std::ostream& os, const exception& e)
+  {
+    e.print (os);
+    return os;
+  }
+
+  // unknown_option
+  //
+  inline unknown_option::
+  unknown_option (const std::string& option)
+  : option_ (option)
+  {
+  }
+
+  inline const std::string& unknown_option::
+  option () const
+  {
+    return option_;
+  }
+
+  // unknown_argument
+  //
+  inline unknown_argument::
+  unknown_argument (const std::string& argument)
+  : argument_ (argument)
+  {
+  }
+
+  inline const std::string& unknown_argument::
+  argument () const
+  {
+    return argument_;
+  }
+
+  // missing_value
+  //
+  inline missing_value::
+  missing_value (const std::string& option)
+  : option_ (option)
+  {
+  }
+
+  inline const std::string& missing_value::
+  option () const
+  {
+    return option_;
+  }
+
+  // invalid_value
+  //
+  inline invalid_value::
+  invalid_value (const std::string& option,
+                 const std::string& value)
+  : option_ (option),  value_ (value)
+  {
+  }
+
+  inline const std::string& invalid_value::
+  option () const
+  {
+    return option_;
+  }
+
+  inline const std::string& invalid_value::
+  value () const
+  {
+    return value_;
+  }
+}
+
 // options
 //
 

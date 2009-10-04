@@ -8,7 +8,7 @@
 using namespace std;
 
 void
-generate_runtime_header_decl (context& ctx)
+generate_runtime_header (context& ctx)
 {
   ostream& os (ctx.os);
 
@@ -24,16 +24,16 @@ generate_runtime_header_decl (context& ctx)
   //
   os << "class unknown_mode"
      << "{"
-     << "public:"
+     << "public:" << endl
      << "enum value"
      << "{"
      << "skip," << endl
      << "stop," << endl
      << "fail" << endl
      << "};"
-     << "unknown_mode (value v)" << endl
-     << ": v_ (v) {}"
-     << "operator value () const {return v_;}"
+     << "unknown_mode (value v);"
+     << endl
+     << "operator value () const {return v_;}" // Can't generate outside.
      << "private:" << endl
      << "value v_;"
      << "};";
@@ -52,12 +52,9 @@ generate_runtime_header_decl (context& ctx)
      << "print (std::ostream&) const = 0;"
      << "};";
 
-  os << "inline std::ostream&" << endl
-     << "operator<< (std::ostream& os, const exception& e)"
-     << "{"
-     << "e.print (os);"
-     << "return os;"
-     << "}";
+  os << "std::ostream&" << endl
+     << "operator<< (std::ostream&, const exception&);"
+     << endl;
 
   os << "class unknown_option: public exception"
      << "{"
@@ -65,15 +62,11 @@ generate_runtime_header_decl (context& ctx)
      << "virtual" << endl
      << "~unknown_option () throw ();"
      << endl
-     << "unknown_option (const std::string& option)" << endl
-     << ": option_ (option)"
-     << "{"
-     << "}"
+     << "unknown_option (const std::string& option);"
+     << endl
      << "const std::string&" << endl
-     << "option () const"
-     << "{"
-     << "return option_;"
-     << "}"
+     << "option () const;"
+     << endl
      << "virtual void" << endl
      << "print (std::ostream&) const;"
      << endl
@@ -90,15 +83,11 @@ generate_runtime_header_decl (context& ctx)
      << "virtual" << endl
      << "~unknown_argument () throw ();"
      << endl
-     << "unknown_argument (const std::string& argument)" << endl
-     << ": argument_ (argument)"
-     << "{"
-     << "}"
+     << "unknown_argument (const std::string& argument);"
+     << endl
      << "const std::string&" << endl
-     << "argument () const"
-     << "{"
-     << "return argument_;"
-     << "}"
+     << "argument () const;"
+     << endl
      << "virtual void" << endl
      << "print (std::ostream&) const;"
      << endl
@@ -115,15 +104,11 @@ generate_runtime_header_decl (context& ctx)
      << "virtual" << endl
      << "~missing_value () throw ();"
      << endl
-     << "missing_value (const std::string& option)" << endl
-     << ": option_ (option)"
-     << "{"
-     << "}"
+     << "missing_value (const std::string& option);"
+     << endl
      << "const std::string&" << endl
-     << "option () const"
-     << "{"
-     << "return option_;"
-     << "}"
+     << "option () const;"
+     << endl
      << "virtual void" << endl
      << "print (std::ostream&) const;"
      << endl
@@ -141,21 +126,14 @@ generate_runtime_header_decl (context& ctx)
      << "~invalid_value () throw ();"
      << endl
      << "invalid_value (const std::string& option," << endl
-     << "const std::string& value)" << endl
-     << ": option_ (option),"
-     << "  value_ (value)"
-     << "{"
-     << "}"
+     << "const std::string& value);"
+     << endl
      << "const std::string&" << endl
-     << "option () const"
-     << "{"
-     << "return option_;"
-     << "}"
+     << "option () const;"
+     << endl
      << "const std::string&" << endl
-     << "value () const"
-     << "{"
-     << "return value_;"
-     << "}"
+     << "value () const;"
+     << endl
      << "virtual void" << endl
      << "print (std::ostream&) const;"
      << endl
@@ -168,10 +146,4 @@ generate_runtime_header_decl (context& ctx)
      << "};";
 
   os << "}"; // namespace cli
-}
-
-void
-generate_runtime_header_impl (context& ctx)
-{
-  ostream& os (ctx.os);
 }

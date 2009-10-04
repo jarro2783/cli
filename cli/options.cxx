@@ -393,7 +393,7 @@ _parse (int start,
     {
       start += (*(i->second)) (*this, argv + start, argc - start);
     }
-    else if (opt && s[0] == '-' && s[1] != '\0')
+    else if (opt && std::strncmp (s, "-", 1) == 0 && s[1] != '\0')
     {
       switch (opt_mode)
       {

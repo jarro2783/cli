@@ -14,10 +14,11 @@
 #include <cutl/compiler/cxx-indenter.hxx>
 
 #include "header.hxx"
-#include "source.hxx"
 #include "inline.hxx"
+#include "source.hxx"
 
 #include "runtime-header.hxx"
+#include "runtime-inline.hxx"
 #include "runtime-source.hxx"
 
 #include "context.hxx"
@@ -180,9 +181,8 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
           << "#define " << guard << endl
           << endl;
 
-      generate_runtime_header_decl (ctx);
+      generate_runtime_header (ctx);
       generate_header (ctx);
-      generate_runtime_header_impl (ctx);
 
       if (inl)
       {
@@ -200,6 +200,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
     {
       cxx_filter filt (ixx);
       context ctx (ixx, unit, ops);
+      generate_runtime_inline (ctx);
       generate_inline (ctx);
     }
 
@@ -214,9 +215,13 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
           << endl;
 
       if (!inl)
-        generate_inline (ctx);
+        generate_runtime_inline (ctx);
 
       generate_runtime_source (ctx);
+
+      if (!inl)
+        generate_inline (ctx);
+
       generate_source (ctx);
     }
 

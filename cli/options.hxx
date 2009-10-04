@@ -13,17 +13,15 @@ namespace cli
 {
   class unknown_mode
   {
-    public:enum value
+    public:
+    enum value
     {
       skip,
       stop,
       fail
     };
 
-    unknown_mode (value v)
-    : v_ (v) 
-    {
-    }
+    unknown_mode (value v);
 
     operator value () const 
     {
@@ -44,12 +42,8 @@ namespace cli
     print (std::ostream&) const = 0;
   };
 
-  inline std::ostream&
-  operator<< (std::ostream& os, const exception& e)
-  {
-    e.print (os);
-    return os;
-  }
+  std::ostream&
+  operator<< (std::ostream&, const exception&);
 
   class unknown_option: public exception
   {
@@ -57,16 +51,10 @@ namespace cli
     virtual
     ~unknown_option () throw ();
 
-    unknown_option (const std::string& option)
-    : option_ (option)
-    {
-    }
+    unknown_option (const std::string& option);
 
     const std::string&
-    option () const
-    {
-      return option_;
-    }
+    option () const;
 
     virtual void
     print (std::ostream&) const;
@@ -84,16 +72,10 @@ namespace cli
     virtual
     ~unknown_argument () throw ();
 
-    unknown_argument (const std::string& argument)
-    : argument_ (argument)
-    {
-    }
+    unknown_argument (const std::string& argument);
 
     const std::string&
-    argument () const
-    {
-      return argument_;
-    }
+    argument () const;
 
     virtual void
     print (std::ostream&) const;
@@ -111,16 +93,10 @@ namespace cli
     virtual
     ~missing_value () throw ();
 
-    missing_value (const std::string& option)
-    : option_ (option)
-    {
-    }
+    missing_value (const std::string& option);
 
     const std::string&
-    option () const
-    {
-      return option_;
-    }
+    option () const;
 
     virtual void
     print (std::ostream&) const;
@@ -139,22 +115,13 @@ namespace cli
     ~invalid_value () throw ();
 
     invalid_value (const std::string& option,
-                   const std::string& value)
-    : option_ (option),  value_ (value)
-    {
-    }
+                   const std::string& value);
 
     const std::string&
-    option () const
-    {
-      return option_;
-    }
+    option () const;
 
     const std::string&
-    value () const
-    {
-      return value_;
-    }
+    value () const;
 
     virtual void
     print (std::ostream&) const;

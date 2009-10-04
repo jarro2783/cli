@@ -14,6 +14,7 @@ header.cxx               \
 inline.cxx               \
 source.cxx               \
 runtime-header.cxx       \
+runtime-inline.cxx       \
 runtime-source.cxx       \
 generator.cxx            \
 name-processor.cxx
