@@ -210,11 +210,20 @@ class options
   bool const&
   version () const;
 
+  bool const&
+  suppress_inline () const;
+
   std::string const&
   output_dir () const;
 
-  bool const&
-  suppress_inline () const;
+  std::string const&
+  hxx_suffix () const;
+
+  std::string const&
+  ixx_suffix () const;
+
+  std::string const&
+  cxx_suffix () const;
 
   private:
   int
@@ -227,8 +236,11 @@ class options
   public:
   bool help_;
   bool version_;
-  std::string output_dir_;
   bool suppress_inline_;
+  std::string output_dir_;
+  std::string hxx_suffix_;
+  std::string ixx_suffix_;
+  std::string cxx_suffix_;
 };
 
 #include "options.ixx"

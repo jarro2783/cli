@@ -77,16 +77,12 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
   {
     bool inl (!ops.suppress_inline ());
 
-    string hxx_suffix (".hxx");
-    string ixx_suffix (".ixx");
-    string cxx_suffix (".cxx");
-
     path file (p.leaf ());
     string base (file.base ().string ());
 
-    string hxx_name (base + hxx_suffix);
-    string ixx_name (base + ixx_suffix);
-    string cxx_name (base + cxx_suffix);
+    string hxx_name (base + ops.hxx_suffix ());
+    string ixx_name (base + ops.ixx_suffix ());
+    string cxx_name (base + ops.cxx_suffix ());
 
     path hxx_path (hxx_name);
     path ixx_path (ixx_name);
