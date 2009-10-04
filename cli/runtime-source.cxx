@@ -13,6 +13,7 @@ generate_runtime_source (context& ctx)
   ostream& os (ctx.os);
 
   os << "#include <map>" << endl
+     << "#include <set>" << endl
      << "#include <string>" << endl
      << "#include <vector>" << endl
      << "#include <ostream>" << endl
@@ -161,6 +162,21 @@ generate_runtime_source (context& ctx)
      << "X x;"
      << "int i (parser<X>::parse (x, argv, n));"
      << "v.push_back (x);"
+     << "return i;"
+     << "}"
+     << "};";
+
+  // parser<std::set<X>>
+  //
+  os << "template <typename X>" << endl
+     << "struct parser<std::set<X> >"
+     << "{"
+     << "static int" << endl
+     << "parse (std::set<X>& s, char** argv, int n)"
+     << "{"
+     << "X x;"
+     << "int i (parser<X>::parse (x, argv, n));"
+     << "s.insert (x);"
      << "return i;"
      << "}"
      << "};";
