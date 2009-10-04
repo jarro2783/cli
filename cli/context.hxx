@@ -13,6 +13,7 @@
 
 #include <cutl/shared-ptr.hxx>
 
+#include "options.hxx"
 #include "semantics.hxx"
 #include "traversal.hxx"
 
@@ -23,6 +24,7 @@ class context
 public:
   typedef std::size_t size_t;
   typedef std::string string;
+  typedef ::options options_type;
 
 private:
   struct data;
@@ -31,6 +33,7 @@ private:
 public:
   std::ostream& os;
   semantics::cli_unit& unit;
+  options_type const& options;
 
   string& inl;
 
@@ -65,8 +68,7 @@ public:
   }
 
 public:
-  context (std::ostream&,
-           semantics::cli_unit&);
+  context (std::ostream&, semantics::cli_unit&, options_type const&);
 
   context (context&);
 

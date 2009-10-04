@@ -75,7 +75,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
 {
   try
   {
-    bool inl (false);
+    bool inl (!ops.suppress_inline ());
 
     string hxx_suffix (".hxx");
     string ixx_suffix (".ixx");
@@ -104,7 +104,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
     // Process names.
     //
     {
-      context ctx (cerr, unit);
+      context ctx (cerr, unit, ops);
       process_names (ctx);
     }
 
@@ -167,7 +167,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
     //
     {
       cxx_filter filt (hxx);
-      context ctx (hxx, unit);
+      context ctx (hxx, unit, ops);
 
       string guard (make_guard (hxx_name, "", ctx));
 
@@ -193,7 +193,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
     if (inl)
     {
       cxx_filter filt (ixx);
-      context ctx (ixx, unit);
+      context ctx (ixx, unit, ops);
       generate_inline (ctx);
     }
 
@@ -201,7 +201,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
     //
     {
       cxx_filter filt (cxx);
-      context ctx (cxx, unit);
+      context ctx (cxx, unit, ops);
 
       cxx << "#include \"" << hxx_name << "\"" << endl
           << endl;

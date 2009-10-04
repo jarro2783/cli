@@ -213,6 +213,9 @@ class options
   std::string const&
   output_dir () const;
 
+  bool const&
+  suppress_inline () const;
+
   private:
   int
   _parse (int start,
@@ -225,6 +228,9 @@ class options
   bool help_;
   bool version_;
   std::string output_dir_;
+  bool suppress_inline_;
 };
+
+#include "options.ixx"
 
 #endif // OPTIONS_HXX

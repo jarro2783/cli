@@ -10,17 +10,15 @@
 using namespace std;
 
 context::
-context (std::ostream& os_,
-         semantics::cli_unit& unit_)
+context (ostream& os_, semantics::cli_unit& unit_, options_type const& ops)
     : data_ (new (shared) data),
       os (os_),
       unit (unit_),
+      options (ops),
       inl (data_->inl_),
       reserved_name_map (data_->reserved_name_map_)
 {
-  //@@ --generate-inline
-  //
-  if (false)
+  if (!options.suppress_inline ())
     inl = "inline ";
 }
 
@@ -29,6 +27,7 @@ context (context& c)
     : data_ (c.data_),
       os (c.os),
       unit (c.unit),
+      options (c.options),
       inl (c.inl),
       reserved_name_map (c.reserved_name_map)
 {

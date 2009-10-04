@@ -15,4 +15,5 @@ class options
   bool --help;
   bool --version;
   std::string --output-dir;
+  bool --suppress-inline;
 };

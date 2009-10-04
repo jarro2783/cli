@@ -4,27 +4,6 @@
 
 #include "options.hxx"
 
-// options
-//
-
-bool const& options::
-help () const
-{
-  return help_;
-}
-
-bool const& options::
-version () const
-{
-  return version_;
-}
-
-std::string const& options::
-output_dir () const
-{
-  return output_dir_;
-}
-
 #include <string>
 #include <vector>
 #include <ostream>
@@ -188,7 +167,8 @@ options (int argc,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
-  output_dir_ ()
+  output_dir_ (),
+  suppress_inline_ ()
 {
   _parse (1, argc, argv, opt, arg);
 }
@@ -201,7 +181,8 @@ options (int start,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
-  output_dir_ ()
+  output_dir_ (),
+  suppress_inline_ ()
 {
   _parse (start, argc, argv, opt, arg);
 }
@@ -214,7 +195,8 @@ options (int argc,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
-  output_dir_ ()
+  output_dir_ (),
+  suppress_inline_ ()
 {
   end = _parse (1, argc, argv, opt, arg);
 }
@@ -228,7 +210,8 @@ options (int start,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
-  output_dir_ ()
+  output_dir_ (),
+  suppress_inline_ ()
 {
   end = _parse (start, argc, argv, opt, arg);
 }
@@ -249,6 +232,8 @@ struct _cli_options_map_init
     &::cli::thunk<options, bool, &options::version_>;
     _cli_options_map_["--output-dir"] = 
     &::cli::thunk<options, std::string, &options::output_dir_>;
+    _cli_options_map_["--suppress-inline"] = 
+    &::cli::thunk<options, bool, &options::suppress_inline_>;
   }
 } _cli_options_map_init_;
 
