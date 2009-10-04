@@ -79,15 +79,6 @@ namespace semantics
     context_type context_;
   };
 
-  /*
-  inline bool
-  operator== (edge const& x, edge const& y)
-  {
-    return &x == &y;
-  }
-  */
-
-
   //
   //
   class node
@@ -162,15 +153,6 @@ namespace semantics
     size_t line_;
     size_t column_;
   };
-
-  /*
-  inline bool
-  operator== (node const& x, node const& y)
-  {
-    return &x == &y;
-  }
-  */
-
 
   //
   //
