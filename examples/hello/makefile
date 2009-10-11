@@ -12,6 +12,7 @@ obj := $(addprefix $(out_base)/,$(cxx:.cxx=.o) $(cli:.cli=.o))
 dep := $(obj:.o=.o.d)
 
 driver   := $(out_base)/driver
+install  := $(out_base)/.install
 clean    := $(out_base)/.clean
 
 # Build.
@@ -31,6 +32,14 @@ $(call include-dep,$(dep),$(obj),$(gen))
 # Convenience alias for default target.
 #
 $(out_base)/: $(driver)
+
+# Install
+#
+$(install): path := $(subst $(src_root)/,,$(src_base))
+$(install):
+	$(call install-data,$(src_base)/driver.cxx,$(install_doc_dir)/cli/$(path)/driver.cxx)
+	$(call install-data,$(src_base)/hello.cli,$(install_doc_dir)/cli/$(path)/hello.cli)
+	$(call install-data,$(src_base)/README,$(install_doc_dir)/cli/$(path)/README)
 
 # Clean.
 #

@@ -68,20 +68,15 @@ $(call include-dep,$(cxx_od),$(cxx_obj),$(gen))
 
 # Alias for default target.
 #
-.PHONY: $(out_base)/
 $(out_base)/: $(cli)
 
 # Install.
 #
-.PHONY: $(install)
-
 $(install): $(cli)
 	$(call install-exec,$<,$(install_bin_dir)/cli)
 
 # Clean.
 #
-.PHONY: $(clean)
-
 $(clean):                            \
   $(cli).o.clean                     \
   $(addsuffix .cxx.clean,$(cxx_obj)) \

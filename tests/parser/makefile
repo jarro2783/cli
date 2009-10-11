@@ -18,7 +18,6 @@ driver   := $(out_base)/driver
 test     := $(out_base)/.test
 clean    := $(out_base)/.clean
 
-
 # Build.
 #
 # Import.
@@ -51,37 +50,27 @@ $(cxx_obj) $(cxx_od): $(cutl.l.cpp-options)
 
 $(call include-dep,$(cxx_od))
 
-
 # Alias for default target.
 #
-.PHONY: $(out_base)/
 $(out_base)/: $(driver)
-
 
 # Test.
 #
 test_targets := $(addprefix $(out_base)/.test-,$(tests))
 
-.PHONY: $(test)
 $(test): $(test_targets)
-
-
 $(test_targets): driver := $(driver)
 
 .PHONY: $(out_base)/.test-%
 $(out_base)/.test-%: $(driver) $(src_base)/test-%.cli $(src_base)/test-%.std
 	$(call message,test $(out_base)/$*,$(driver) $(src_base)/test-$*.cli | diff -u $(src_base)/test-$*.std -)
 
-
 # Clean.
 #
-.PHONY: $(clean)
-
 $(clean):                            \
   $(driver).o.clean                  \
   $(addsuffix .cxx.clean,$(cxx_obj)) \
   $(addsuffix .cxx.clean,$(cxx_od))
-
 
 # Generated .gitignore.
 #
@@ -93,7 +82,6 @@ $(clean): $(out_base)/.gitignore.clean
 
 $(call include,$(bld_root)/git/gitignore.make)
 endif
-
 
 # How to.
 #

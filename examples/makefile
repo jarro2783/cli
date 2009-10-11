@@ -8,11 +8,12 @@ include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 examples := hello features
 
 default   := $(out_base)/
+install   := $(out_base)/.install
 clean     := $(out_base)/.clean
 
-.PHONY: $(default) $(clean)
-
 $(default): $(addprefix $(out_base)/,$(addsuffix /,$(examples)))
+$(install): $(addprefix $(out_base)/,$(addsuffix /.install,$(examples)))
+	$(call install-data,$(src_base)/README,$(install_doc_dir)/cli/examples/README)
 $(clean): $(addprefix $(out_base)/,$(addsuffix /.clean,$(examples)))
 
 $(foreach e,$(examples),$(call import,$(src_base)/$e/makefile))

@@ -26,11 +26,14 @@ $(call include,$(bld_root)/cxx/configuration.make)
 
 # Aliases
 #
+.PHONY: $(out_base)/         \
+        $(out_base)/.test    \
+        $(out_base)/.install \
+        $(out_base)/.clean
+
 ifdef %interactive%
 
-.PHONY: test $(out_base)/.test \
-        install $(out_base)/.install \
-        clean $(out_base)/.clean
+.PHONY: test install clean
 
 test: $(out_base)/.test
 install: $(out_base)/.install
@@ -62,6 +65,20 @@ endif
 #
 ifneq ($(filter $(MAKECMDGOALS),clean disfigure),)
 include-dep =
+endif
+
+# For install, don't include dependecies in examples, and tests.
+#
+ifneq ($(filter $(MAKECMDGOALS),install),)
+
+ifneq ($(subst $(src_root)/tests/,,$(src_base)),$(src_base))
+include-dep =
+endif
+
+ifneq ($(subst $(src_root)/examples/,,$(src_base)),$(src_base))
+include-dep =
+endif
+
 endif
 
 .DEFAULT_GOAL := $(def_goal)
