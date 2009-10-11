@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+  <title>CLI 1.0.0 Compiler Command Line Manual</title>
+
+  <meta name="copyright" content="&copy; 2009 Code Synthesis Tools CC"/>
+  <meta name="keywords" content="cli,command,line,interface,compiler,c++"/>
+  <meta name="description" content="CLI Compiler Command Line Manual"/>
+
+  <link rel="stylesheet" type="text/css" href="default.css" />
+
+<style type="text/css">
+
+  #synopsis {
+    list-style-type:  none;
+  }
+
+  #synopsis li {
+    padding-top      : 0.0em;
+    padding-bottom   : 0.0em;
+  }
+
+  #commands dt {
+    padding-top      : 0.4em;
+  }
+
+  #commands dd {
+    padding-bottom   : 0.4em;
+    padding-left     : 2em;
+  }
+
+  .options dt {
+    padding-top      : 0.4em;
+  }
+
+  .options dd {
+    padding-top      : 0.1em;
+    padding-bottom   : 0.4em;
+    padding-left     : 1.4em;
+  }
+
+</style>
+</head>
+
+<body>
+<div id="container">
+  <div id="content">
+
+  <h1>NAME</h1>
+
+  <p>cli - command line interface compiler for C++</p>
+
+  <h1>SYNOPSIS</h1>
+
+  <dl id="synopsis">
+    <dt><code><b>cli</b> [<i>options</i>] <i>file</i></code></dt>
+  </dl>
+
+  <h1>DESCRIPTION</h1>
+
+  <p><code><b>cli</b></code> generates C++ implementation for command
+  line interface defined in the CLI language. For an input file in the
+  form <code><b>name.cli</b></code> the following C++ files are generated:
+  <code><b>name.hxx</b></code> (header file), <code><b>name.ixx</b></code>
+  (inline file, generated unless the <code><b>--suppress-inline</b></code>
+  option is specified), and <code><b>name.cxx</b></code> (source file).</p>
+
+  <h1>OPTIONS</h1>
+
+  <dl class="options">
+    <dt><code><b>--help</b></code></dt>
+    <dd>Print usage information and exit.</dd>
+
+    <dt><code><b>--version</b></code></dt>
+    <dd>Print version and exit.</dd>
+
+    <dt><code><b>--output-dir</b> | <b>-o</b> <i>dir</i></code></dt>
+    <dd>Write generated files to <code><i>dir</i></code> instead of
+        the current directory.</dd>
+
+    <dt><code><b>--suppress-inline</b></code></dt>
+    <dd>Generate all functions non-inline. By default simple functions
+        are made inline. This option suppresses creation of the inline
+        file.</dd>
+
+    <dt><code><b>--hxx-suffix</b> <i>suffix</i></code></dt>
+    <dd>Use the provided <code><i>suffix</i></code> instead of the default
+        <code><b>.hxx</b></code> to construct the name of the generated header
+        file.</dd>
+
+    <dt><code><b>--ixx-suffix</b> <i>suffix</i></code></dt>
+    <dd>Use the provided <code><i>suffix</i></code> instead of the default
+        <code><b>.ixx</b></code> to construct the name of the generated inline
+        file.</dd>
+
+    <dt><code><b>--cxx-suffix</b> <i>suffix</i></code></dt>
+    <dd>Use the provided <code><i>suffix</i></code> instead of the default
+        <code><b>.cxx</b></code> to construct the name of the generated source
+        file.</dd>
+
+    <dt><code><b>--option-prefix</b> <i>prefix</i></code></dt>
+    <dd>Use the provided <code><i>prefix</i></code> instead of the default
+        <code><b>-</b></code> as an option prefix. Unknown command line
+        arguments that start with this prefix are treated as unknown options.
+        If you set the option prefix to the empty value, then all the unknown
+        command line arguments will be treated as program arguments.</dd>
+
+    <dt><code><b>--option-separator</b> <i>separator</i></code></dt>
+    <dd>Use the provided <code><i>separator</i></code> instead of the default
+        <code><b>--</b></code> as an optional separator between options and
+        arguments. All command line arguments that are parsed after this
+        separator are treated as program arguments. Set the option separator
+        to the empty value if you don't want this functionality.</dd>
+
+    <dt><code><b>--include-with-brackets</b></code></dt>
+    <dd>Use angle brackets (&lt;&gt;) instead of quotes ("") in generated
+        <code><b>#include</b></code> directives.</dd>
+
+    <dt><code><b>--include-prefix</b> <i>prefix</i></code></dt>
+    <dd>Add <code><i>prefix</i></code> to generated <code><b>#include</b></code>
+        directive paths.</dd>
+
+    <dt><code><b>--guard-prefix</b> <i>prefix</i></code></dt>
+    <dd>Add <code><i>prefix</i></code> to generated header inclusion guards.
+        The prefix is transformed to upper case and characters that are
+        illegal in a preprocessor macro name are replaced with underscores.</dd>
+
+    <dt><code><b>--reserved-name</b> <i>name</i>[<b>=</b><i>rep</i>]</code></dt>
+    <dd>Add <code><i>name</i></code> to the list of names that should not
+        be used as identifiers. The name can optionally be followed by
+        <code><b>=</b></code> and the replacement name that should be
+        used instead. All C++ keywords are already in this list.</dd>
+
+  </dl>
+
+  <h1>DIAGNOSTICS</h1>
+
+  <p>If the input file is not a valid CLI definition, <code><b>cli</b></code>
+     will issue diagnostic messages to STDERR and exit with non-zero exit
+     code.</p>
+
+  <h1>BUGS</h1>
+
+  <p>Send bug reports to the
+     <a href="mailto:cli-users@codesynthesis.com">cli-users@codesynthesis.com</a> mailing list.</p>
+
+  </div>
+  <div id="footer">
+    &copy;2009 <a href="http://www.codesynthesis.com">CODE SYNTHESIS TOOLS CC</a>
+
+    <div id="terms">
+      Permission is granted to copy, distribute and/or modify this
+      document under the terms of the
+      <a href="http://www.codesynthesis.com/licenses/mit.txt">MIT License</a>.
+    </div>
+  </div>
+</div>
+</body>
+</html>

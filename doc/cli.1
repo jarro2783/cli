@@ -1,0 +1,148 @@
+.\" Process this file with
+.\" groff -man -Tascii cli.1
+.\"
+.TH CLI 1 "October 2009" "CLI 1.0.0"
+.SH NAME
+cli \- command line interface compiler for C++
+.\"
+.\"
+.\"
+.\"--------------------------------------------------------------------
+.SH SYNOPSIS
+.\"--------------------------------------------------------------------
+.B cli
+.B [
+.I options
+.B ]
+.I file
+.\"
+.\"
+.\"
+.\"--------------------------------------------------------------------
+.SH DESCRIPTION
+.\"--------------------------------------------------------------------
+.B cli
+generates C++ implementation for command line interface defined in the CLI
+language. For an input file in the form
+.B name.cli
+the following C++ files are generated:
+.B name.hxx
+(header file),
+.B name.ixx
+(inline file, generated unless the
+.B --suppress-inline
+option is specified), and
+.B name.cxx (source file).
+.\"
+.\"
+.\"
+.\"--------------------------------------------------------------------
+.SH OPTIONS
+.\"--------------------------------------------------------------------
+.IP "\fB\--help\fR"
+Print usage information and exit.
+
+.IP "\fB\--version\fR"
+Print version and exit.
+
+.IP "\fB\--output-dir\fR | \fB\-o \fIdir\fR"
+Write generated files to
+.I dir
+instead of the current directory.
+
+.IP "\fB\--suppress-inline\fR"
+Generate all functions non-inline. By default simple functions are made
+inline. This option suppresses creation of the inline file.
+
+.IP "\fB\--hxx-suffix \fIsuffix\fR"
+Use the provided
+.I suffix
+instead of the default
+.B .hxx
+to construct the name of the generated header file.
+
+.IP "\fB\--ixx-suffix \fIsuffix\fR"
+Use the provided
+.I suffix
+instead of the default
+.B .ixx
+to construct the name of the generated inline file.
+
+.IP "\fB\--cxx-suffix \fIsuffix\fR"
+Use the provided
+.I suffix
+instead of the default
+.B .cxx
+to construct the name of the generated source file.
+
+.IP "\fB\--option-prefix \fIprefix\fR"
+Use the provided
+.I prefix
+instead of the default
+.B -
+as an option prefix. Unknown command line arguments that start with this
+prefix are treated as unknown options. If you set the option prefix to the
+empty value, then all the unknown command line arguments will be treated as
+program arguments.
+
+.IP "\fB\--option-separator \fIseparator\fR"
+Use the provided
+.I separator
+instead of the default
+.B --
+as an optional separator between options and arguments. All command line
+arguments that are parsed after this separator are treated as program
+arguments. Set the option separator to the empty value if you don't want
+this functionality.
+
+.IP "\fB\--include-with-brackets\fR"
+Use angle brackets (<>) instead of quotes ("") in generated
+.B #include
+directives.
+
+.IP "\fB\--include-prefix \fIprefix\fR"
+Add
+.I prefix
+to generated
+.B #include
+directive paths.
+
+.IP "\fB\--guard-prefix \fIprefix\fR"
+Add
+.I prefix
+to generated header inclusion guards. The prefix is transformed to upper
+case and characters that are illegal in a preprocessor macro name are
+replaced with underscores.
+
+.IP "\fB\--reserved-name \fIname\fR[\fB=\fIrep\fR]"
+Add
+.I name
+to the list of names that should not be used as identifiers. The name
+can optionally be followed by
+.B =
+and the replacement name that should be used instead. All C++ keywords
+are already in this list.
+
+.\"
+.\" DIAGNOSTICS
+.\"
+.SH DIAGNOSTICS
+If the input file is not a valid CLI definition,
+.B cli
+will issue diagnostic messages to
+.B STDERR
+and exit with non-zero exit code.
+.\"
+.\" BUGS
+.\"
+.SH BUGS
+Send bug reports to the cli-users@codesynthesis.com mailing list.
+.\"
+.\" COPYRIGHT
+.\"
+.SH COPYRIGHT
+Copyright (c) 2009 Code Synthesis Tools CC.
+
+Permission is granted to copy, distribute and/or modify this document under
+the terms of the MIT License. Copy of this license can be obtained from
+http://www.codesynthesis.com/licenses/mit.txt
