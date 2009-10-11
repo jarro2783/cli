@@ -23,7 +23,7 @@ installed. To check the GNU make version run make (or gmake) with the
 
 To build the compiler, tests, and examples simply run make in the root
 directory of the package. To run the automated tests, run 'make test'.
-To clean the object file, executables, etc., run 'make clean'. To de-
+To clean the object files, executables, etc., run 'make clean'. To de-
 configure the package (that is, remove configuration files in addition
 to objects, executables, etc.), run 'make disfigure'.
 
@@ -31,6 +31,9 @@ to objects, executables, etc.), run 'make disfigure'.
 Windows
 -------
 
-Project and solution files for Visual C++ will be provided in the future.
-For now, you can create an empty console project and add all the source
-files in the cli/ directory to it.
+Project and solution files are provided for Visual C++ 8.0 (2005) and 
+9.0 (2008). To build the CLI compiler, open and build the corresponding
+solution file in the cli\ directory. After the build is complete, the
+compiler executable can be found in the cli\ directory. You can also
+build examples by opening and building one of the solution files in the
+examples\ directory.
