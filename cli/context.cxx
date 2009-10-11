@@ -9,34 +9,6 @@
 
 using namespace std;
 
-context::
-context (ostream& os_, semantics::cli_unit& unit_, options_type const& ops)
-    : data_ (new (shared) data),
-      os (os_),
-      unit (unit_),
-      options (ops),
-      inl (data_->inl_),
-      opt_prefix (options.option_prefix ()),
-      opt_sep (options.option_separator ()),
-      reserved_name_map (options.reserved_name ())
-{
-  if (!options.suppress_inline ())
-    data_->inl_ = "inline ";
-}
-
-context::
-context (context& c)
-    : data_ (c.data_),
-      os (c.os),
-      unit (c.unit),
-      options (c.options),
-      inl (c.inl),
-      opt_prefix (c.opt_prefix),
-      opt_sep (c.opt_sep),
-      reserved_name_map (c.reserved_name_map)
-{
-}
-
 namespace
 {
   char const* keywords[] =
@@ -119,6 +91,39 @@ namespace
   };
 }
 
+context::
+context (ostream& os_, semantics::cli_unit& unit_, options_type const& ops)
+    : data_ (new (shared) data),
+      os (os_),
+      unit (unit_),
+      options (ops),
+      inl (data_->inl_),
+      opt_prefix (options.option_prefix ()),
+      opt_sep (options.option_separator ()),
+      reserved_name_map (options.reserved_name ()),
+      keyword_set (data_->keyword_set_)
+{
+  if (!options.suppress_inline ())
+    data_->inl_ = "inline ";
+
+  for (size_t i (0); i < sizeof (keywords) / sizeof (char*); ++i)
+    data_->keyword_set_.insert (keywords[i]);
+}
+
+context::
+context (context& c)
+    : data_ (c.data_),
+      os (c.os),
+      unit (c.unit),
+      options (c.options),
+      inl (c.inl),
+      opt_prefix (c.opt_prefix),
+      opt_sep (c.opt_sep),
+      reserved_name_map (c.reserved_name_map),
+      keyword_set (c.keyword_set)
+{
+}
+
 string context::
 escape (string const& name) const
 {
@@ -169,9 +174,7 @@ escape (string const& name) const
 
   // Keywords
   //
-  size const ks (sizeof (keywords) / sizeof (char*));
-
-  if (std::binary_search (keywords, keywords + ks, r))
+  if (keyword_set.find (r) != keyword_set.end ())
   {
     r += '_';
 

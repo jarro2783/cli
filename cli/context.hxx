@@ -6,6 +6,7 @@
 #ifndef CLI_CONTEXT_HXX
 #define CLI_CONTEXT_HXX
 
+#include <set>
 #include <map>
 #include <string>
 #include <ostream>
@@ -42,10 +43,14 @@ public:
   typedef std::map<string, string> reserved_name_map_type;
   reserved_name_map_type const& reserved_name_map;
 
+  typedef std::set<string> keyword_set_type;
+  keyword_set_type const& keyword_set;
+
 private:
   struct data
   {
     string inl_;
+    keyword_set_type keyword_set_;
   };
 
 public:
