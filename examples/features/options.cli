@@ -1,0 +1,39 @@
+include <set>;
+include <map>;
+include <vector>;
+include <string>;
+
+// We can place the options classes into namespaces which mapped to C++
+// namespaces.
+//
+namespace features
+{
+  class options
+  {
+    // We can have several aliases for the same option. The first one is used
+    // to derive the accessor name.
+    //
+    std::string --out-dir | -o;
+
+    // We can use both assignment and constructor notations to provide the
+    // default option value.
+    //
+    std::string --first-name = "John";
+    std::string --last-name ("Mr John Doe", 8, 3);
+
+    // We can use containers to to collect option value. If we have a command
+    // line like this: -v 1 -v 2 -v 1 -s 1 -s 2 -s 1 then the vector returned
+    // by the vector() accessor will contain three elements: 1, 2, and 1 while
+    // the set returned by the set() accessor will contain two elements: 1 and
+    // 2.
+    //
+    std::vector<int> --vector | -v;
+    std::set<int> --set | -s;
+
+    // We can also use maps. In this case the option value is expected to have
+    // two part, the key and the value, separated by '='. For example: -m a=A
+    // -m =B -m c= -m d (same as -m d=).
+    //
+    std::map<std::string, std::string> --map | -m;
+  };
+}

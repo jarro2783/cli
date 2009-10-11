@@ -14,8 +14,8 @@ usage ()
 {
   cerr << "usage: driver <options> <names>" << endl
        << "  [--help]" << endl
-       << "  [--greeting|-g <string>]" << endl
-       << "  [--exclamations|-e <integer>]" << endl;
+       << "  [--greeting <string>]" << endl
+       << "  [--exclamations <integer>]" << endl;
 }
 
 int
@@ -39,6 +39,8 @@ main (int argc, char* argv[])
       return 1;
     }
 
+    // Print the greetings.
+    //
     for (int i = end; i < argc; i++)
     {
       cout << o.greeting () << ", " << argv[i];

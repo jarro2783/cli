@@ -5,7 +5,7 @@
 
 include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
-examples := hello
+examples := hello features
 
 default   := $(out_base)/
 clean     := $(out_base)/.clean
