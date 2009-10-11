@@ -3,8 +3,6 @@
 // copyright : Copyright (c) 2009 Code Synthesis Tools CC
 // license   : MIT; see accompanying LICENSE file
 
-#include <algorithm>  // std::binary_search
-
 #include "context.hxx"
 
 using namespace std;
