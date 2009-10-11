@@ -12,9 +12,7 @@ namespace semantics
 {
   class class_: public scope
   {
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     class_ (path const& file, size_t line, size_t column)
         : node (file, line, column)
     {

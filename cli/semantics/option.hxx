@@ -34,9 +34,7 @@ namespace semantics
       return *type_;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     void
     set_left_node (option_type& n)
     {
@@ -78,9 +76,7 @@ namespace semantics
       return *expression_;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     void
     set_left_node (option_type& n)
     {
@@ -139,9 +135,7 @@ namespace semantics
       return initialized_->expression ();
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     option (path const& file, size_t line, size_t column)
         : node (file, line, column), initialized_ (0)
     {

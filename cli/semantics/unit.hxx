@@ -36,9 +36,7 @@ namespace semantics
       return file_;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     includes (string const& file)
         : file_ (file)
     {
@@ -66,9 +64,7 @@ namespace semantics
       return *includee_;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     cli_includes (string const& file)
         : includes (file)
     {
@@ -95,9 +91,7 @@ namespace semantics
       return *includee_;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     cxx_includes (string const& file)
         : includes (file)
     {
@@ -117,9 +111,7 @@ namespace semantics
   //
   class cxx_unit: public node
   {
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     cxx_unit (path const& file, size_t line, size_t column)
         : node (file, line, column)
     {
@@ -156,7 +148,7 @@ namespace semantics
 
   public:
     cli_unit (path const& file)
-        : node (file, 1, 1)
+        : node (file, 1, 1), graph_ (*this)
     {
       // Use a special edge to get this->name() return the global
       // namespace name ("").
@@ -169,14 +161,14 @@ namespace semantics
     T&
     new_node (path const& file, size_t line, size_t column)
     {
-      return graph ().new_node<T> (file, line, column);
+      return graph_.new_node<T> (file, line, column);
     }
 
     template <typename T, typename A0>
     T&
     new_node (path const& file, size_t line, size_t column, A0 const& a0)
     {
-      return graph ().new_node<T> (file, line, column, a0);
+      return graph_.new_node<T> (file, line, column, a0);
     }
 
     template <typename T, typename A0, typename A1>
@@ -184,7 +176,7 @@ namespace semantics
     new_node (path const& file, size_t line, size_t column,
               A0 const& a0, A1 const& a1)
     {
-      return graph ().new_node<T> (file, line, column, a0, a1);
+      return graph_.new_node<T> (file, line, column, a0, a1);
     }
 
     template <typename T, typename A0, typename A1, typename A2>
@@ -192,7 +184,7 @@ namespace semantics
     new_node (path const& file, size_t line, size_t column,
               A0 const& a0, A1 const& a1, A2 const& a2)
     {
-      return graph ().new_node<T> (file, line, column, a0, a1, a2);
+      return graph_.new_node<T> (file, line, column, a0, a1, a2);
     }
 
     template <typename T, typename A0, typename A1, typename A2, typename A3>
@@ -200,7 +192,7 @@ namespace semantics
     new_node (path const& file, size_t line, size_t column,
               A0 const& a0, A1 const& a1, A2 const& a2, A3 const& a3)
     {
-      return graph ().new_node<T> (file, line, column, a0, a1, a2, a3);
+      return graph_.new_node<T> (file, line, column, a0, a1, a2, a3);
     }
 
   public:
@@ -219,9 +211,7 @@ namespace semantics
     //
     class global_names: public names
     {
-    protected:
-      friend class graph<node, edge>;
-
+    public:
       global_names ()
           : names ("")
       {
@@ -252,9 +242,7 @@ namespace semantics
       }
     };
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     void
     add_edge_left (cli_includes& e)
     {
@@ -280,16 +268,10 @@ namespace semantics
     using namespace_::add_edge_right;
 
   private:
-    semantics::graph<node, edge>&
-    graph ()
-    {
-      return *this;
-    }
-
-  private:
     typedef std::map<string, type*> type_map;
 
   private:
+    graph<node, edge>& graph_;
     includes_list includes_;
     type_map types_;
   };

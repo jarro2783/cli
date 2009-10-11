@@ -72,9 +72,6 @@ namespace semantics
       return dynamic_cast<X const*> (this) != 0;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
   private:
     context_type context_;
   };
@@ -123,9 +120,7 @@ namespace semantics
       return dynamic_cast<X const*> (this) != 0;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     node (path const& file, size_t line, size_t column)
         : file_ (file), line_ (line), column_ (column)
     {
@@ -202,9 +197,7 @@ namespace semantics
       return *named_;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     names (string const& name)
     {
       names_.push_back (name);
@@ -273,9 +266,7 @@ namespace semantics
       return *named_;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     nameable ()
         : named_ (0)
     {
@@ -350,9 +341,7 @@ namespace semantics
     names_iterator
     find (names&);
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     scope (path const& file, size_t line, size_t column)
         : node (file, line, column)
     {
@@ -368,7 +357,6 @@ namespace semantics
     void
     remove_edge_left (names&);
 
-  protected:
     using nameable::add_edge_right;
 
   private:
@@ -388,9 +376,7 @@ namespace semantics
       return name_;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     type (path const& file, size_t line, size_t column, string const& name)
         : node (file, line, column), name_ (name)
     {

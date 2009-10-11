@@ -50,9 +50,7 @@ namespace semantics
       return *initializes_;
     }
 
-  protected:
-    friend class graph<node, edge>;
-
+  public:
     expression (path const& file,
                 size_t line,
                 size_t column,
