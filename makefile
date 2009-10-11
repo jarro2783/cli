@@ -8,11 +8,10 @@ include $(dir $(lastword $(MAKEFILE_LIST)))build/bootstrap.make
 default  := $(out_base)/
 test     := $(out_base)/.test
 install  := $(out_base)/.install
-dist     := $(out_base)/.dist
 clean    := $(out_base)/.clean
 
 
-.PHONY: $(default) $(test) $(install) $(dist) $(clean)
+.PHONY: $(default) $(test) $(install) $(clean)
 
 # Build.
 #
@@ -29,11 +28,6 @@ $(install): $(out_base)/cli/.install           \
 	$(call install-data,$(src_base)/LICENSE,$(install_doc_dir)/cli/LICENSE)
 	$(call install-data,$(src_base)/NEWS,$(install_doc_dir)/cli/NEWS)
 	$(call install-data,$(src_base)/README,$(install_doc_dir)/cli/README)
-
-# Dist.
-#
-
-# @@ TODO
 
 # Clean.
 #

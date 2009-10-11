@@ -30,23 +30,12 @@ ifdef %interactive%
 
 .PHONY: test $(out_base)/.test \
         install $(out_base)/.install \
-        dist $(out_base)/.dist \
         clean $(out_base)/.clean
 
 test: $(out_base)/.test
 install: $(out_base)/.install
-dist: $(out_base)/.dist
 clean: $(out_base)/.clean
 
-endif
-
-
-# Make sure the distribution prefix is set if the goal is dist.
-#
-ifneq ($(filter $(MAKECMDGOALS),dist),)
-ifeq ($(dist_prefix),)
-$(error dist_prefix is not set)
-endif
 endif
 
 # If we don't have dependency auto-generation then we need to manually

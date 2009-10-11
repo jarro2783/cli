@@ -42,7 +42,6 @@ cxx_obj  := $(addprefix $(out_base)/,$(cxx_tun:.cxx=.o) $(cli_tun:.cli=.o))
 cxx_od   := $(cxx_obj:.o=.o.d)
 
 cli      := $(out_base)/cli
-dist     := $(out_base)/.dist
 clean    := $(out_base)/.clean
 install  := $(out_base)/.install
 
@@ -72,12 +71,6 @@ $(call include-dep,$(cxx_od),$(cxx_obj),$(gen))
 .PHONY: $(out_base)/
 $(out_base)/: $(cli)
 
-# Dist.
-#
-.PHONY: $(dist)
-
-# @@ TODO
-
 # Install.
 #
 .PHONY: $(install)
@@ -94,7 +87,6 @@ $(clean):                            \
   $(addsuffix .cxx.clean,$(cxx_obj)) \
   $(addsuffix .cxx.clean,$(cxx_od))
 
-
 # Generated .gitignore.
 #
 ifeq ($(out_base),$(src_base))
@@ -105,7 +97,6 @@ $(clean): $(out_base)/.gitignore.clean
 
 $(call include,$(bld_root)/git/gitignore.make)
 endif
-
 
 # how to
 #
