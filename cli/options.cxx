@@ -240,8 +240,8 @@ options (int argc,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
-  suppress_inline_ (),
   output_dir_ (),
+  suppress_inline_ (),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
@@ -263,8 +263,8 @@ options (int start,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
-  suppress_inline_ (),
   output_dir_ (),
+  suppress_inline_ (),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
@@ -286,8 +286,8 @@ options (int argc,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
-  suppress_inline_ (),
   output_dir_ (),
+  suppress_inline_ (),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
@@ -310,8 +310,8 @@ options (int start,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
-  suppress_inline_ (),
   output_dir_ (),
+  suppress_inline_ (),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
@@ -339,12 +339,12 @@ struct _cli_options_map_init
     &::cli::thunk<options, bool, &options::help_>;
     _cli_options_map_["--version"] = 
     &::cli::thunk<options, bool, &options::version_>;
-    _cli_options_map_["--suppress-inline"] = 
-    &::cli::thunk<options, bool, &options::suppress_inline_>;
     _cli_options_map_["--output-dir"] = 
     &::cli::thunk<options, std::string, &options::output_dir_>;
     _cli_options_map_["-o"] = 
     &::cli::thunk<options, std::string, &options::output_dir_>;
+    _cli_options_map_["--suppress-inline"] = 
+    &::cli::thunk<options, bool, &options::suppress_inline_>;
     _cli_options_map_["--hxx-suffix"] = 
     &::cli::thunk<options, std::string, &options::hxx_suffix_>;
     _cli_options_map_["--ixx-suffix"] = 

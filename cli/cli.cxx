@@ -7,11 +7,15 @@
 #include <fstream>
 #include <iostream>
 
+#include <cutl/compiler/code-stream.hxx>
+
+#include "usage.hxx"
 #include "options.hxx"
 #include "parser.hxx"
 #include "generator.hxx"
 
 using namespace std;
+using namespace cutl;
 
 int main (int argc, char* argv[])
 {
@@ -22,6 +26,8 @@ int main (int argc, char* argv[])
     int end;
     options ops (argc, argv, end);
 
+    // Handle --version
+    //
     if (ops.version ())
     {
       e << "CodeSynthesis CLI command line interface compiler 0.0.2" << endl
@@ -30,6 +36,29 @@ int main (int argc, char* argv[])
       e << "This is free software; see the source for copying conditions. "
         << "There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS "
         << "FOR A PARTICULAR PURPOSE." << endl;
+
+      return 0;
+    }
+
+    // Handle --help
+    //
+    if (ops.help ())
+    {
+      e << "Usage: " << argv[0] << " [options] file"
+        << endl
+        << "Options:" << endl;
+
+      compiler::ostream_filter<usage_indenter, char> filt (e);
+
+      e << "--help" << endl
+        << " Print usage information and exit."
+        << endl;
+
+      e << "--version" << endl
+        << " Print version and exit."
+        << endl;
+
+      generator::usage ();
 
       return 0;
     }

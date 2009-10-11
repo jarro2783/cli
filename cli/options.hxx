@@ -179,11 +179,11 @@ class options
   bool const&
   version () const;
 
-  bool const&
-  suppress_inline () const;
-
   std::string const&
   output_dir () const;
+
+  bool const&
+  suppress_inline () const;
 
   std::string const&
   hxx_suffix () const;
@@ -223,8 +223,8 @@ class options
   public:
   bool help_;
   bool version_;
-  bool suppress_inline_;
   std::string output_dir_;
+  bool suppress_inline_;
   std::string hxx_suffix_;
   std::string ixx_suffix_;
   std::string cxx_suffix_;

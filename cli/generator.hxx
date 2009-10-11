@@ -14,6 +14,9 @@ class generator
 public:
   generator ();
 
+  static void
+  usage ();
+
   class failed {};
 
   void

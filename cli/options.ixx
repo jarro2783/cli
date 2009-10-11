@@ -100,16 +100,16 @@ version () const
   return version_;
 }
 
-inline bool const& options::
-suppress_inline () const
-{
-  return suppress_inline_;
-}
-
 inline std::string const& options::
 output_dir () const
 {
   return output_dir_;
+}
+
+inline bool const& options::
+suppress_inline () const
+{
+  return suppress_inline_;
 }
 
 inline std::string const& options::
