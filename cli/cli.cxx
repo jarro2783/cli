@@ -15,20 +15,30 @@ using namespace std;
 
 int main (int argc, char* argv[])
 {
-  if (argc < 2)
-  {
-    cerr << "usage: " << argv[0] << " file.cli" << endl;
-    return 1;
-  }
+  ostream& e (cerr);
 
   try
   {
     int end;
     options ops (argc, argv, end);
 
+    if (ops.version ())
+    {
+      e << "CodeSynthesis CLI command line interface compiler 0.0.2" << endl
+        << "Copyright (C) 2009 Code Synthesis Tools CC" << endl;
+
+      e << "This is free software; see the source for copying conditions. "
+        << "There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS "
+        << "FOR A PARTICULAR PURPOSE." << endl;
+
+      return 0;
+    }
+
     if (end == argc)
     {
-      cerr << "error: no input file specified" << endl;
+      e << "error: no input file specified" << endl
+        << "info: try '" << argv[0] << " --help' for more information" << endl;
+
       return 1;
     }
 
@@ -37,7 +47,7 @@ int main (int argc, char* argv[])
     ifstream ifs (path.string ().c_str ());
     if (!ifs.is_open ())
     {
-      cerr << path << ": error: unable to open in read mode" << endl;
+      e << path << ": error: unable to open in read mode" << endl;
       return 1;
     }
 
@@ -49,20 +59,20 @@ int main (int argc, char* argv[])
     generator g;
     g.generate (ops, *unit, path);
   }
-  catch (cli::exception const& e)
+  catch (cli::exception const& ex)
   {
-    cerr << e << endl;
+    e << ex << endl;
     return 1;
   }
-  catch (semantics::invalid_path const& e)
+  catch (semantics::invalid_path const& ex)
   {
-    cerr << "error: '" << e.path () << "' is not a valid filesystem path"
-         << endl;
+    e << "error: '" << ex.path () << "' is not a valid filesystem path"
+      << endl;
     return 1;
   }
   catch (std::ios_base::failure const&)
   {
-    cerr << argv[1] << ": error: read failure" << endl;
+    e << argv[1] << ": error: read failure" << endl;
     return 1;
   }
   catch (parser::invalid_input const&)
