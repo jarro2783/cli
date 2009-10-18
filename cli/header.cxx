@@ -19,7 +19,7 @@ namespace
       string name (ename (o));
       string type (o.type ().name ());
 
-      os << type << " const&" << endl
+      os << "const " << type << "&" << endl
          << name << " () const;"
          << endl;
     }

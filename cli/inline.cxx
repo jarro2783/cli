@@ -20,7 +20,7 @@ namespace
       string type (o.type ().name ());
       string scope (escape (o.scope ().name ()));
 
-      os << inl << type << " const& " << scope << "::" << endl
+      os << inl << "const " << type << "& " << scope << "::" << endl
          << name << " () const"
          << "{"
          << "return " << emember (o) << ";"
