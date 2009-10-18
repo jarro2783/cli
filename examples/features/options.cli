@@ -31,7 +31,7 @@ namespace features
     std::set<int> --set | -s;
 
     // We can also use maps. In this case the option value is expected to have
-    // two part, the key and the value, separated by '='. For example: -m a=A
+    // two parts: the key and the value, separated by '='. For example: -m a=A
     // -m =B -m c= -m d (same as -m d=).
     //
     std::map<std::string, std::string> --map | -m;
