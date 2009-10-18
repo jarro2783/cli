@@ -9,17 +9,19 @@ default  := $(out_base)/
 install  := $(out_base)/.install
 cleandoc := $(out_base)/.cleandoc
 
-$(default):
+$(default): $(out_base)/guide/
 
 # Install.
 #
-$(install):
+$(install): $(out_base)/guide/.install
 	$(call install-data,$(src_base)/default.css,$(install_doc_dir)/cli/default.css)
 	$(call install-data,$(src_base)/cli.xhtml,$(install_doc_dir)/cli/cli.xhtml)
 	$(call install-data,$(src_base)/cli.1,$(install_man_dir)/man1/cli.1)
 
 # Clean.
 #
-$(cleandoc):
+$(cleandoc): $(out_base)/guide/.cleandoc
 
 $(call include,$(bld_root)/install.make)
+
+$(call import,$(src_base)/guide/makefile)

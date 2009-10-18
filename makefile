@@ -9,6 +9,7 @@ default  := $(out_base)/
 test     := $(out_base)/.test
 install  := $(out_base)/.install
 clean    := $(out_base)/.clean
+cleandoc := $(out_base)/.cleandoc
 
 # Build.
 #
@@ -36,6 +37,8 @@ $(install): $(out_base)/cli/.install     \
 $(clean): $(out_base)/cli/.clean      \
           $(out_base)/examples/.clean \
           $(out_base)/tests/.clean
+
+$(cleandoc): $(out_base)/doc/.cleandoc
 
 $(call include,$(bld_root)/install.make)
 

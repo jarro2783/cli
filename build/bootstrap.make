@@ -26,18 +26,20 @@ $(call include,$(bld_root)/cxx/configuration.make)
 
 # Aliases
 #
-.PHONY: $(out_base)/         \
-        $(out_base)/.test    \
-        $(out_base)/.install \
-        $(out_base)/.clean
+.PHONY: $(out_base)/          \
+        $(out_base)/.test     \
+        $(out_base)/.install  \
+        $(out_base)/.clean    \
+	$(out_base)/.cleandoc
 
 ifdef %interactive%
 
-.PHONY: test install clean
+.PHONY: test install clean cleandoc
 
 test: $(out_base)/.test
 install: $(out_base)/.install
 clean: $(out_base)/.clean
+cleandoc: $(out_base)/.cleandoc
 
 endif
 
@@ -63,7 +65,7 @@ endif
 
 # Don't include dependency info for certain targets.
 #
-ifneq ($(filter $(MAKECMDGOALS),clean disfigure),)
+ifneq ($(filter $(MAKECMDGOALS),clean cleandoc disfigure),)
 include-dep =
 endif
 
