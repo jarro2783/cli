@@ -47,7 +47,7 @@ main (int argc, char* argv[])
     // --map | -m
     //
     typedef map<std::string, std::string> str_map;
-    const str_map& m (o.map ());
+    const str_map& m = o.map ();
     str_map::const_iterator i (m.find ("a"));
 
     if (i != m.end ())

@@ -77,8 +77,8 @@ namespace
       for (names::name_iterator i (n.name_begin ()); i != n.name_end (); ++i)
       {
         os << "_cli_" << scope << "_map_[\"" << *i << "\"] = " << endl
-           << "&::cli::thunk<" << scope << ", " << type << ", " <<
-          "&" << scope << "::" << member << ">;";
+           << "&::cli::thunk< " << scope << ", " << type << ", " <<
+          "&" << scope << "::" << member << " >;";
       }
     }
   };
@@ -205,12 +205,12 @@ namespace
          << "{";
 
       if (sep)
-        os << "bool opt (true);" // Still recognizing options.
+        os << "bool opt = true;" // Still recognizing options.
            << endl;
 
       os << "for (; start < argc;)"
          << "{"
-         << "const char* s (argv[start]);";
+         << "const char* s = argv[start];";
 
       if (sep)
         os << endl
