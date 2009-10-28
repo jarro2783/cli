@@ -6,9 +6,9 @@ the following dependencies:
 
   libcutl >= 1.0.0 http://www.codesynthesis.com/projects/libcutl/
 
-Additionally for UNIX-like operating systems:
+Additionally, for UNIX-like operating systems:
 
-  build   >= 0.3.4 http://kolpackov.net/projects/build/
+  build   >= 0.3.5 http://kolpackov.net/projects/build/
 
 The cli+dep package comes with the necessary dependencies bundled.
 
@@ -22,7 +22,7 @@ installed. To check the GNU make version run make (or gmake) with the
 --version option.
 
 To build the compiler, tests, and examples simply run make in the root
-directory of the package. To run the automated tests, run 'make test'.
+directory of the package. To run the automated test suite, run 'make test'.
 To clean the object files, executables, etc., run 'make clean'. To de-
 configure the package (that is, remove configuration files in addition
 to objects, executables, etc.), run 'make disfigure'.

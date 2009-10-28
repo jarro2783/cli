@@ -142,7 +142,7 @@
 
   <p>Copyright &copy; 2009 Code Synthesis Tools CC</p>
 
-  <p>Permission is granted to copy, distribute and/or modify this document
+  <p>Permission is granted to copy, distribute, and/or modify this document
      under the terms of the
      <a href="http://www.codesynthesis.com/licenses/mit.txt">MIT License</a>.
   </p>
@@ -190,11 +190,11 @@
   <h1><a name="1">1 Introduction</a></h1>
 
   <p>Command Line Interface (CLI) definition language is a domain-specific
-     language (DSL) that was designed for specifying command line interfaces
-     of C++ programs. CLI defintions are translated to C++ classes using the
-     CLI compiler. These classes implement parsing of the command line
-     arguments and provide a convenient interface for accessing the
-     extracted data.</p>
+     language (DSL) for defining command line interfaces of C++ programs.
+     CLI definitions are automatically translated to C++ classes using the
+     CLI compiler. These classes implement parsing of the command
+     line arguments and provide a convenient and type-safe interface
+     for accessing the extracted data.</p>
 
   <p>Beyond this guide, you may also find the following sources of
      information useful:</p>
@@ -225,7 +225,7 @@
 
   <p>In this chapter we will examine how to define a very simple command
      line interface in CLI, translate this interface to C++, and use the
-     result in our application. The code presented in this chapter is based
+     result in an application. The code presented in this chapter is based
      on the <code>hello</code> example which can be found in the
      <code>examples/hello/</code> directory of the CLI distribution.</p>
 
@@ -233,18 +233,18 @@
 
   <p>Our <code>hello</code> application is going to print a greeting
      line for each name supplied on the command line. It will also
-     support a number of command line options that can be used to
-     customize the greeting line. These options are: <code>--greeting</code>
-     and <code>--exclamations</code>. The <code>--greeting</code>
-     option allows us to specify the greeting pharse instead of the
+     support two command line options, <code>--greeting</code>
+     and <code>--exclamations</code>, that can be used to
+     customize the greeting line. The <code>--greeting</code>
+     option allows us to specify the greeting phrase instead of the
      default <code>"Hello"</code>. The <code>--exclamations</code>
-     option is used to specify how many exclamations marks should
-     be prined at the end of each greeting. We will also support
+     option is used to specify how many exclamation marks should
+     be printed at the end of each greeting. We will also support
      the <code>--help</code> option which triggers printing of the
      usage information.</p>
 
-  <p>Now we can write a description of the above command line interface
-      in the CLI language and save it into <code>hello.cli</code>:</p>
+  <p>We can now write a description of the above command line interface
+     in the CLI language and save it into <code>hello.cli</code>:</p>
 
   <pre>
 include &lt;string>;
@@ -261,12 +261,12 @@ class options
      clear (the CLI language is covered in greater detail in the next
      chapter), it should be easy to connect declarations in
      <code>hello.cli</code> to the command line interface described in
-     the preceeding paragrpahs. The next step is to translate this
+     the preceding paragraphs. The next step is to translate this
      interface specification to C++.</p>
 
-  <h2><a name="2.2">2.2 Translating CLI Defintions to C++</a></h2>
+  <h2><a name="2.2">2.2 Translating CLI Definitions to C++</a></h2>
 
-  <p>Now we are ready to translate our <code>hello.cli</code> to C++.
+  <p>Now we are ready to translate <code>hello.cli</code> to C++.
      To do this we invoke the CLI compiler from a terminal (UNIX) or
      a command prompt (Windows):
   </p>
@@ -277,8 +277,8 @@ $ cli hello.cli
 
   <p>This invocation of the CLI compiler produces three C++ files:
      <code>hello.hxx</code> <code>hello.ixx</code>, and
-     <code>hello.cxx</code>. You can change the extensions in these
-     files with the compiler command line options. See the
+     <code>hello.cxx</code>. You can change the file name extensions
+     for these files with the compiler command line options. See the
      <a href="http://www.codesynthesis.com/projects/cli/doc/cli.xhtml">CLI
      Compiler Command Line Manual</a> for more information.</p>
 
@@ -315,12 +315,12 @@ private:
      CLI class. For each option in this CLI class an accessor function is
      generated inside the C++ class. The <code>options</code> C++ class also
      defines a number of overloaded constructs that we can use to parse the
-     <code>argc/argv</code> array. Let's now see how we can use this genearted
+     <code>argc/argv</code> array. Let's now see how we can use this generated
      class to implement option parsing in our <code>hello</code> application.</p>
 
   <h2><a name="2.3">2.3 Implementing Application Logic</a></h2>
 
-  <p>At this point we have all the parts we need to implement our
+  <p>At this point we have everything we need to implement our
      application:</p>
 
   <pre class="c++">
@@ -382,11 +382,11 @@ main (int argc, char* argv[])
 
   <p>At the beginning of our application we create the <code>options</code>
      object which parses the command line. The <code>end</code> variable
-     contains the index of the first non-option argument. Then we access
+     contains the index of the first non-option argument. We then access
      the option values as needed during the application execution. We also
-     catch and print the <code>cli::exception</code> exception in case
-     something goes wrong (for example, an unknown option is specified
-     or an option value is invalid).
+     catch and print <code>cli::exception</code> in case something goes
+     wrong, for example, an unknown option is specified or an option value
+     is invalid.
   </p>
 
   <h2><a name="2.4">2.4 Compiling and Running</a></h2>
@@ -431,16 +431,16 @@ usage: driver &lt;options> &lt;names>
   <h1><a name="3">3 CLI Language</a></h1>
 
   <p>This chapter describes the CLI language and its mapping to C++.
-     A CLI definition unit consists of zero or more <a href="#3.3">Include
-     Directives</a> followed by one or more <a href="#3.4">Namespace Definition</a>
-     or <a href="#3.1">Option Class Definition</a>. C and C++-style comments
-     can be used anywhere in the CLI definition unit except in character and
+     A CLI file consists of zero or more <a href="#3.3">Include
+     Directives</a> followed by one or more <a href="#3.4">Namespace Definitions</a>
+     or <a href="#3.1">Option Class Definitions</a>. C and C++-style comments
+     can be used anywhere in the CLI file except in character and
      string literals.</p>
 
   <h2><a name="3.1">3.1 Option Class Definition</a></h2>
 
 <p>The central part of the CLI language is <em>option class</em>. An
-   option class contains one or more <em>option</em> definition, for
+   option class contains one or more <em>option</em> definitions, for
    example:</p>
 
   <pre>
@@ -498,18 +498,18 @@ public:
 
 
   <p>An option class is mapped to a C++ class with the same name. The
-     C++ class defines a set of public overloaded constructors, public
-     copy constructor and assignment operator, as well as a set of public
+     C++ class defines a set of public overloaded constructors, a public
+     copy constructor and an assignment operator, as well as a set of public
      accessor functions corresponding to option definitions.</p>
 
   <p>The <code>argc/argv</code> arguments in the overloaded constructors
      are used to pass the command line arguments array, normally as passed
-     to <code>mail()</code>. The <code>start</code> argument is used to
+     to <code>main()</code>. The <code>start</code> argument is used to
      specify the position in the arguments array from which the parsing
-     should start. Constructor that don't have this argument start from
-     position 1, skipping the executable name in <code>argv[0]</code>.
+     should start. The constructors that don't have this argument, start
+     from position 1, skipping the executable name in <code>argv[0]</code>.
      The <code>end</code> argument is used to return the position in
-     the arguments array where parsing of options stopped. This is the
+     the arguments array where the parsing of options stopped. This is the
      position of the first program argument, if any.</p>
 
   <p>The <code>opt_mode</code> and <code>arg_mode</code> arguments
@@ -540,10 +540,10 @@ namespace cli
   <p>If the mode is <code>skip</code>, the parser skips an unknown
      option or argument and continue parsing. If the mode is
      <code>stop</code>, the parser stops the parsing process. The
-     position of the unknown entitiy is stored in the <code>end</code>
+     position of the unknown entity is stored in the <code>end</code>
      argument. If the mode is <code>fail</code>, the parser throws the
      <code>cli::unknown_option</code> or <code>cli::unknown_argument</code>
-     exception (described blow) on encounertin an unknown option or argument,
+     exception (described blow) on encountering an unknown option or argument,
      respectively.</p>
 
   <p>The parsing constructor (those with the <code>argc/argv</code> arguments)
@@ -554,11 +554,11 @@ namespace cli
      described above. The <code>missing_value</code> exception is thrown when
      an option value is missing. The <code>invalid_value</code> exception is
      thrown when an option value is invalid, for example, a non-integer value
-     is speicified for an option of type <code>int</code>.</p>
+     is specified for an option of type <code>int</code>.</p>
 
   <p>All CLI exceptions are derived from the common <code>cli::exception</code>
-     class which provides a polymorphic <code>std::ostream</code> insertion
-     support. For example, you can catch the <code>cli::unknown_option</code>
+     class which implements the polymorphic <code>std::ostream</code> insertion.
+     For example, if you catch the <code>cli::unknown_option</code>
      exception as <code>cli::exception</code> and print it to
      <code>std::cerr</code>, you will get the error message corresponding
      to the <code>unknown_option</code> exception.</p>
@@ -655,21 +655,21 @@ namespace cli
   <h2><a name="3.2">3.2 Option Definition</a></h2>
 
 <p>An option definition consists of there components: <em>type</em>,
-   <em>name</em>, and <em>default value</em>. Option type can be any
-   C++ type as long as its string representation can be extracted using
+   <em>name</em>, and <em>default value</em>. An option type can be any
+   C++ type as long as its string representation can be parsed using
    the <code>std::istream</code> interface. If the option type is
-   user-define then you will need to include its declaration using
+   user-defined then you will need to include its declaration using
    the <a href="#3.3">Include Directive</a>.</p>
 
-<p>An option of any type other that <code>bool</code> is expected to
+<p>An option of a type other than <code>bool</code> is expected to
    have a value. An option of type <code>bool</code> is treated as
    a flag and does not have a value. That is, a mere presence of such
-   an option on the command line sets this option value to
+   an option on the command line sets this option's value to
    <code>true</code>.</p>
 
 <p>The name component specifies the option name as it will be entered
-   in the command line. A name can contain any number of aliases seperated
-   by <code>|</code>. The C++ acessor function name is derived from the
+   in the command line. A name can contain any number of aliases separated
+   by <code>|</code>. The C++ accessor function name is derived from the
    first name by removing any leading special characters, such as
    <code>-</code>, <code>/</code>, etc., and replacing special characters
    in other places with underscore. For example, the following option
@@ -693,7 +693,7 @@ class options
   </pre>
 
   <p>While any option alias can be used on the command line to specify
-     this option value.</p>
+     this option's value.</p>
 
   <p>If the option name conflicts with one of the CLI language keywords,
      it can be specified as a string literal:</p>
@@ -706,7 +706,7 @@ class options
   </pre>
 
   <p>The final component of the option definition is the optional default
-     value. If the default value is not specified then the option is
+     value. If the default value is not specified, then the option is
      initialized with the default constructor. In particular, this means
      that a <code>bool</code> option will be initialized to <code>false</code>,
      an <code>int</code> option will be initialized to <code>0</code>, etc.</p>
@@ -732,8 +732,8 @@ class options
 
   <p>The assignment initialization supports character, string, boolean, and
      simple integer literals (including negative integers) as well
-     as identifiers. For more complex expression use the constructor
-     initialization or wrap the expression in parenthesis, for example:</p>
+     as identifiers. For more complex expressions use the constructor
+     initialization or wrap the expressions in parenthesis, for example:</p>
 
   <pre>
 include "constants.hxx"; // Defines default_value.
@@ -746,17 +746,17 @@ class options
 };
   </pre>
 
-  <p>By default when an option is specified two or more times on the command
+  <p>By default, when an option is specified two or more times on the command
      line, the last value overrides all the previous ones. However, a number
      of standard C++ containers are handled differently to allow collecting
      multiple option values or building key-value maps. These
-     containers are <code>std::vector</code>, <code>std::set</code> and
+     containers are <code>std::vector</code>, <code>std::set</code>, and
      <code>std::map</code>.</p>
 
   <p>When <code>std::vector</code> or <code>std::set</code> is specified
-     as an option type, all values for this option are inserted into the
+     as an option type, all the values for this option are inserted into the
      container in the order they are encountered. As a result,
-     <code>std::vector</code> will conatin all the values, inclduing
+     <code>std::vector</code> will contain all the values, including
      duplicates while <code>std::set</code> will contain all the unique
      values. For example:</p>
 
@@ -801,21 +801,21 @@ class options
 
   <p>If you are using user-defined types in your option definitions,
      you will need to include their declarations with the include
-     directive. Include directives can specify <code>&lt; ></code> or
+     directive. Include directives can use <code>&lt; ></code> or
      <code>" "</code>-enclosed paths. The CLI compiler does not
-     actully open or read these files. Instead the include directives
-     are translated to C++ preprocessor <code>#include</code> directive
+     actually open or read these files. Instead, the include directives
+     are translated to C++ preprocessor <code>#include</code> directives
      in the generated C++ header file. For example, the following CLI
      definition:</p>
 
   <pre>
 include &lt;string>;
-include "types.hxx"; // Defines the name class.
+include "types.hxx"; // Defines the name_type class.
 
 class options
 {
   std::string --string;
-  name --name;
+  name_type --name;
 };
   </pre>
 
@@ -832,7 +832,7 @@ class options
   const std::string&amp;
   string () const;
 
-  const name&amp;
+  const name_type&amp;
   name () const;
 
   ...
@@ -840,8 +840,8 @@ class options
   </pre>
 
   <p>Without the <code>#include</code> directives the <code>std::string</code>
-     and <code>name</code> type in the <code>options</code> class would be
-     undeclared and result in compillation errors.</p>
+     and <code>name_type</code> types in the <code>options</code> class would
+     be undeclared and result in compilation errors.</p>
 
   <h2><a name="3.4">3.4 Namespace Definition</a></h2>
 
@@ -877,8 +877,8 @@ namespace compiler
 }
   </pre>
 
-  <p>The above CLI namespace strcture would result in the equivalent C++
-     namespaces strcture:</p>
+  <p>The above CLI namespace structure would result in the equivalent C++
+     namespaces structure:</p>
 
   <pre>
 namespace compiler
