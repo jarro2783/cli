@@ -4,7 +4,7 @@ General
 Unless you are using the cli+dep package, you will also need to install
 the following dependencies:
 
-  libcutl >= 1.0.0 http://www.codesynthesis.com/projects/libcutl/
+  libcutl >= 1.1.0 http://www.codesynthesis.com/projects/libcutl/
 
 Additionally, for UNIX-like operating systems:
 
