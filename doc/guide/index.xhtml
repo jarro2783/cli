@@ -581,7 +581,7 @@ namespace cli
   inline std::ostream&amp;
   operator&lt;&lt; (std::ostream&amp; os, const exception&amp; e)
   {
-    os &lt;&lt; e;
+    e.print (os);
     return os;
   }
 
