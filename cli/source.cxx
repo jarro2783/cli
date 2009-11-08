@@ -162,7 +162,7 @@ namespace
           l++;
         }
 
-        os << *i;
+        os << escape_str (*i);
         l += i->size ();
       }
 
@@ -176,7 +176,7 @@ namespace
 
         if (doc.size () > 0)
         {
-          os << escape_str (doc[0]);
+          os << escape_str (format (doc[0], ot_plain));
           l += doc[0].size ();
         }
         else
