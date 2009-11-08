@@ -17,7 +17,7 @@ def-unit:
 
 include-decl-seq:
 	include-decl
-	include-decl-seq include-decl;
+	include-decl-seq include-decl
 
 include-decl:
 	"include" path-literal ";"
@@ -44,7 +44,7 @@ option-def-seq:
 	option-def-seq option-def
 
 option-def:
-	type-spec option-name-seq initializer(opt) ";"
+	type-spec option-name-seq initializer(opt) option-doc ";"
 
 type-spec:
 	fundamental-type-spec
@@ -52,7 +52,7 @@ type-spec:
 
 option-name-seq:
 	option-name
-	option-name-seq "|" option-name;
+	option-name-seq "|" option-name
 
 option-name:
 	option-identifier
@@ -70,6 +70,13 @@ initializer-expr:
 	string-literal
 	qualified-name
         call-expr
+
+option-doc:
+	"{" doc-string-seq "}"
+
+doc-string-seq:
+	string-literal
+	doc-string-seq "," string-literal
 
 qualified-name:
 	"::" qualified-name-trailer

@@ -532,6 +532,51 @@ option_def (token& t)
     unit_->new_edge<initialized> (*o, e);
   }
 
+  if (t.punctuation () == token::p_lcbrace)
+  {
+    // doc-string-seq
+    //
+    for (t = lexer_->next ();; t = lexer_->next ())
+    {
+      if (t.type () != token::t_string_lit)
+      {
+        cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
+             << "expected documentation string instead of " << t << endl;
+        throw error ();
+      }
+
+      if (valid_)
+      {
+        // Get rid of '"'.
+        //
+        string r;
+        string const& l (t.literal ());
+
+        for (size_t i (0), n (l.size ()); i < n; ++i)
+        {
+          if (l[i] != '"' || (i != 0 && l[i - 1] == '\\'))
+            r += l[i];
+        }
+
+        o->doc ().push_back (r);
+      }
+
+      t = lexer_->next ();
+
+      if (t.punctuation () != token::p_comma)
+        break;
+    }
+
+    if (t.punctuation () != token::p_rcbrace)
+    {
+      cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
+           << "expected '}' instead of " << t << endl;
+      throw error ();
+    }
+
+    t = lexer_->next ();
+  }
+
   if (t.punctuation () != token::p_semi)
   {
     cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
