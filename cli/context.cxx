@@ -199,11 +199,103 @@ escape (string const& name) const
 }
 
 string context::
+translate_arg (string const& s, std::set<string>& set)
+{
+  string r;
+  r.reserve (s.size ());
+  set.clear ();
+
+  size_t p (string::npos);
+
+  for (size_t i (0), n (s.size ()); i < n; ++i)
+  {
+    if (p == string::npos && s[i] == '<')
+    {
+      p = i;
+      r += "\\i{";
+      continue;
+    }
+
+    if (p != string::npos && s[i] == '>')
+    {
+      set.insert (string (s, p + 1, i - p - 1));
+      r += '}';
+      p = string::npos;
+      continue;
+    }
+
+    if (p != string::npos && s[i] == '}' && s[i - 1] != '\\')
+    {
+      r += "\\}";
+      continue;
+    }
+
+    r += s[i];
+  }
+
+  return r;
+}
+
+string context::
+translate (string const& s, std::set<string> const& set)
+{
+  string r;
+  r.reserve (s.size ());
+
+  size_t p (string::npos);
+
+  for (size_t i (0), n (s.size ()); i < n; ++i)
+  {
+    if (p == string::npos && s[i] == '<')
+    {
+      p = i;
+      continue;
+    }
+
+    if (p != string::npos)
+    {
+      if (s[i] == '>')
+      {
+        string a (s, p + 1, i - p - 1);
+
+        if (set.find (a) != set.end ())
+        {
+          r += "\\i{";
+
+          for (size_t j (0), n (a.size ()); j < n; ++j)
+          {
+            if (a[j] == '}' && (j == 0 || a[j - 1] != '\\'))
+              r += "\\}";
+            else
+              r += a[j];
+          }
+
+          r += '}';
+        }
+        else
+        {
+          r += '<';
+          r += a;
+          r += '>';
+        }
+        p = string::npos;
+      }
+      continue;
+    }
+
+    r += s[i];
+  }
+
+  return r;
+}
+
+string context::
 format (string const& s, output_type ot)
 {
   string r;
   r.reserve (s.size ());
 
+  bool para (false);
   bool escape (false);
   std::stack<unsigned char> blocks; // Bit 0: code; 1: italic; 2: bold.
 
@@ -211,6 +303,8 @@ format (string const& s, output_type ot)
   {
     if (escape)
     {
+      bool block (false);
+
       switch (s[i])
       {
       case '\\':
@@ -263,6 +357,7 @@ format (string const& s, output_type ot)
           {
             i = j;
             blocks.push (b);
+            block = true;
             break;
           }
 
@@ -304,6 +399,7 @@ format (string const& s, output_type ot)
           {
             i = j;
             blocks.push (b);
+            block = true;
             break;
           }
 
@@ -345,6 +441,7 @@ format (string const& s, output_type ot)
           {
             i = j;
             blocks.push (b);
+            block = true;
             break;
           }
 
@@ -354,6 +451,30 @@ format (string const& s, output_type ot)
       case '}':
         {
           r += '}';
+          break;
+        }
+      }
+
+      if (block)
+      {
+        unsigned char b (blocks.top ());
+
+        switch (ot)
+        {
+        case ot_html:
+          {
+            if (b & 1)
+              r += "<code>";
+
+            if (b & 2)
+              r += "<i>";
+
+            if (b & 4)
+              r += "<b>";
+
+            break;
+          }
+        default:
           break;
         }
       }
@@ -373,15 +494,49 @@ format (string const& s, output_type ot)
           r += '\n';
           break;
         }
+      case ot_html:
+        {
+          if (para)
+            r += "</p>";
+          else
+            para = true;
+
+          r += "\n<p>";
+          break;
+        }
       }
     }
     else if (!blocks.empty () && s[i] == '}')
     {
+      unsigned char b (blocks.top ());
+
+      switch (ot)
+      {
+      case ot_html:
+        {
+          if (b & 1)
+            r += "</code>";
+
+          if (b & 2)
+            r += "</i>";
+
+          if (b & 4)
+            r += "</b>";
+
+          break;
+        }
+      default:
+        break;
+      }
+
       blocks.pop ();
     }
     else
       r += s[i];
   }
+
+  if (para)
+    r += "</p>";
 
   return r;
 }

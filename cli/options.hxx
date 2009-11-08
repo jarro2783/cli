@@ -189,6 +189,18 @@ class options
   const bool&
   suppress_usage () const;
 
+  const bool&
+  generate_cxx () const;
+
+  const bool&
+  generate_man () const;
+
+  const bool&
+  generate_html () const;
+
+  const bool&
+  stdout () const;
+
   const std::size_t&
   option_length () const;
 
@@ -200,6 +212,9 @@ class options
 
   const std::string&
   cxx_suffix () const;
+
+  const std::string&
+  html_suffix () const;
 
   const std::string&
   option_prefix () const;
@@ -238,10 +253,15 @@ class options
   std::string output_dir_;
   bool suppress_inline_;
   bool suppress_usage_;
+  bool generate_cxx_;
+  bool generate_man_;
+  bool generate_html_;
+  bool stdout_;
   std::size_t option_length_;
   std::string hxx_suffix_;
   std::string ixx_suffix_;
   std::string cxx_suffix_;
+  std::string html_suffix_;
   std::string option_prefix_;
   std::string option_separator_;
   bool include_with_brackets_;

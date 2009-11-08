@@ -243,10 +243,15 @@ options (int argc,
   output_dir_ (),
   suppress_inline_ (),
   suppress_usage_ (),
+  generate_cxx_ (),
+  generate_man_ (),
+  generate_html_ (),
+  stdout_ (),
   option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  html_suffix_ (".html"),
   option_prefix_ ("-"),
   option_separator_ ("--"),
   include_with_brackets_ (),
@@ -268,10 +273,15 @@ options (int start,
   output_dir_ (),
   suppress_inline_ (),
   suppress_usage_ (),
+  generate_cxx_ (),
+  generate_man_ (),
+  generate_html_ (),
+  stdout_ (),
   option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  html_suffix_ (".html"),
   option_prefix_ ("-"),
   option_separator_ ("--"),
   include_with_brackets_ (),
@@ -293,10 +303,15 @@ options (int argc,
   output_dir_ (),
   suppress_inline_ (),
   suppress_usage_ (),
+  generate_cxx_ (),
+  generate_man_ (),
+  generate_html_ (),
+  stdout_ (),
   option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  html_suffix_ (".html"),
   option_prefix_ ("-"),
   option_separator_ ("--"),
   include_with_brackets_ (),
@@ -319,10 +334,15 @@ options (int start,
   output_dir_ (),
   suppress_inline_ (),
   suppress_usage_ (),
+  generate_cxx_ (),
+  generate_man_ (),
+  generate_html_ (),
+  stdout_ (),
   option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  html_suffix_ (".html"),
   option_prefix_ ("-"),
   option_separator_ ("--"),
   include_with_brackets_ (),
@@ -346,6 +366,14 @@ print_usage (::std::ostream& os)
 
   os << "--suppress-usage             Suppress generation of usage printing code." << ::std::endl;
 
+  os << "--generate-cxx" << std::endl;
+
+  os << "--generate-man" << std::endl;
+
+  os << "--generate-html" << std::endl;
+
+  os << "--stdout" << std::endl;
+
   os << "--option-length <len>        Indent option description <len> characters when" << ::std::endl
      << "                             printing usage." << ::std::endl;
 
@@ -357,6 +385,9 @@ print_usage (::std::ostream& os)
 
   os << "--cxx-suffix <suffix>        Use <suffix> instead of the default '.cxx' to" << ::std::endl
      << "                             construct the name of the generated source file." << ::std::endl;
+
+  os << "--html-suffix <suffix>       Use <suffix> instead of the default '.html' to" << ::std::endl
+     << "                             construct the name of the generated HTML file." << ::std::endl;
 
   os << "--option-prefix <prefix>     Use <prefix> instead of the default '-' as an" << ::std::endl
      << "                             option prefix." << ::std::endl;
@@ -399,6 +430,14 @@ struct _cli_options_map_init
     &::cli::thunk< options, bool, &options::suppress_inline_ >;
     _cli_options_map_["--suppress-usage"] = 
     &::cli::thunk< options, bool, &options::suppress_usage_ >;
+    _cli_options_map_["--generate-cxx"] = 
+    &::cli::thunk< options, bool, &options::generate_cxx_ >;
+    _cli_options_map_["--generate-man"] = 
+    &::cli::thunk< options, bool, &options::generate_man_ >;
+    _cli_options_map_["--generate-html"] = 
+    &::cli::thunk< options, bool, &options::generate_html_ >;
+    _cli_options_map_["--stdout"] = 
+    &::cli::thunk< options, bool, &options::stdout_ >;
     _cli_options_map_["--option-length"] = 
     &::cli::thunk< options, std::size_t, &options::option_length_ >;
     _cli_options_map_["--hxx-suffix"] = 
@@ -407,6 +446,8 @@ struct _cli_options_map_init
     &::cli::thunk< options, std::string, &options::ixx_suffix_ >;
     _cli_options_map_["--cxx-suffix"] = 
     &::cli::thunk< options, std::string, &options::cxx_suffix_ >;
+    _cli_options_map_["--html-suffix"] = 
+    &::cli::thunk< options, std::string, &options::html_suffix_ >;
     _cli_options_map_["--option-prefix"] = 
     &::cli::thunk< options, std::string, &options::option_prefix_ >;
     _cli_options_map_["--option-separator"] = 

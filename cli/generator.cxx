@@ -21,6 +21,8 @@
 #include "runtime-inline.hxx"
 #include "runtime-source.hxx"
 
+#include "html.hxx"
+
 #include "context.hxx"
 #include "generator.hxx"
 #include "name-processor.hxx"
@@ -73,156 +75,211 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
 {
   try
   {
-    bool inl (!ops.suppress_inline ());
-
     path file (p.leaf ());
     string base (file.base ().string ());
 
-    string hxx_name (base + ops.hxx_suffix ());
-    string ixx_name (base + ops.ixx_suffix ());
-    string cxx_name (base + ops.cxx_suffix ());
+    bool gen_cxx (ops.generate_cxx ());
+    bool gen_man (ops.generate_man ());
+    bool gen_html (ops.generate_html ());
 
-    path hxx_path (hxx_name);
-    path ixx_path (ixx_name);
-    path cxx_path (cxx_name);
+    if (!gen_cxx && !gen_man && !gen_html)
+      gen_cxx = true;
 
-    if (!ops.output_dir ().empty ())
+    if (ops.stdout ())
     {
-      path dir (ops.output_dir ());
+      if (gen_cxx)
+      {
+        cerr << "error: --stdout cannot be used with C++ output" << endl;
+        throw failed ();
+      }
 
-      hxx_path = dir / hxx_path;
-      ixx_path = dir / ixx_path;
-      cxx_path = dir / cxx_path;
-    }
-
-    // Process names.
-    //
-    {
-      context ctx (cerr, unit, ops);
-      process_names (ctx);
+      if (gen_man && gen_html)
+      {
+        cerr << "error: --stdout cannot be used with man and html output"
+             << endl;
+        throw failed ();
+      }
     }
 
     fs::auto_removes auto_rm;
 
-    //
-    //
-    ofstream hxx (hxx_path.string ().c_str ());
-
-    if (!hxx.is_open ())
+    if (gen_cxx)
     {
-      cerr << "error: unable to open '" << hxx_path << "' in write mode"
-           << endl;
-      throw failed ();
-    }
+      bool inl (!ops.suppress_inline ());
 
-    auto_rm.add (hxx_path);
+      string hxx_name (base + ops.hxx_suffix ());
+      string ixx_name (base + ops.ixx_suffix ());
+      string cxx_name (base + ops.cxx_suffix ());
 
-    //
-    //
-    ofstream ixx;
+      path hxx_path (hxx_name);
+      path ixx_path (ixx_name);
+      path cxx_path (cxx_name);
 
-    if (inl)
-    {
-      ixx.open (ixx_path.string ().c_str (), ios_base::out);
-
-      if (!ixx.is_open ())
+      if (!ops.output_dir ().empty ())
       {
-        cerr << "error: unable to open '" << ixx_path << "' in write mode"
+        path dir (ops.output_dir ());
+
+        hxx_path = dir / hxx_path;
+        ixx_path = dir / ixx_path;
+        cxx_path = dir / cxx_path;
+      }
+
+      // Process names.
+      //
+      {
+        context ctx (cerr, unit, ops);
+        process_names (ctx);
+      }
+
+      //
+      //
+      ofstream hxx (hxx_path.string ().c_str ());
+
+      if (!hxx.is_open ())
+      {
+        cerr << "error: unable to open '" << hxx_path << "' in write mode"
              << endl;
         throw failed ();
       }
 
-      auto_rm.add (ixx_path);
-    }
+      auto_rm.add (hxx_path);
 
-    //
-    //
-    ofstream cxx (cxx_path.string ().c_str ());
-
-    if (!cxx.is_open ())
-    {
-      cerr << "error: unable to open '" << cxx_path << "' in write mode"
-           << endl;
-      throw failed ();
-    }
-
-    auto_rm.add (cxx_path);
-
-    // Print headers.
-    //
-    hxx << header;
-    if (inl)
-      ixx << header;
-    cxx << header;
-
-    typedef compiler::ostream_filter<compiler::cxx_indenter, char> cxx_filter;
-
-    // Include settings.
-    //
-    bool br (ops.include_with_brackets ());
-    string ip (ops.include_prefix ());
-    string gp (ops.guard_prefix ());
-
-    if (!ip.empty () && ip[ip.size () - 1] != '/')
-      ip.append ("/");
-
-    if (!gp.empty () && gp[gp.size () - 1] != '_')
-      gp.append ("_");
-
-    // HXX
-    //
-    {
-      cxx_filter filt (hxx);
-      context ctx (hxx, unit, ops);
-
-      string guard (make_guard (gp + hxx_name, ctx));
-
-      hxx << "#ifndef " << guard << endl
-          << "#define " << guard << endl
-          << endl;
-
-      generate_runtime_header (ctx);
-      generate_header (ctx);
+      //
+      //
+      ofstream ixx;
 
       if (inl)
       {
-        hxx << "#include " << (br ? '<' : '"') << ip << ixx_name <<
-          (br ? '>' : '"') << endl
-            << endl;
+        ixx.open (ixx_path.string ().c_str (), ios_base::out);
+
+        if (!ixx.is_open ())
+        {
+          cerr << "error: unable to open '" << ixx_path << "' in write mode"
+               << endl;
+          throw failed ();
+        }
+
+        auto_rm.add (ixx_path);
       }
 
-      hxx << "#endif // " << guard << endl;
-    }
+      //
+      //
+      ofstream cxx (cxx_path.string ().c_str ());
 
-    // IXX
-    //
-    if (inl)
-    {
-      cxx_filter filt (ixx);
-      context ctx (ixx, unit, ops);
-      generate_runtime_inline (ctx);
-      generate_inline (ctx);
-    }
+      if (!cxx.is_open ())
+      {
+        cerr << "error: unable to open '" << cxx_path << "' in write mode"
+             << endl;
+        throw failed ();
+      }
 
-    // CXX
-    //
-    {
-      cxx_filter filt (cxx);
-      context ctx (cxx, unit, ops);
+      auto_rm.add (cxx_path);
 
-      cxx << "#include " << (br ? '<' : '"') << ip << hxx_name <<
-        (br ? '>' : '"') << endl
-          << endl;
+      // Print headers.
+      //
+      hxx << header;
+      if (inl)
+        ixx << header;
+      cxx << header;
 
-      if (!inl)
+      typedef
+        compiler::ostream_filter<compiler::cxx_indenter, char>
+        cxx_filter;
+
+      // Include settings.
+      //
+      bool br (ops.include_with_brackets ());
+      string ip (ops.include_prefix ());
+      string gp (ops.guard_prefix ());
+
+      if (!ip.empty () && ip[ip.size () - 1] != '/')
+        ip.append ("/");
+
+      if (!gp.empty () && gp[gp.size () - 1] != '_')
+        gp.append ("_");
+
+      // HXX
+      //
+      {
+        cxx_filter filt (hxx);
+        context ctx (hxx, unit, ops);
+
+        string guard (make_guard (gp + hxx_name, ctx));
+
+        hxx << "#ifndef " << guard << endl
+            << "#define " << guard << endl
+            << endl;
+
+        generate_runtime_header (ctx);
+        generate_header (ctx);
+
+        if (inl)
+        {
+          hxx << "#include " << (br ? '<' : '"') << ip << ixx_name <<
+            (br ? '>' : '"') << endl
+              << endl;
+        }
+
+        hxx << "#endif // " << guard << endl;
+      }
+
+      // IXX
+      //
+      if (inl)
+      {
+        cxx_filter filt (ixx);
+        context ctx (ixx, unit, ops);
         generate_runtime_inline (ctx);
-
-      generate_runtime_source (ctx);
-
-      if (!inl)
         generate_inline (ctx);
+      }
 
-      generate_source (ctx);
+      // CXX
+      //
+      {
+        cxx_filter filt (cxx);
+        context ctx (cxx, unit, ops);
+
+        cxx << "#include " << (br ? '<' : '"') << ip << hxx_name <<
+          (br ? '>' : '"') << endl
+            << endl;
+
+        if (!inl)
+          generate_runtime_inline (ctx);
+
+        generate_runtime_source (ctx);
+
+        if (!inl)
+          generate_inline (ctx);
+
+        generate_source (ctx);
+      }
+    }
+
+    if (gen_html)
+    {
+      ofstream html;
+
+      if (!ops.stdout ())
+      {
+        path html_path (base + ops.html_suffix ());
+
+        if (!ops.output_dir ().empty ())
+          html_path = path (ops.output_dir ()) / html_path;
+
+        html.open (html_path.string ().c_str ());
+
+        if (!html.is_open ())
+        {
+          cerr << "error: unable to open '" << html_path << "' in write mode"
+               << endl;
+          throw failed ();
+        }
+
+        auto_rm.add (html_path);
+      }
+
+      context ctx (ops.stdout () ? cout : html, unit, ops);
+      generate_html (ctx);
     }
 
     auto_rm.cancel ();

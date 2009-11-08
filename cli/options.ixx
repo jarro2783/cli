@@ -118,6 +118,30 @@ suppress_usage () const
   return suppress_usage_;
 }
 
+inline const bool& options::
+generate_cxx () const
+{
+  return generate_cxx_;
+}
+
+inline const bool& options::
+generate_man () const
+{
+  return generate_man_;
+}
+
+inline const bool& options::
+generate_html () const
+{
+  return generate_html_;
+}
+
+inline const bool& options::
+stdout () const
+{
+  return stdout_;
+}
+
 inline const std::size_t& options::
 option_length () const
 {
@@ -140,6 +164,12 @@ inline const std::string& options::
 cxx_suffix () const
 {
   return cxx_suffix_;
+}
+
+inline const std::string& options::
+html_suffix () const
+{
+  return html_suffix_;
 }
 
 inline const std::string& options::

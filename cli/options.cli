@@ -33,6 +33,26 @@ class options
     "Suppress generation of usage printing code."
   };
 
+  bool --generate-cxx
+  {
+    ""
+  };
+
+  bool --generate-man
+  {
+    ""
+  };
+
+  bool --generate-html
+  {
+    ""
+  };
+
+  bool --stdout
+  {
+    ""
+  };
+
   std::size_t --option-length = 0
   {
     "<len>",
@@ -58,6 +78,13 @@ class options
     "<suffix>",
     "Use <suffix> instead of the default '.cxx' to construct the name of
      the generated source file."
+  };
+
+  std::string --html-suffix = ".html"
+  {
+    "<suffix>",
+    "Use <suffix> instead of the default '.html' to construct the name of
+     the generated HTML file."
   };
 
   std::string --option-prefix = "-"

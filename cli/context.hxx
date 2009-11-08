@@ -63,12 +63,21 @@ public:
   string
   escape (string const&) const;
 
-  // Format the documentation string.
+  // Translate and format the documentation string. Translate converts
+  // the <arg>-style constructs to \i{arg}. Format converts the string
+  // to the output format.
   //
   enum output_type
   {
-    ot_plain
+    ot_plain,
+    ot_html
   };
+
+  static string
+  translate_arg (string const&, std::set<string>&);
+
+  static string
+  translate (string const&, std::set<string> const&);
 
   static string
   format (string const&, output_type);
