@@ -10,26 +10,93 @@
 include <map>;
 include <string>;
 include <vector>;
+include <cstddef>;
 
 class options
 {
-  bool --help;
-  bool --version;
+  bool --help {"Print usage information and exit."};
+  bool --version {"Print version and exit."};
 
-  std::string --output-dir | -o;
+  std::string --output-dir | -o
+  {
+    "<dir>",
+    "Write generated files to <dir>."
+  };
 
-  bool --suppress-inline;
+  bool --suppress-inline
+  {
+    "Generate all functions non-inline."
+  };
 
-  std::string --hxx-suffix = ".hxx";
-  std::string --ixx-suffix = ".ixx";
-  std::string --cxx-suffix = ".cxx";
+  bool --suppress-usage
+  {
+    "Suppress generation of usage printing code."
+  };
 
-  std::string --option-prefix = "-";
-  std::string --option-separator = "--";
+  std::size_t --option-length = 0
+  {
+    "<len>",
+    "Indent option description <len> characters when printing usage."
+  };
 
-  bool --include-with-brackets;
-  std::string --include-prefix;
-  std::string --guard-prefix;
+  std::string --hxx-suffix = ".hxx"
+  {
+    "<suffix>",
+    "Use <suffix> instead of the default '.hxx' to construct the name of
+     the generated header file."
+  };
 
-  std::map<std::string, std::string> --reserved-name;
+  std::string --ixx-suffix = ".ixx"
+  {
+    "<suffix>",
+    "Use <suffix> instead of the default '.ixx' to construct the name of
+     the generated inline file."
+  };
+
+  std::string --cxx-suffix = ".cxx"
+  {
+    "<suffix>",
+    "Use <suffix> instead of the default '.cxx' to construct the name of
+     the generated source file."
+  };
+
+  std::string --option-prefix = "-"
+  {
+    "<prefix>",
+    "Use <prefix> instead of the default '-' as an option prefix."
+  };
+
+  std::string --option-separator = "--"
+  {
+    "<sep>",
+    "Use <sep> instead of the default '--' as an optional separator between
+     options and arguments."
+  };
+
+  bool --include-with-brackets
+  {
+    "Use angle brackets (<>) instead of quotes (\"\") in generated #include
+     directives."
+  };
+
+  std::string --include-prefix
+  {
+    "<prefix>",
+    "Add <prefix> to generated #include directive paths."
+  };
+
+  std::string --guard-prefix
+  {
+    "<prefix>",
+    "Add <prefix> to generated header inclusion guards."
+  };
+
+  std::map<std::string, std::string> --reserved-name
+  {
+    "<name>=<rep>",
+    "Add <name> to the list of names that should not be used as identifiers.
+     The name can optionally be followed by '=' and the <rep> replacement
+     name that should be used instead.",
+    ""
+  };
 };

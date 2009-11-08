@@ -20,6 +20,8 @@
 
 using std::endl;
 
+class generation_failed {};
+
 class context
 {
 public:
@@ -35,6 +37,8 @@ public:
   std::ostream& os;
   semantics::cli_unit& unit;
   options_type const& options;
+
+  bool usage;
 
   string const& inl;
   string const& opt_prefix;
@@ -58,6 +62,16 @@ public:
   //
   string
   escape (string const&) const;
+
+  // Format the documentation string.
+  //
+  enum output_type
+  {
+    ot_plain
+  };
+
+  static string
+  format (string const&, output_type);
 
 public:
   static string const&

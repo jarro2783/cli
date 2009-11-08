@@ -3,6 +3,8 @@
 // copyright : Copyright (c) 2009 Code Synthesis Tools CC
 // license   : MIT; see accompanying LICENSE file
 
+#include <stack>
+
 #include "context.hxx"
 
 using namespace std;
@@ -90,11 +92,14 @@ namespace
 }
 
 context::
-context (ostream& os_, semantics::cli_unit& unit_, options_type const& ops)
+context (ostream& os_,
+         semantics::cli_unit& unit_,
+         options_type const& ops)
     : data_ (new (shared) data),
       os (os_),
       unit (unit_),
       options (ops),
+      usage (!options.suppress_usage ()),
       inl (data_->inl_),
       opt_prefix (options.option_prefix ()),
       opt_sep (options.option_separator ()),
@@ -114,6 +119,7 @@ context (context& c)
       os (c.os),
       unit (c.unit),
       options (c.options),
+      usage (c.usage),
       inl (c.inl),
       opt_prefix (c.opt_prefix),
       opt_sep (c.opt_sep),
@@ -187,6 +193,194 @@ escape (string const& name) const
       else
         r += L'_';
     }
+  }
+
+  return r;
+}
+
+string context::
+format (string const& s, output_type ot)
+{
+  string r;
+  r.reserve (s.size ());
+
+  bool escape (false);
+  std::stack<unsigned char> blocks; // Bit 0: code; 1: italic; 2: bold.
+
+  for (size_t i (0), n (s.size ()); i < n; ++i)
+  {
+    if (escape)
+    {
+      switch (s[i])
+      {
+      case '\\':
+        {
+          r += '\\';
+          break;
+        }
+      case '"':
+        {
+          r += '"';
+          break;
+        }
+      case '\'':
+        {
+          r += '\'';
+          break;
+        }
+      case 'c':
+        {
+          unsigned char b (1);
+          size_t j (i + 1);
+
+          if (j < n)
+          {
+            if (s[j] == 'i')
+            {
+              b |= 2;
+              j++;
+
+              if (j < n && s[j] == 'b')
+              {
+                b |= 4;
+                j++;
+              }
+            }
+            else if (s[j] == 'b')
+            {
+              b |= 4;
+              j++;
+
+              if (j < n && s[j] == 'i')
+              {
+                b |= 2;
+                j++;
+              }
+            }
+          }
+
+          if (j < n && s[j] == '{')
+          {
+            i = j;
+            blocks.push (b);
+            break;
+          }
+
+          r += 'c';
+          break;
+        }
+      case 'i':
+        {
+          unsigned char b (2);
+          size_t j (i + 1);
+
+          if (j < n)
+          {
+            if (s[j] == 'c')
+            {
+              b |= 1;
+              j++;
+
+              if (j < n && s[j] == 'b')
+              {
+                b |= 4;
+                j++;
+              }
+            }
+            else if (s[j] == 'b')
+            {
+              b |= 4;
+              j++;
+
+              if (j < n && s[j] == 'c')
+              {
+                b |= 1;
+                j++;
+              }
+            }
+          }
+
+          if (j < n && s[j] == '{')
+          {
+            i = j;
+            blocks.push (b);
+            break;
+          }
+
+          r += 'i';
+          break;
+        }
+      case 'b':
+        {
+          unsigned char b (4);
+          size_t j (i + 1);
+
+          if (j < n)
+          {
+            if (s[j] == 'c')
+            {
+              b |= 1;
+              j++;
+
+              if (j < n && s[j] == 'i')
+              {
+                b |= 2;
+                j++;
+              }
+            }
+            else if (s[j] == 'i')
+            {
+              b |= 2;
+              j++;
+
+              if (j < n && s[j] == 'c')
+              {
+                b |= 1;
+                j++;
+              }
+            }
+          }
+
+          if (j < n && s[j] == '{')
+          {
+            i = j;
+            blocks.push (b);
+            break;
+          }
+
+          r += 'b';
+          break;
+        }
+      case '}':
+        {
+          r += '}';
+          break;
+        }
+      }
+
+      escape = false;
+    }
+    else if (s[i] == '\\')
+    {
+      escape = true;
+    }
+    else if (s[i] == '\n')
+    {
+      switch (ot)
+      {
+      case ot_plain:
+        {
+          r += '\n';
+          break;
+        }
+      }
+    }
+    else if (!blocks.empty () && s[i] == '}')
+    {
+      blocks.pop ();
+    }
+    else
+      r += s[i];
   }
 
   return r;

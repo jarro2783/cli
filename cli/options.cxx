@@ -142,7 +142,7 @@ namespace cli
     parse (std::vector<X>& v, char** argv, int n)
     {
       X x;
-      int i (parser<X>::parse (x, argv, n));
+      int i = parser<X>::parse (x, argv, n);
       v.push_back (x);
       return i;
     }
@@ -155,7 +155,7 @@ namespace cli
     parse (std::set<X>& s, char** argv, int n)
     {
       X x;
-      int i (parser<X>::parse (x, argv, n));
+      int i = parser<X>::parse (x, argv, n);
       s.insert (x);
       return i;
     }
@@ -170,7 +170,7 @@ namespace cli
       if (n > 1)
       {
         std::string s (argv[1]);
-        std::string::size_type p (s.find ('='));
+        std::string::size_type p = s.find ('=');
 
         if (p == std::string::npos)
         {
@@ -242,6 +242,8 @@ options (int argc,
   version_ (),
   output_dir_ (),
   suppress_inline_ (),
+  suppress_usage_ (),
+  option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
@@ -265,6 +267,8 @@ options (int start,
   version_ (),
   output_dir_ (),
   suppress_inline_ (),
+  suppress_usage_ (),
+  option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
@@ -288,6 +292,8 @@ options (int argc,
   version_ (),
   output_dir_ (),
   suppress_inline_ (),
+  suppress_usage_ (),
+  option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
@@ -312,6 +318,8 @@ options (int start,
   version_ (),
   output_dir_ (),
   suppress_inline_ (),
+  suppress_usage_ (),
+  option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
@@ -325,6 +333,50 @@ options (int start,
   end = _parse (start, argc, argv, opt, arg);
 }
 
+void options::
+print_usage (::std::ostream& os)
+{
+  os << "--help                       Print usage information and exit." << ::std::endl;
+
+  os << "--version                    Print version and exit." << ::std::endl;
+
+  os << "--output-dir|-o <dir>        Write generated files to <dir>." << ::std::endl;
+
+  os << "--suppress-inline            Generate all functions non-inline." << ::std::endl;
+
+  os << "--suppress-usage             Suppress generation of usage printing code." << ::std::endl;
+
+  os << "--option-length <len>        Indent option description <len> characters when" << ::std::endl
+     << "                             printing usage." << ::std::endl;
+
+  os << "--hxx-suffix <suffix>        Use <suffix> instead of the default '.hxx' to" << ::std::endl
+     << "                             construct the name of the generated header file." << ::std::endl;
+
+  os << "--ixx-suffix <suffix>        Use <suffix> instead of the default '.ixx' to" << ::std::endl
+     << "                             construct the name of the generated inline file." << ::std::endl;
+
+  os << "--cxx-suffix <suffix>        Use <suffix> instead of the default '.cxx' to" << ::std::endl
+     << "                             construct the name of the generated source file." << ::std::endl;
+
+  os << "--option-prefix <prefix>     Use <prefix> instead of the default '-' as an" << ::std::endl
+     << "                             option prefix." << ::std::endl;
+
+  os << "--option-separator <sep>     Use <sep> instead of the default '--' as an" << ::std::endl
+     << "                             optional separator between options and arguments." << ::std::endl;
+
+  os << "--include-with-brackets      Use angle brackets (<>) instead of quotes (\"\") in" << ::std::endl
+     << "                             generated #include directives." << ::std::endl;
+
+  os << "--include-prefix <prefix>    Add <prefix> to generated #include directive paths." << ::std::endl;
+
+  os << "--guard-prefix <prefix>      Add <prefix> to generated header inclusion guards." << ::std::endl;
+
+  os << "--reserved-name <name>=<rep> Add <name> to the list of names that should not be" << ::std::endl
+     << "                             used as identifiers. The name can optionally be" << ::std::endl
+     << "                             followed by '=' and the <rep> replacement name that" << ::std::endl
+     << "                             should be used instead." << ::std::endl;
+}
+
 typedef
 std::map<std::string, int (*) (options&, char**, int)>
 _cli_options_map;
@@ -336,33 +388,37 @@ struct _cli_options_map_init
   _cli_options_map_init ()
   {
     _cli_options_map_["--help"] = 
-    &::cli::thunk<options, bool, &options::help_>;
+    &::cli::thunk< options, bool, &options::help_ >;
     _cli_options_map_["--version"] = 
-    &::cli::thunk<options, bool, &options::version_>;
+    &::cli::thunk< options, bool, &options::version_ >;
     _cli_options_map_["--output-dir"] = 
-    &::cli::thunk<options, std::string, &options::output_dir_>;
+    &::cli::thunk< options, std::string, &options::output_dir_ >;
     _cli_options_map_["-o"] = 
-    &::cli::thunk<options, std::string, &options::output_dir_>;
+    &::cli::thunk< options, std::string, &options::output_dir_ >;
     _cli_options_map_["--suppress-inline"] = 
-    &::cli::thunk<options, bool, &options::suppress_inline_>;
+    &::cli::thunk< options, bool, &options::suppress_inline_ >;
+    _cli_options_map_["--suppress-usage"] = 
+    &::cli::thunk< options, bool, &options::suppress_usage_ >;
+    _cli_options_map_["--option-length"] = 
+    &::cli::thunk< options, std::size_t, &options::option_length_ >;
     _cli_options_map_["--hxx-suffix"] = 
-    &::cli::thunk<options, std::string, &options::hxx_suffix_>;
+    &::cli::thunk< options, std::string, &options::hxx_suffix_ >;
     _cli_options_map_["--ixx-suffix"] = 
-    &::cli::thunk<options, std::string, &options::ixx_suffix_>;
+    &::cli::thunk< options, std::string, &options::ixx_suffix_ >;
     _cli_options_map_["--cxx-suffix"] = 
-    &::cli::thunk<options, std::string, &options::cxx_suffix_>;
+    &::cli::thunk< options, std::string, &options::cxx_suffix_ >;
     _cli_options_map_["--option-prefix"] = 
-    &::cli::thunk<options, std::string, &options::option_prefix_>;
+    &::cli::thunk< options, std::string, &options::option_prefix_ >;
     _cli_options_map_["--option-separator"] = 
-    &::cli::thunk<options, std::string, &options::option_separator_>;
+    &::cli::thunk< options, std::string, &options::option_separator_ >;
     _cli_options_map_["--include-with-brackets"] = 
-    &::cli::thunk<options, bool, &options::include_with_brackets_>;
+    &::cli::thunk< options, bool, &options::include_with_brackets_ >;
     _cli_options_map_["--include-prefix"] = 
-    &::cli::thunk<options, std::string, &options::include_prefix_>;
+    &::cli::thunk< options, std::string, &options::include_prefix_ >;
     _cli_options_map_["--guard-prefix"] = 
-    &::cli::thunk<options, std::string, &options::guard_prefix_>;
+    &::cli::thunk< options, std::string, &options::guard_prefix_ >;
     _cli_options_map_["--reserved-name"] = 
-    &::cli::thunk<options, std::map<std::string, std::string>, &options::reserved_name_>;
+    &::cli::thunk< options, std::map<std::string, std::string>, &options::reserved_name_ >;
   }
 } _cli_options_map_init_;
 
@@ -373,11 +429,11 @@ _parse (int start,
         ::cli::unknown_mode opt_mode,
         ::cli::unknown_mode arg_mode)
 {
-  bool opt (true);
+  bool opt = true;
 
   for (; start < argc;)
   {
-    const char* s (argv[start]);
+    const char* s = argv[start];
 
     if (std::strcmp (s, "--") == 0)
     {

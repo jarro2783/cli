@@ -400,7 +400,7 @@ char_literal (xchar c)
     // them with \', as in '\\'.
     //
     if (c == '\\' && p == '\\')
-      p = '.';
+      p = '\0';
     else
       p = c;
   }
@@ -439,7 +439,7 @@ string lexer::
 string_literal_trailer ()
 {
   string r;
-  char p ('"');
+  char p ('\0');
 
   while (true)
   {
@@ -458,10 +458,10 @@ string_literal_trailer ()
       break;
 
     // We need to keep track of \\ escapings so we don't confuse
-    // them with \', as in '\\'.
+    // them with \", as in "\\".
     //
     if (c == '\\' && p == '\\')
-      p = '.';
+      p = '\0';
     else
       p = c;
   }

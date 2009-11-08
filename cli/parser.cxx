@@ -410,11 +410,22 @@ option_def (token& t)
           //
           string r;
           string const& l (t.literal ());
+          char p ('\0');
 
           for (size_t i (0), n (l.size ()); i < n; ++i)
           {
-            if (l[i] != '"' || (i != 0 && l[i - 1] == '\\'))
-              r += l[i];
+            if (l[i] == '"' && p != '\\')
+              continue;
+
+            // We need to keep track of \\ escapings so we don't confuse
+            // them with \", as in "\\".
+            //
+            if (l[i] == '\\' && p == '\\')
+              p = '\0';
+            else
+              p = l[i];
+
+            r += l[i];
           }
 
           nl.push_back (r);
@@ -549,16 +560,81 @@ option_def (token& t)
       {
         // Get rid of '"'.
         //
-        string r;
+        string t1, t2;
         string const& l (t.literal ());
+        char p ('\0');
 
         for (size_t i (0), n (l.size ()); i < n; ++i)
         {
-          if (l[i] != '"' || (i != 0 && l[i - 1] == '\\'))
-            r += l[i];
+          if (l[i] == '"' && p != '\\')
+            continue;
+
+          // We need to keep track of \\ escapings so we don't confuse
+          // them with \", as in "\\".
+          //
+          if (l[i] == '\\' && p == '\\')
+            p = '\0';
+          else
+            p = l[i];
+
+          t1 += l[i];
         }
 
-        o->doc ().push_back (r);
+        // Get rid of leading and trailing spaces in each line.
+        //
+        if (t1.size () != 0)
+        {
+          bool more (true);
+          size_t b (0), e;
+
+          while (more)
+          {
+            e = t1.find ('\n', b);
+
+            if (e == string::npos)
+            {
+              e = t1.size ();
+              more = false;
+            }
+
+            while (b < e && (t1[b] == 0x20 || t1[b] == 0x0D || t1[b] == 0x09))
+              ++b;
+
+            --e;
+
+            while (e > b && (t1[e] == 0x20 || t1[e] == 0x0D || t1[e] == 0x09))
+              --e;
+
+            if (b <= e)
+              t2.append (t1, b, e - b + 1);
+
+            if (more)
+            {
+              t2 += '\n';
+              b = e + 2;
+            }
+          }
+        }
+
+        // Replace every single newlines with single space and all
+        // multiple new lines (paragraph marker) with a single newline.
+        //
+        t1.clear ();
+        for (size_t i (0), n (t2.size ()); i < n; ++i)
+        {
+          if (t2[i] == '\n')
+          {
+            size_t j (i);
+            for (; i + 1 < n && t2[i + 1] == '\n'; ++i) ;
+
+            if (j != 0 && i + 1 != n) // Strip leading and trailing newlines.
+              t1 += i != j ? '\n' : ' ';
+          }
+          else
+            t1 += t2[i];
+        }
+
+        o->doc ().push_back (t1);
       }
 
       t = lexer_->next ();

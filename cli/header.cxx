@@ -100,10 +100,20 @@ namespace
       //
       os << "// Option accessors." << endl
          << "//" << endl
-         << "public:" << endl
          << endl;
 
       names (c, names_option_);
+
+      // usage
+      //
+      if (usage)
+      {
+        os << "// Print usage information." << endl
+           << "//" << endl
+           << "static void" << endl
+           << "print_usage (::std::ostream&);"
+           << endl;
+      }
 
       // _parse()
       //

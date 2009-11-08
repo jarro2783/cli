@@ -31,64 +31,6 @@ using namespace cutl;
 
 using semantics::path;
 
-void generator::
-usage ()
-{
-  ostream& e (cerr);
-
-  e << "--output-dir | -o <dir>" << endl
-    << " Write generated files to <dir>." << endl;
-
-  e << "--suppress-inline" << endl
-    << " Generate all functions non-inline." << endl;
-
-  e << "--hxx-suffix <suffix>" << endl
-    << " Use <suffix> instead of the default '.hxx' to\n"
-    << " construct the name of the generated header file."
-    << endl;
-
-  e << "--ixx-suffix <suffix>" << endl
-    << " Use <suffix> instead of the default '.ixx' to\n"
-    << " construct the name of the generated inline file."
-    << endl;
-
-  e << "--cxx-suffix <suffix>" << endl
-    << " Use <suffix> instead of the default '.cxx' to\n"
-    << " construct the name of the generated source file."
-    << endl;
-
-  e << "--option-prefix <prefix>" << endl
-    << " Use <prefix> instead of the default '-' as an\n"
-    << " option prefix."
-    << endl;
-
-  e << "--option-separator <sep>" << endl
-    << " Use <sep> instead of the default '--' as an\n"
-    << " optional separator between options and arguments."
-    << endl;
-
-  e << "--include-with-brackets" << endl
-    << " Use angle brackets (<>) instead of quotes (\"\") in\n"
-    << " generated #include directives."
-    << endl;
-
-  e << "--include-prefix <prefix>" << endl
-    << " Add <prefix> to generated #include directive\n"
-    << " paths."
-    << endl;
-
-  e << "--guard-prefix <prefix>" << endl
-    << " Add <prefix> to generated header inclusion guards."
-    << endl;
-
-  e << "--reserved-name <name>" << endl
-    << " Add <name> to the list of names that should not\n"
-    << " be used as identifiers. The name can optionally\n"
-    << " be followed by '=' and the replacement name that\n"
-    << " should be used instead."
-    << endl;
-}
-
 namespace
 {
   static char const header[] =
@@ -284,6 +226,12 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
     }
 
     auto_rm.cancel ();
+  }
+  catch (const generation_failed&)
+  {
+    // Code generation failed. Diagnostics has already been issued.
+    //
+    throw failed ();
   }
   catch (semantics::invalid_path const& e)
   {

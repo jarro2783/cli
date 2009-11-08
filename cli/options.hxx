@@ -141,6 +141,8 @@ namespace cli
 
 #include <vector>
 
+#include <cstddef>
+
 class options
 {
   public:
@@ -171,46 +173,56 @@ class options
 
   // Option accessors.
   //
-  public:
 
-  bool const&
+  const bool&
   help () const;
 
-  bool const&
+  const bool&
   version () const;
 
-  std::string const&
+  const std::string&
   output_dir () const;
 
-  bool const&
+  const bool&
   suppress_inline () const;
 
-  std::string const&
+  const bool&
+  suppress_usage () const;
+
+  const std::size_t&
+  option_length () const;
+
+  const std::string&
   hxx_suffix () const;
 
-  std::string const&
+  const std::string&
   ixx_suffix () const;
 
-  std::string const&
+  const std::string&
   cxx_suffix () const;
 
-  std::string const&
+  const std::string&
   option_prefix () const;
 
-  std::string const&
+  const std::string&
   option_separator () const;
 
-  bool const&
+  const bool&
   include_with_brackets () const;
 
-  std::string const&
+  const std::string&
   include_prefix () const;
 
-  std::string const&
+  const std::string&
   guard_prefix () const;
 
-  std::map<std::string, std::string> const&
+  const std::map<std::string, std::string>&
   reserved_name () const;
+
+  // Print usage information.
+  //
+  static void
+  print_usage (::std::ostream&);
 
   private:
   int
@@ -225,6 +237,8 @@ class options
   bool version_;
   std::string output_dir_;
   bool suppress_inline_;
+  bool suppress_usage_;
+  std::size_t option_length_;
   std::string hxx_suffix_;
   std::string ixx_suffix_;
   std::string cxx_suffix_;

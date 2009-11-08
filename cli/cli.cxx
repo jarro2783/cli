@@ -9,7 +9,6 @@
 
 #include <cutl/compiler/code-stream.hxx>
 
-#include "usage.hxx"
 #include "options.hxx"
 #include "parser.hxx"
 #include "generator.hxx"
@@ -48,17 +47,7 @@ int main (int argc, char* argv[])
         << endl
         << "Options:" << endl;
 
-      compiler::ostream_filter<usage_indenter, char> filt (e);
-
-      e << "--help" << endl
-        << " Print usage information and exit."
-        << endl;
-
-      e << "--version" << endl
-        << " Print version and exit."
-        << endl;
-
-      generator::usage ();
+      options::print_usage (e);
 
       return 0;
     }

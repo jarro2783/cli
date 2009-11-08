@@ -88,79 +88,91 @@ namespace cli
 // options
 //
 
-inline bool const& options::
+inline const bool& options::
 help () const
 {
   return help_;
 }
 
-inline bool const& options::
+inline const bool& options::
 version () const
 {
   return version_;
 }
 
-inline std::string const& options::
+inline const std::string& options::
 output_dir () const
 {
   return output_dir_;
 }
 
-inline bool const& options::
+inline const bool& options::
 suppress_inline () const
 {
   return suppress_inline_;
 }
 
-inline std::string const& options::
+inline const bool& options::
+suppress_usage () const
+{
+  return suppress_usage_;
+}
+
+inline const std::size_t& options::
+option_length () const
+{
+  return option_length_;
+}
+
+inline const std::string& options::
 hxx_suffix () const
 {
   return hxx_suffix_;
 }
 
-inline std::string const& options::
+inline const std::string& options::
 ixx_suffix () const
 {
   return ixx_suffix_;
 }
 
-inline std::string const& options::
+inline const std::string& options::
 cxx_suffix () const
 {
   return cxx_suffix_;
 }
 
-inline std::string const& options::
+inline const std::string& options::
 option_prefix () const
 {
   return option_prefix_;
 }
 
-inline std::string const& options::
+inline const std::string& options::
 option_separator () const
 {
   return option_separator_;
 }
 
-inline bool const& options::
+inline const bool& options::
 include_with_brackets () const
 {
   return include_with_brackets_;
 }
 
-inline std::string const& options::
+inline const std::string& options::
 include_prefix () const
 {
   return include_prefix_;
 }
 
-inline std::string const& options::
+inline const std::string& options::
 guard_prefix () const
 {
   return guard_prefix_;
 }
 
-inline std::map<std::string, std::string> const& options::
+inline const std::map<std::string, std::string>& options::
 reserved_name () const
 {
   return reserved_name_;
