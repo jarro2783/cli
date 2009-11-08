@@ -7,3 +7,7 @@
 "a\111";
 "abc""def";
 "abc"   "def";
+"abc
+  def
+
+     xyz";

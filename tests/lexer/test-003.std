@@ -16,4 +16,9 @@
 ;
 "abc""def"
 ;
+"abc
+  def
+
+     xyz"
+;
 <EOS>
