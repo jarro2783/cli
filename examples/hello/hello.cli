@@ -2,7 +2,17 @@ include <string>;
 
 class options
 {
-  bool --help;
-  std::string --greeting = "Hello";
-  unsigned int --exclamations = 1;
+  bool --help {"Print usage information and exit."};
+
+  std::string --greeting = "Hello"
+  {
+    "<text>",
+    "Use <text> as a greeting phrase instead of the default \"Hello\"."
+  };
+
+  unsigned int --exclamations = 1
+  {
+    "<num>",
+    "Print <num> exclamation marks instead of 1 by default."
+  };
 };

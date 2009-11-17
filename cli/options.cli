@@ -20,110 +20,170 @@ class options
   std::string --output-dir | -o
   {
     "<dir>",
-    "Write generated files to <dir>."
+    "Write the generated files to <dir> instead of the current directory."
   };
 
   bool --suppress-inline
   {
-    "Generate all functions non-inline."
+    "Generate all functions non-inline. By default simple functions are
+     made inline. This option suppresses creation of the inline file."
   };
 
   bool --suppress-usage
   {
-    "Suppress generation of usage printing code."
+    "Suppress the generation of the usage printing code."
   };
 
-  bool --generate-cxx
+  bool --long-usage
   {
-    ""
-  };
-
-  bool --generate-man
-  {
-    ""
-  };
-
-  bool --generate-html
-  {
-    ""
-  };
-
-  bool --stdout
-  {
-    ""
+    "If no short documentation string is provided, use the complete
+     long documentation string in usage. By default, in this situation
+     only the first sentence from the long string is used."
   };
 
   std::size_t --option-length = 0
   {
     "<len>",
-    "Indent option description <len> characters when printing usage."
+    "Indent option descriptions <len> characters when printing usage. This is
+     useful when you have multiple options classes, potentially in separate
+     files, and would like their usage to have the same indentation level."
+  };
+
+  bool --generate-cxx
+  {
+    "Generate C++ code. If neither \cb{--generate-man} nor \cb{--generate-html}
+     is specified, this mode is assumed by default."
+  };
+
+  bool --generate-man
+  {
+    "Generate documentation in the man page format."
+  };
+
+  bool --generate-html
+  {
+    "Generate documentation in the HTML format."
+  };
+
+  std::string --man-prologue
+  {
+    "<file>",
+    "Insert the content of <file> at the beginning of the man page file."
+  };
+
+  std::string --man-epilogue
+  {
+    "<file>",
+    "Insert the content of <file> at the end of the man page file."
+  };
+
+  std::string --html-prologue
+  {
+    "<file>",
+    "Insert the content of <file> at the beginning of the HTML file."
+  };
+
+  std::string --html-epilogue
+  {
+    "<file>",
+    "Insert the content of <file> at the end of the HTML file."
+  };
+
+  std::string --class
+  {
+    "<fq-name>",
+    "Generate the man page or HTML documentation only for the <fq-name> options
+     class. The <fq-name> name should be a fully-qualified options class name,
+     for example, \cb{app::options}. This functionality is useful if you need
+     to insert custom documentation between options belonging to different
+     classes."
+  };
+
+  bool --stdout
+  {
+    "Write output to STDOUT instead of a file. This option is not valid
+     when generating C++ code and is normally used to combine generated
+     documentation for several option classes in a single file."
   };
 
   std::string --hxx-suffix = ".hxx"
   {
     "<suffix>",
-    "Use <suffix> instead of the default '.hxx' to construct the name of
+    "Use <suffix> instead of the default \cb{.hxx} to construct the name of
      the generated header file."
   };
 
   std::string --ixx-suffix = ".ixx"
   {
     "<suffix>",
-    "Use <suffix> instead of the default '.ixx' to construct the name of
+    "Use <suffix> instead of the default \cb{.ixx} to construct the name of
      the generated inline file."
   };
 
   std::string --cxx-suffix = ".cxx"
   {
     "<suffix>",
-    "Use <suffix> instead of the default '.cxx' to construct the name of
+    "Use <suffix> instead of the default \cb{.cxx} to construct the name of
      the generated source file."
+  };
+
+  std::string --man-suffix = ".1"
+  {
+    "<suffix>",
+    "Use <suffix> instead of the default \cb{.1} to construct the name of
+     the generated man page file."
   };
 
   std::string --html-suffix = ".html"
   {
     "<suffix>",
-    "Use <suffix> instead of the default '.html' to construct the name of
-     the generated HTML file."
+    "Use <suffix> instead of the default \cb{.html} to construct the name
+     of the generated HTML file."
   };
 
   std::string --option-prefix = "-"
   {
     "<prefix>",
-    "Use <prefix> instead of the default '-' as an option prefix."
+    "Use <prefix> instead of the default \cb{-} as an option prefix. Unknown
+     command line arguments that start with this prefix are treated as unknown
+     options. If you set the option prefix to the empty value, then all the
+     unknown command line arguments will be treated as program arguments."
   };
 
   std::string --option-separator = "--"
   {
     "<sep>",
-    "Use <sep> instead of the default '--' as an optional separator between
-     options and arguments."
+    "Use <sep> instead of the default \cb{--} as an optional separator between
+     options and arguments. All the command line arguments that are parsed
+     after this separator are treated as program arguments. Set the option
+     separator to the empty value if you don't want this functionality."
   };
 
   bool --include-with-brackets
   {
-    "Use angle brackets (<>) instead of quotes (\"\") in generated #include
-     directives."
+    "Use angle brackets (<>) instead of quotes (\"\") in the generated
+     \cb{#include} directives."
   };
 
   std::string --include-prefix
   {
     "<prefix>",
-    "Add <prefix> to generated #include directive paths."
+    "Add <prefix> to the generated \cb{#include} directive paths."
   };
 
   std::string --guard-prefix
   {
     "<prefix>",
-    "Add <prefix> to generated header inclusion guards."
+    "Add <prefix> to the generated header inclusion guards. The prefix is
+     transformed to upper case and characters that are illegal in a
+     preprocessor macro name are replaced with underscores."
   };
 
   std::map<std::string, std::string> --reserved-name
   {
     "<name>=<rep>",
-    "Add <name> to the list of names that should not be used as identifiers.
-     The name can optionally be followed by '=' and the <rep> replacement
-     name that should be used instead.",
-    ""
+    "Add <name> with an optional <rep> replacement to the list of names
+     that should not be used as identifiers. If provided, the replacement
+     name is used instead. All C++ keywords are already in this list."
   };
 };

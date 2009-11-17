@@ -125,6 +125,17 @@
     padding           : 0em 0 0em 0.7em;
     text-align        : left;
   }
+
+  /* Sample options documentation. */
+  .options dt {
+    padding-top      : 0.4em;
+  }
+
+  .options dd {
+    padding-top      : 0.1em;
+    padding-bottom   : 0.4em;
+    padding-left     : 1.4em;
+  }
 </style>
 
 
@@ -168,6 +179,7 @@
           <tr><th>2.2</th><td><a href="#2.2">Translating CLI Definitions to C++</a></td></tr>
           <tr><th>2.3</th><td><a href="#2.3">Implementing Application Logic</a></td></tr>
           <tr><th>2.4</th><td><a href="#2.4">Compiling and Running</a></td></tr>
+	  <tr><th>2.5</th><td><a href="#2.5">Adding Documentation</a></td></tr>
         </table>
       </td>
     </tr>
@@ -177,8 +189,9 @@
         <table class="toc">
           <tr><th>3.1</th><td><a href="#3.1">Options Class Definition</a></td></tr>
           <tr><th>3.2</th><td><a href="#3.2">Option Definition</a></td></tr>
-          <tr><th>3.3</th><td><a href="#3.3">Include Directive</a></td></tr>
-          <tr><th>3.4</th><td><a href="#3.4">Namespace Definition</a></td></tr>
+	  <tr><th>3.3</th><td><a href="#3.3">Option Documentation</a></td></tr>
+          <tr><th>3.4</th><td><a href="#3.4">Include Directive</a></td></tr>
+          <tr><th>3.5</th><td><a href="#3.5">Namespace Definition</a></td></tr>
         </table>
       </td>
     </tr>
@@ -332,10 +345,9 @@ using namespace std;
 void
 usage ()
 {
-  cerr &lt;&lt; "usage: driver &lt;options> &lt;names>" &lt;&lt; endl
-       &lt;&lt; "  [--help]" &lt;&lt; endl
-       &lt;&lt; "  [--greeting &lt;string>]" &lt;&lt; endl
-       &lt;&lt; "  [--exclamations &lt;integer>]" &lt;&lt; endl;
+  cerr &lt;&lt; "usage: driver [options] &lt;names>" &lt;&lt; endl
+       &lt;&lt; "options:" &lt;&lt; endl;
+  options::print_usage (cerr);
 }
 
 int
@@ -411,19 +423,110 @@ Hi, Jane!!!
   <pre class="terminal">
 $ ./driver -n 3 Jane
 unknown option '-n'
-usage: driver &lt;options> &lt;names>
-  [--help]
-  [--greeting &lt;string>]
-  [--exclamations &lt;integer>]
+usage: driver [options] &lt;names>
+options:
+--help
+--greeting &lt;arg>
+--exclamations &lt;arg>
 
 $ ./driver --exclamations abc Jane
 invalid value 'abc' for option '--exclamations'
-usage: driver &lt;options> &lt;names>
-  [--help]
-  [--greeting &lt;string>]
-  [--exclamations &lt;integer>]
+usage: driver [options] &lt;names>
+options:
+--help
+--greeting &lt;arg>
+--exclamations &lt;arg>
   </pre>
 
+  <h2><a name="2.5">2.5 Adding Documentation</a></h2>
+
+  <p>As we have seen in the previous sections, the <code>options</code>
+     C++ class provides the <code>print_usage()</code> function which we
+     can use to display the application usage information. Right now this
+     information is very basic and does not include any description of
+     the purpose of each option:</p>
+
+  <pre class="terminal">
+$ ./driver --help
+usage: driver [options] &lt;names>
+options:
+--help
+--greeting &lt;arg>
+--exclamations &lt;arg>
+  </pre>
+
+  <p>To make the usage information more descriptive we can document each
+     option in the command line interface definition. This information can
+     also be used to automatically generate program documentation in various
+     formats, such as HTML and man page. For example:</p>
+
+  <pre>
+include &lt;string>;
+
+class options
+{
+  bool --help {"Print usage information and exit."};
+
+  std::string --greeting = "Hello"
+  {
+    "&lt;text>",
+    "Use &lt;text> as a greeting phrase instead of the default \"Hello\"."
+  };
+
+  unsigned int --exclamations = 1
+  {
+    "&lt;num>",
+    "Print &lt;num> exclamation marks instead of 1 by default."
+  };
+};
+  </pre>
+
+  <p>If we now save this updated command line interface to
+     <code>hello.cli</code> and recompile our application, the usage
+     information printed by the program will look like this:</p>
+
+  <pre class="terminal">
+usage: driver [options] &lt;names>
+options:
+--help               Print usage information and exit.
+--greeting &lt;text>    Use &lt;text> as a greeting phrase instead of the
+                     default "Hello".
+--exclamations &lt;num> Print &lt;num> exclamation marks instead of 1 by
+                     default.
+  </pre>
+
+  <p>We can also generate the program documentation in the HTML
+     (<code>--generate-html</code> CLI option) and man page
+     (<code>--generate-man</code> CLI option) formats. For example:</p>
+
+  <pre class="terminal">
+$ cli --generate-html hello.cli
+  </pre>
+
+  <p>The resulting <code>hello.html</code> file contains the following
+     documentation:</p>
+
+<dl class="options">
+  <dt><code><b>--help</b></code></dt>
+  <dd>Print usage information and exit.</dd>
+
+  <dt><code><b>--greeting</b></code> <i>text</i></dt>
+  <dd>Use <i>text</i> as a greeting phrase instead of the default "Hello".</dd>
+
+  <dt><code><b>--exclamations</b></code> <i>num</i></dt>
+  <dd>Print <i>num</i> exclamation marks instead of 1 by default.</dd>
+
+</dl>
+
+  <p>This HTML fragment can be combined with custom prologue and epilogue
+     to create a complete program documentation
+     (<code>--html-prologue/--html-epilogue</code> options for the HTML
+     output, <code>--man-prologue/--man-epilogue</code> options for the
+     man page output). For an example of such complete documentation see
+     the <a href="http://www.codesynthesis.com/projects/cli/doc/cli.xhtml">CLI
+     Compiler Command Line Manual</a> and the <code>cli(1)</code> man
+     page. For more information on the option documentation syntax,
+     see <a href="#3.3">Section 3.3, Option Documentation</a>.</p>
 
   <!-- CLI Language -->
 
@@ -431,8 +534,8 @@ usage: driver &lt;options> &lt;names>
   <h1><a name="3">3 CLI Language</a></h1>
 
   <p>This chapter describes the CLI language and its mapping to C++.
-     A CLI file consists of zero or more <a href="#3.3">Include
-     Directives</a> followed by one or more <a href="#3.4">Namespace Definitions</a>
+     A CLI file consists of zero or more <a href="#3.4">Include
+     Directives</a> followed by one or more <a href="#3.5">Namespace Definitions</a>
      or <a href="#3.1">Option Class Definitions</a>. C and C++-style comments
      can be used anywhere in the CLI file except in character and
      string literals.</p>
@@ -488,6 +591,10 @@ public:
   operator= (const options&amp;);
 
 public:
+  static void
+  print_usage (std::ostream&amp;);
+
+public:
   bool
   help () const;
 
@@ -500,7 +607,10 @@ public:
   <p>An option class is mapped to a C++ class with the same name. The
      C++ class defines a set of public overloaded constructors, a public
      copy constructor and an assignment operator, as well as a set of public
-     accessor functions corresponding to option definitions.</p>
+     accessor functions corresponding to option definitions. It also
+     defines a public static <code>print_usage()</code> function that
+     can be used to print the usage information for the options
+     defined by the class.</p>
 
   <p>The <code>argc/argv</code> arguments in the overloaded constructors
      are used to pass the command line arguments array, normally as passed
@@ -654,12 +764,12 @@ namespace cli
 
   <h2><a name="3.2">3.2 Option Definition</a></h2>
 
-<p>An option definition consists of there components: <em>type</em>,
-   <em>name</em>, and <em>default value</em>. An option type can be any
-   C++ type as long as its string representation can be parsed using
-   the <code>std::istream</code> interface. If the option type is
-   user-defined then you will need to include its declaration using
-   the <a href="#3.3">Include Directive</a>.</p>
+<p>An option definition consists of four components: <em>type</em>,
+   <em>name</em>, <em>default value</em>, and <em>documentation</em>.
+   An option type can be any C++ type as long as its string representation
+   can be parsed using the <code>std::istream</code> interface. If the option
+   type is user-defined then you will need to include its declaration using
+   the <a href="#3.4">Include Directive</a>.</p>
 
 <p>An option of a type other than <code>bool</code> is expected to
    have a value. An option of type <code>bool</code> is treated as
@@ -672,7 +782,7 @@ namespace cli
    by <code>|</code>. The C++ accessor function name is derived from the
    first name by removing any leading special characters, such as
    <code>-</code>, <code>/</code>, etc., and replacing special characters
-   in other places with underscore. For example, the following option
+   in other places with underscores. For example, the following option
    definition:</p>
 
   <pre>
@@ -705,7 +815,7 @@ class options
 };
   </pre>
 
-  <p>The final component of the option definition is the optional default
+  <p>The following component of the option definition is the optional default
      value. If the default value is not specified, then the option is
      initialized with the default constructor. In particular, this means
      that a <code>bool</code> option will be initialized to <code>false</code>,
@@ -797,7 +907,127 @@ class options
      <code>-m =B</code> (key is an empty string),  <code>-m c=</code> (value
       is an empty string), or <code>-m d</code> (same as <code>-m d=</code>).</p>
 
-  <h2><a name="3.3">3.3 Include Directive</a></h2>
+  <p>The last component in the option definition is optional documentation.
+     It is discussed in the next section.</p>
+
+  <h2><a name="3.3">3.3 Option Documentation</a></h2>
+
+  <p>Option documentation mimics C++ string array initialization:
+     it is enclosed in <code>{}</code> and consists of one or more
+     documentation strings separated by a comma, for example:</p>
+
+  <pre>
+class options
+{
+  int --compression = 5
+  {
+    "&lt;level>",
+    "Set compression to &lt;level> instead of 5 by default.
+
+     With the higher compression levels the program may produce a
+     smaller output but may also take longer and use more memory."
+  };
+};
+  </pre>
+
+  <p>The option documentation consists of a maximum of three documentation
+     strings. The first string is the value documentation string.
+     It describes the option value and is only applicable to options
+     with types other than <code>bool</code> (options of type
+     <code>bool</code> are flags and don't have an explicit value).
+     The second string (or the first string for options of type
+     <code>bool</code>) is the short documentation string. It
+     provides a brief description of the option. The last entry
+     in the option documentation is the long documentation string.
+     It provides a detailed description of the option. The short
+     documentation string is optional. If only two strings are
+     present in the option documentation (one string for options
+     of type <code>bool</code>), then the second (first) string is
+     assumed to be the long documentation string.</p>
+
+  <p>Option documentation is used to print the usage information
+     as well as to generate program documentation in the HTML and
+     man page formats. For usage information the short documentation
+     string is used if provided. If only the long string is available,
+     then, by default, only the first sentence from the long string
+     is used. You can override this behavior and include the complete
+     long string in the usage information by specifying the
+     <code>--long-usage</code> CLI compiler option. When generating
+     the program documentation, the long documentation strings are
+     always used.</p>
+
+  <p>The value documentation string can contain text enclosed in
+     <code>&lt;></code> which is automatically recognized by the CLI
+     compiler and typeset according to the selected output in all three
+     documentation strings. For example, in usage the <code>level</code>
+     value for the <code>--compression</code> option presented above
+     will be displayed as <code>&lt;level></code> while in the HTML and
+     man page output it will be typeset in italic as
+     <code><i>level</i></code>. Here is another example using the
+     <code>std::map</code> type:</p>
+
+  <pre>
+include &lt;map>;
+include &lt;string>;
+
+class options
+{
+  std::map&lt;std::string, std::string> --map
+  {
+    "&lt;key>=&lt;value>",
+    "Add the &lt;key>, &lt;value> pair to the map."
+  };
+};
+  </pre>
+
+  <p>The resulting HTML output for this option would look like this:</p>
+
+<dl class="options">
+  <dt><code><b>--map</b></code> <i>key</i>=<i>value</i></dt>
+  <dd>Add the <i>key</i>, <i>value</i> pair to the map.</dd>
+</dl>
+
+  <p>As you might have noticed from the examples presented so far, the
+     documentation strings can span multiple lines which is not possible
+     in C++. Also, all three documentation strings support the following
+     basic formatting mechanisms. The start of a new paragraph is indicated
+     by a blank line. A fragment of text can be typeset in monospace font
+     (normally used for code fragments) by enclosing it in the
+     <code>\c{}</code> block. Similarly, text can be typeset in bold or
+     italic fonts using the <code>\b{}</code> and <code>\i{}</code> blocks,
+     respectively. You can also combine several font properties in a single
+     block, for example, <code>\cb{bold code}</code>. If you need to include
+     literal <code>}</code> in a formatting block, you can use the
+     <code>\}</code> escape sequence, for example,
+     <code>\c{int a[] = {1, 2\}}</code>. The following example shows how we
+     can use these mechanisms:</p>
+
+  <pre>
+class options
+{
+  int --compression = 5
+  {
+    "&lt;level>",
+    "Set compression to &lt;level> instead of 5 by default.
+
+     With the higher compression levels the program \i{may}
+     produce a smaller output but may also \b{take longer}
+     and \b{use more memory}."
+  };
+};
+  </pre>
+
+  <p>The resulting HTML output for this option would look like this:</p>
+
+<dl class="options">
+  <dt><code><b>--compression</b></code> <i>level</i></dt>
+  <dd>Set compression to <i>level</i> instead of 5 by default.
+
+  <p>With the higher compression levels the program <i>may</i> produce a
+  smaller output but may also <b>take longer</b> and <b>use more memory</b>.</p></dd>
+</dl>
+
+  <h2><a name="3.4">3.4 Include Directive</a></h2>
 
   <p>If you are using user-defined types in your option definitions,
      you will need to include their declarations with the include
@@ -843,7 +1073,7 @@ class options
      and <code>name_type</code> types in the <code>options</code> class would
      be undeclared and result in compilation errors.</p>
 
-  <h2><a name="3.4">3.4 Namespace Definition</a></h2>
+  <h2><a name="3.5">3.5 Namespace Definition</a></h2>
 
   <p>Option classes can be placed into namespaces which are translated
      directly to C++ namespaces. For example:</p>

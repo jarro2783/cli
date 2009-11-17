@@ -309,7 +309,19 @@ format (string const& s, output_type ot)
       {
       case '\\':
         {
-          r += '\\';
+          switch (ot)
+          {
+          case ot_man:
+            {
+              r += "\\e";
+              break;
+            }
+          default:
+            {
+              r += '\\';
+              break;
+            }
+          }
           break;
         }
       case '"':
@@ -461,6 +473,12 @@ format (string const& s, output_type ot)
 
         switch (ot)
         {
+        case ot_plain:
+          {
+            if (b & 1)
+              r += "'";
+            break;
+          }
         case ot_html:
           {
             if (b & 1)
@@ -471,6 +489,17 @@ format (string const& s, output_type ot)
 
             if (b & 4)
               r += "<b>";
+
+            break;
+          }
+        case ot_man:
+          {
+            if ((b & 6) == 6)
+              r += "\\f(BI";
+            else if (b & 2)
+              r += "\\fI";
+            else if (b & 4)
+              r += "\\fB";
 
             break;
           }
@@ -490,6 +519,7 @@ format (string const& s, output_type ot)
       switch (ot)
       {
       case ot_plain:
+      case ot_man:
         {
           r += '\n';
           break;
@@ -506,24 +536,42 @@ format (string const& s, output_type ot)
         }
       }
     }
+    else if (s[i] == '.')
+    {
+      if (ot == ot_man)
+        r += "\\.";
+      else
+        r += '.';
+    }
     else if (!blocks.empty () && s[i] == '}')
     {
       unsigned char b (blocks.top ());
 
       switch (ot)
       {
-      case ot_html:
+      case ot_plain:
         {
           if (b & 1)
-            r += "</code>";
+            r += "'";
+          break;
+        }
+      case ot_html:
+        {
+          if (b & 4)
+            r += "</b>";
 
           if (b & 2)
             r += "</i>";
 
-          if (b & 4)
-            r += "</b>";
+          if (b & 1)
+            r += "</code>";
 
           break;
+        }
+      case ot_man:
+        {
+          if (b & 6)
+            r += "\\fP";
         }
       default:
         break;
@@ -537,6 +585,27 @@ format (string const& s, output_type ot)
 
   if (para)
     r += "</p>";
+
+  return r;
+}
+
+string context::
+fq_name (semantics::nameable& n, bool cxx_name)
+{
+  using namespace semantics;
+
+  string r;
+
+  if (dynamic_cast<cli_unit*> (&n))
+  {
+    return ""; // Map to global namespace.
+  }
+  else
+  {
+    r = fq_name (n.scope ());
+    r += "::";
+    r += cxx_name ? escape (n.name ()) : n.name ();
+  }
 
   return r;
 }

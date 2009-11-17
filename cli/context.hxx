@@ -70,7 +70,8 @@ public:
   enum output_type
   {
     ot_plain,
-    ot_html
+    ot_html,
+    ot_man
   };
 
   static string
@@ -94,6 +95,12 @@ public:
   {
     return n.context ().get<string> ("member");
   }
+
+public:
+  // Return fully-qualified C++ or CLI name.
+  //
+  string
+  fq_name (semantics::nameable& n, bool cxx_name = true);
 
 public:
   context (std::ostream&, semantics::cli_unit&, options_type const&);

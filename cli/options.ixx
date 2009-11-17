@@ -119,6 +119,18 @@ suppress_usage () const
 }
 
 inline const bool& options::
+long_usage () const
+{
+  return long_usage_;
+}
+
+inline const std::size_t& options::
+option_length () const
+{
+  return option_length_;
+}
+
+inline const bool& options::
 generate_cxx () const
 {
   return generate_cxx_;
@@ -136,16 +148,40 @@ generate_html () const
   return generate_html_;
 }
 
+inline const std::string& options::
+man_prologue () const
+{
+  return man_prologue_;
+}
+
+inline const std::string& options::
+man_epilogue () const
+{
+  return man_epilogue_;
+}
+
+inline const std::string& options::
+html_prologue () const
+{
+  return html_prologue_;
+}
+
+inline const std::string& options::
+html_epilogue () const
+{
+  return html_epilogue_;
+}
+
+inline const std::string& options::
+class_ () const
+{
+  return class__;
+}
+
 inline const bool& options::
 stdout () const
 {
   return stdout_;
-}
-
-inline const std::size_t& options::
-option_length () const
-{
-  return option_length_;
 }
 
 inline const std::string& options::
@@ -164,6 +200,12 @@ inline const std::string& options::
 cxx_suffix () const
 {
   return cxx_suffix_;
+}
+
+inline const std::string& options::
+man_suffix () const
+{
+  return man_suffix_;
 }
 
 inline const std::string& options::

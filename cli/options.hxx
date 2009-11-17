@@ -190,6 +190,12 @@ class options
   suppress_usage () const;
 
   const bool&
+  long_usage () const;
+
+  const std::size_t&
+  option_length () const;
+
+  const bool&
   generate_cxx () const;
 
   const bool&
@@ -198,11 +204,23 @@ class options
   const bool&
   generate_html () const;
 
+  const std::string&
+  man_prologue () const;
+
+  const std::string&
+  man_epilogue () const;
+
+  const std::string&
+  html_prologue () const;
+
+  const std::string&
+  html_epilogue () const;
+
+  const std::string&
+  class_ () const;
+
   const bool&
   stdout () const;
-
-  const std::size_t&
-  option_length () const;
 
   const std::string&
   hxx_suffix () const;
@@ -212,6 +230,9 @@ class options
 
   const std::string&
   cxx_suffix () const;
+
+  const std::string&
+  man_suffix () const;
 
   const std::string&
   html_suffix () const;
@@ -253,14 +274,21 @@ class options
   std::string output_dir_;
   bool suppress_inline_;
   bool suppress_usage_;
+  bool long_usage_;
+  std::size_t option_length_;
   bool generate_cxx_;
   bool generate_man_;
   bool generate_html_;
+  std::string man_prologue_;
+  std::string man_epilogue_;
+  std::string html_prologue_;
+  std::string html_epilogue_;
+  std::string class__;
   bool stdout_;
-  std::size_t option_length_;
   std::string hxx_suffix_;
   std::string ixx_suffix_;
   std::string cxx_suffix_;
+  std::string man_suffix_;
   std::string html_suffix_;
   std::string option_prefix_;
   std::string option_separator_;

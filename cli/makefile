@@ -16,6 +16,7 @@ source.cxx               \
 runtime-header.cxx       \
 runtime-inline.cxx       \
 runtime-source.cxx       \
+man.cxx                  \
 html.cxx                 \
 generator.cxx            \
 name-processor.cxx

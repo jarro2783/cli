@@ -1,9 +1,9 @@
-// file      : cli/html.cxx
+// file      : cli/man.cxx
 // author    : Boris Kolpackov <boris@codesynthesis.com>
 // copyright : Copyright (c) 2009 Code Synthesis Tools CC
 // license   : MIT; see accompanying LICENSE file
 
-#include "html.hxx"
+#include "man.hxx"
 
 namespace
 {
@@ -18,17 +18,17 @@ namespace
 
       names& n (o.named ());
 
-      os << "  <dt><code><b>";
+      os << ".IP \"\\fB";
 
       for (names::name_iterator i (n.name_begin ()); i != n.name_end (); ++i)
       {
         if (i != n.name_begin ())
-          os << "</b></code>|<code><b>";
+          os << "\\fP|\\fB";
 
-        os << escape_html (*i);
+        os << *i;
       }
 
-      os << "</b></code>";
+      os << "\\fP";
 
       type::doc_list const& doc (o.doc ());
       string type (o.type ().name ());
@@ -41,10 +41,10 @@ namespace
           translate_arg (
             doc.size () > 0 ? doc[0] : string ("<arg>"), arg_set));
 
-        os << ' ' << format (escape_html (s), ot_html);
+        os << ' ' << format (s, ot_man);
       }
 
-      os << "</dt>" << endl;
+      os << "\"" << endl;
 
       string d;
 
@@ -68,9 +68,7 @@ namespace
 
       // Format the documentation string.
       //
-      d = format (escape_html (translate (d, arg_set)), ot_html);
-
-      os << "  <dd>";
+      d = format (translate (d, arg_set), ot_man);
 
       if (!d.empty ())
       {
@@ -84,10 +82,7 @@ namespace
           if (d[i] == '\n' || (i - b >= 76 && e != b))
           {
             if (b != 0)
-            {
-              os << endl
-                 << "  ";
-            }
+              os << endl;
 
             os << string (d, b, e - b);
 
@@ -103,49 +98,14 @@ namespace
         if (b != i)
         {
           if (b != 0)
-          {
-            os << endl
-               << "  ";
-          }
+            os << endl;
 
           os << string (d, b, i - b);
         }
       }
 
-      os << "</dd>" << endl
+      os << endl
          << endl;
-    }
-
-  private:
-    string
-    escape_html (string const& s)
-    {
-      string r;
-      r.reserve (s.size ());
-
-      for (size_t i (0), n (s.size ()); i < n; ++i)
-      {
-        switch (s[i])
-        {
-        case '<':
-          {
-            r += "&lt;";
-            break;
-          }
-        case '&':
-          {
-            r += "&amp;";
-            break;
-          }
-        default:
-          {
-            r += s[i];
-            break;
-          }
-        }
-      }
-
-      return r;
     }
   };
 
@@ -173,11 +133,7 @@ namespace
           return;
       }
 
-      os << "<dl class=\"options\">" << endl;
-
       names (c, names_option_);
-
-      os << "</dl>" << endl;
     }
 
   private:
@@ -188,7 +144,7 @@ namespace
 }
 
 void
-generate_html (context& ctx)
+generate_man (context& ctx)
 {
   traversal::cli_unit unit;
   traversal::names unit_names;

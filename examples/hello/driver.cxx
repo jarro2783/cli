@@ -12,10 +12,9 @@ using namespace std;
 void
 usage ()
 {
-  cerr << "usage: driver <options> <names>" << endl
-       << "  [--help]" << endl
-       << "  [--greeting <string>]" << endl
-       << "  [--exclamations <integer>]" << endl;
+  cerr << "usage: driver [options] <names>" << endl
+       << "options:" << endl;
+  options::print_usage (cerr);
 }
 
 int

@@ -9,14 +9,32 @@ default  := $(out_base)/
 install  := $(out_base)/.install
 cleandoc := $(out_base)/.cleandoc
 
-$(default): $(out_base)/guide/
+$(default): $(out_base)/cli.xhtml $(out_base)/cli.1 $(out_base)/guide/
+
+# Generated documentation.
+#
+$(out_base)/cli.xhtml: $(src_root)/cli/options.cli    \
+                       $(src_base)/cli-prologue.xhtml \
+                       $(src_base)/cli-epilogue.xhtml
+	$(call message,cli-html $<,$(out_root)/cli/cli --generate-html \
+--output-dir $(out_base) --html-prologue $(src_base)/cli-prologue.xhtml \
+--html-epilogue $(src_base)/cli-epilogue.xhtml $<)
+	$(call message,,mv $(out_base)/options.html $(out_base)/cli.xhtml)
+
+$(out_base)/cli.1: $(src_root)/cli/options.cli    \
+                       $(src_base)/cli-prologue.1 \
+                       $(src_base)/cli-epilogue.1
+	$(call message,cli-man $<,$(out_root)/cli/cli --generate-man \
+--output-dir $(out_base) --man-prologue $(src_base)/cli-prologue.1 \
+--man-epilogue $(src_base)/cli-epilogue.1 $<)
+	$(call message,,mv $(out_base)/options.1 $(out_base)/cli.1)
 
 # Install.
 #
-$(install): $(out_base)/guide/.install
+$(install): $(out_base)/guide/.install $(out_base)/cli.xhtml $(out_base)/cli.1
 	$(call install-data,$(src_base)/default.css,$(install_doc_dir)/cli/default.css)
-	$(call install-data,$(src_base)/cli.xhtml,$(install_doc_dir)/cli/cli.xhtml)
-	$(call install-data,$(src_base)/cli.1,$(install_man_dir)/man1/cli.1)
+	$(call install-data,$(out_base)/cli.xhtml,$(install_doc_dir)/cli/cli.xhtml)
+	$(call install-data,$(out_base)/cli.1,$(install_man_dir)/man1/cli.1)
 
 # Clean.
 #

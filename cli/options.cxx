@@ -243,14 +243,21 @@ options (int argc,
   output_dir_ (),
   suppress_inline_ (),
   suppress_usage_ (),
+  long_usage_ (),
+  option_length_ (0),
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
+  man_prologue_ (),
+  man_epilogue_ (),
+  html_prologue_ (),
+  html_epilogue_ (),
+  class__ (),
   stdout_ (),
-  option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  man_suffix_ (".1"),
   html_suffix_ (".html"),
   option_prefix_ ("-"),
   option_separator_ ("--"),
@@ -273,14 +280,21 @@ options (int start,
   output_dir_ (),
   suppress_inline_ (),
   suppress_usage_ (),
+  long_usage_ (),
+  option_length_ (0),
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
+  man_prologue_ (),
+  man_epilogue_ (),
+  html_prologue_ (),
+  html_epilogue_ (),
+  class__ (),
   stdout_ (),
-  option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  man_suffix_ (".1"),
   html_suffix_ (".html"),
   option_prefix_ ("-"),
   option_separator_ ("--"),
@@ -303,14 +317,21 @@ options (int argc,
   output_dir_ (),
   suppress_inline_ (),
   suppress_usage_ (),
+  long_usage_ (),
+  option_length_ (0),
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
+  man_prologue_ (),
+  man_epilogue_ (),
+  html_prologue_ (),
+  html_epilogue_ (),
+  class__ (),
   stdout_ (),
-  option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  man_suffix_ (".1"),
   html_suffix_ (".html"),
   option_prefix_ ("-"),
   option_separator_ ("--"),
@@ -334,14 +355,21 @@ options (int start,
   output_dir_ (),
   suppress_inline_ (),
   suppress_usage_ (),
+  long_usage_ (),
+  option_length_ (0),
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
+  man_prologue_ (),
+  man_epilogue_ (),
+  html_prologue_ (),
+  html_epilogue_ (),
+  class__ (),
   stdout_ (),
-  option_length_ (0),
   hxx_suffix_ (".hxx"),
   ixx_suffix_ (".ixx"),
   cxx_suffix_ (".cxx"),
+  man_suffix_ (".1"),
   html_suffix_ (".html"),
   option_prefix_ ("-"),
   option_separator_ ("--"),
@@ -360,22 +388,41 @@ print_usage (::std::ostream& os)
 
   os << "--version                    Print version and exit." << ::std::endl;
 
-  os << "--output-dir|-o <dir>        Write generated files to <dir>." << ::std::endl;
+  os << "--output-dir|-o <dir>        Write the generated files to <dir> instead of the" << ::std::endl
+     << "                             current directory." << ::std::endl;
 
   os << "--suppress-inline            Generate all functions non-inline." << ::std::endl;
 
-  os << "--suppress-usage             Suppress generation of usage printing code." << ::std::endl;
+  os << "--suppress-usage             Suppress the generation of the usage printing code." << ::std::endl;
 
-  os << "--generate-cxx" << std::endl;
+  os << "--long-usage                 If no short documentation string is provided, use" << ::std::endl
+     << "                             the complete long documentation string in usage." << ::std::endl;
 
-  os << "--generate-man" << std::endl;
-
-  os << "--generate-html" << std::endl;
-
-  os << "--stdout" << std::endl;
-
-  os << "--option-length <len>        Indent option description <len> characters when" << ::std::endl
+  os << "--option-length <len>        Indent option descriptions <len> characters when" << ::std::endl
      << "                             printing usage." << ::std::endl;
+
+  os << "--generate-cxx               Generate C++ code." << ::std::endl;
+
+  os << "--generate-man               Generate documentation in the man page format." << ::std::endl;
+
+  os << "--generate-html              Generate documentation in the HTML format." << ::std::endl;
+
+  os << "--man-prologue <file>        Insert the content of <file> at the beginning of" << ::std::endl
+     << "                             the man page file." << ::std::endl;
+
+  os << "--man-epilogue <file>        Insert the content of <file> at the end of the man" << ::std::endl
+     << "                             page file." << ::std::endl;
+
+  os << "--html-prologue <file>       Insert the content of <file> at the beginning of" << ::std::endl
+     << "                             the HTML file." << ::std::endl;
+
+  os << "--html-epilogue <file>       Insert the content of <file> at the end of the HTML" << ::std::endl
+     << "                             file." << ::std::endl;
+
+  os << "--class <fq-name>            Generate the man page or HTML documentation only" << ::std::endl
+     << "                             for the <fq-name> options class." << ::std::endl;
+
+  os << "--stdout                     Write output to STDOUT instead of a file." << ::std::endl;
 
   os << "--hxx-suffix <suffix>        Use <suffix> instead of the default '.hxx' to" << ::std::endl
      << "                             construct the name of the generated header file." << ::std::endl;
@@ -385,6 +432,9 @@ print_usage (::std::ostream& os)
 
   os << "--cxx-suffix <suffix>        Use <suffix> instead of the default '.cxx' to" << ::std::endl
      << "                             construct the name of the generated source file." << ::std::endl;
+
+  os << "--man-suffix <suffix>        Use <suffix> instead of the default '.1' to" << ::std::endl
+     << "                             construct the name of the generated man page file." << ::std::endl;
 
   os << "--html-suffix <suffix>       Use <suffix> instead of the default '.html' to" << ::std::endl
      << "                             construct the name of the generated HTML file." << ::std::endl;
@@ -396,16 +446,17 @@ print_usage (::std::ostream& os)
      << "                             optional separator between options and arguments." << ::std::endl;
 
   os << "--include-with-brackets      Use angle brackets (<>) instead of quotes (\"\") in" << ::std::endl
-     << "                             generated #include directives." << ::std::endl;
+     << "                             the generated '#include' directives." << ::std::endl;
 
-  os << "--include-prefix <prefix>    Add <prefix> to generated #include directive paths." << ::std::endl;
+  os << "--include-prefix <prefix>    Add <prefix> to the generated '#include' directive" << ::std::endl
+     << "                             paths." << ::std::endl;
 
-  os << "--guard-prefix <prefix>      Add <prefix> to generated header inclusion guards." << ::std::endl;
+  os << "--guard-prefix <prefix>      Add <prefix> to the generated header inclusion" << ::std::endl
+     << "                             guards." << ::std::endl;
 
-  os << "--reserved-name <name>=<rep> Add <name> to the list of names that should not be" << ::std::endl
-     << "                             used as identifiers. The name can optionally be" << ::std::endl
-     << "                             followed by '=' and the <rep> replacement name that" << ::std::endl
-     << "                             should be used instead." << ::std::endl;
+  os << "--reserved-name <name>=<rep> Add <name> with an optional <rep> replacement to" << ::std::endl
+     << "                             the list of names that should not be used as" << ::std::endl
+     << "                             identifiers." << ::std::endl;
 }
 
 typedef
@@ -430,22 +481,36 @@ struct _cli_options_map_init
     &::cli::thunk< options, bool, &options::suppress_inline_ >;
     _cli_options_map_["--suppress-usage"] = 
     &::cli::thunk< options, bool, &options::suppress_usage_ >;
+    _cli_options_map_["--long-usage"] = 
+    &::cli::thunk< options, bool, &options::long_usage_ >;
+    _cli_options_map_["--option-length"] = 
+    &::cli::thunk< options, std::size_t, &options::option_length_ >;
     _cli_options_map_["--generate-cxx"] = 
     &::cli::thunk< options, bool, &options::generate_cxx_ >;
     _cli_options_map_["--generate-man"] = 
     &::cli::thunk< options, bool, &options::generate_man_ >;
     _cli_options_map_["--generate-html"] = 
     &::cli::thunk< options, bool, &options::generate_html_ >;
+    _cli_options_map_["--man-prologue"] = 
+    &::cli::thunk< options, std::string, &options::man_prologue_ >;
+    _cli_options_map_["--man-epilogue"] = 
+    &::cli::thunk< options, std::string, &options::man_epilogue_ >;
+    _cli_options_map_["--html-prologue"] = 
+    &::cli::thunk< options, std::string, &options::html_prologue_ >;
+    _cli_options_map_["--html-epilogue"] = 
+    &::cli::thunk< options, std::string, &options::html_epilogue_ >;
+    _cli_options_map_["--class"] = 
+    &::cli::thunk< options, std::string, &options::class__ >;
     _cli_options_map_["--stdout"] = 
     &::cli::thunk< options, bool, &options::stdout_ >;
-    _cli_options_map_["--option-length"] = 
-    &::cli::thunk< options, std::size_t, &options::option_length_ >;
     _cli_options_map_["--hxx-suffix"] = 
     &::cli::thunk< options, std::string, &options::hxx_suffix_ >;
     _cli_options_map_["--ixx-suffix"] = 
     &::cli::thunk< options, std::string, &options::ixx_suffix_ >;
     _cli_options_map_["--cxx-suffix"] = 
     &::cli::thunk< options, std::string, &options::cxx_suffix_ >;
+    _cli_options_map_["--man-suffix"] = 
+    &::cli::thunk< options, std::string, &options::man_suffix_ >;
     _cli_options_map_["--html-suffix"] = 
     &::cli::thunk< options, std::string, &options::html_suffix_ >;
     _cli_options_map_["--option-prefix"] = 

@@ -188,7 +188,7 @@ namespace
 
       // If we have both the long and the short descriptions, use
       // the short one. Otherwise, use the first sentence from the
-      // long one.
+      // long one ubless --long-usage was specified.
       //
       string d;
 
@@ -197,14 +197,14 @@ namespace
         if (doc.size () > 1)
           d = doc[0];
         else if (doc.size () > 0)
-          d = frist_sentence (doc[0]);
+          d = options.long_usage () ? doc[0] : first_sentence (doc[0]);
       }
       else
       {
         if (doc.size () > 2)
           d = doc[1];
         else if (doc.size () > 1)
-          d = frist_sentence (doc[1]);
+          d = options.long_usage () ? doc[1] : first_sentence (doc[1]);
       }
 
       // Format the documentation string.
@@ -281,7 +281,7 @@ namespace
     }
 
     string
-    frist_sentence (string const& s)
+    first_sentence (string const& s)
     {
       size_t p (s.find ('.'));
 

@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+  <title>CLI 1.0.0 Compiler Command Line Manual</title>
+
+  <meta name="copyright" content="&copy; 2009 Code Synthesis Tools CC"/>
+  <meta name="keywords" content="cli,command,line,interface,compiler,c++"/>
+  <meta name="description" content="CLI Compiler Command Line Manual"/>
+
+  <link rel="stylesheet" type="text/css" href="default.css" />
+
+<style type="text/css">
+
+  #synopsis {
+    list-style-type:  none;
+  }
+
+  #synopsis li {
+    padding-top      : 0.0em;
+    padding-bottom   : 0.0em;
+  }
+
+  #commands dt {
+    padding-top      : 0.4em;
+  }
+
+  #commands dd {
+    padding-bottom   : 0.4em;
+    padding-left     : 2em;
+  }
+
+  .options dt {
+    padding-top      : 0.4em;
+  }
+
+  .options dd {
+    padding-top      : 0.1em;
+    padding-bottom   : 0.4em;
+    padding-left     : 1.4em;
+  }
+
+</style>
+</head>
+
+<body>
+<div id="container">
+  <div id="content">
+
+  <h1>NAME</h1>
+
+  <p>cli - command line interface compiler for C++</p>
+
+  <h1>SYNOPSIS</h1>
+
+  <dl id="synopsis">
+    <dt><code><b>cli</b> [<i>options</i>] <i>file</i></code></dt>
+  </dl>
+
+  <h1>DESCRIPTION</h1>
+
+  <p><code><b>cli</b></code> generates C++ implementation and
+  documentation in various formats for a command line interface
+  defined in the CLI language. For an input file in the form
+  <code><b>name.cli</b></code> the following is generated. By
+  default or if the <code><b>--generate-cxx</b></code> option is
+  specified, the following C++ files are generated:
+  <code><b>name.hxx</b></code> (header file), <code><b>name.ixx</b></code>
+  (inline file, generated unless the <code><b>--suppress-inline</b></code>
+  option is specified), and <code><b>name.cxx</b></code> (source file).
+  If the <code><b>--generate-html</b></code> option is specified, then
+  the <code><b>name.html</b></code> HTML documentation file is generated.
+  If the <code><b>--generate-man</b></code> option is specified, then
+  the <code><b>name.1</b></code> man page file is generated. When
+  <code><b>--generate-html</b></code> or <code><b>--generate-man</b></code>
+  is specified, the <code><b>--stdout</b></code> option can be used to
+  redirect the output to STDOUT instead of a file.</p>
+
+  <h1>OPTIONS</h1>

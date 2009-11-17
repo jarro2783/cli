@@ -1,0 +1,59 @@
+.\" Process this file with
+.\" groff -man -Tascii cli.1
+.\"
+.TH CLI 1 "October 2009" "CLI 1.0.0"
+.SH NAME
+cli \- command line interface compiler for C++
+.\"
+.\"
+.\"
+.\"--------------------------------------------------------------------
+.SH SYNOPSIS
+.\"--------------------------------------------------------------------
+.B cli
+.B [
+.I options
+.B ]
+.I file
+.\"
+.\"
+.\"
+.\"--------------------------------------------------------------------
+.SH DESCRIPTION
+.\"--------------------------------------------------------------------
+.B cli
+generates C++ implementation and documentation in various formats for a
+command line interface defined in the CLI language. For an input file in
+the form
+.B name.cli
+the following is generated. By default or if the
+.B --generate-cxx
+option is specified, the following C++ files are generated:
+.B name.hxx
+(header file),
+.B name.ixx
+(inline file, generated unless the
+.B --suppress-inline
+option is specified), and
+.B name.cxx (source file).
+If the
+.B --generate-html
+option is specified, then the
+.B name.html
+HTML documentation file is generated. If the
+.B --generate-man
+option is specified, then the
+.B name.1
+man page file is generated. When
+.B --generate-html
+or
+.B --generate-man
+is specified, the
+.B --stdout
+option can be used to redirect the output to STDOUT instead of a file.
+.\"
+.\"
+.\"
+.\"--------------------------------------------------------------------
+.SH OPTIONS
+.\"--------------------------------------------------------------------
