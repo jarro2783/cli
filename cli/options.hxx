@@ -184,6 +184,9 @@ class options
   output_dir () const;
 
   const bool&
+  generate_modifier () const;
+
+  const bool&
   suppress_inline () const;
 
   const bool&
@@ -272,6 +275,7 @@ class options
   bool help_;
   bool version_;
   std::string output_dir_;
+  bool generate_modifier_;
   bool suppress_inline_;
   bool suppress_usage_;
   bool long_usage_;

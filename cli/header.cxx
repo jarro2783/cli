@@ -22,6 +22,11 @@ namespace
       os << "const " << type << "&" << endl
          << name << " () const;"
          << endl;
+
+      if (modifier)
+        os << "void" << endl
+           << name << " (const " << type << "&);"
+           << endl;
     }
   };
 
@@ -98,7 +103,7 @@ namespace
 
       //
       //
-      os << "// Option accessors." << endl
+      os << "// Option accessors" << (modifier ? " and modifiers." : ".") << endl
          << "//" << endl
          << endl;
 

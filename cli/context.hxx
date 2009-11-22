@@ -38,6 +38,7 @@ public:
   semantics::cli_unit& unit;
   options_type const& options;
 
+  bool modifier;
   bool usage;
 
   string const& inl;

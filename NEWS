@@ -25,6 +25,9 @@ Version 1.1.0
     The CLI compiler usage, HTML documentation, and man page are auto-generated
     using this feature.
 
+  * New option, --generate-modifier, triggers generation of the option value
+    modifiers in addition to the accessors.
+
 Version 1.0.0
 
   * First public release.

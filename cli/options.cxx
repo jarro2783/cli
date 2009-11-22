@@ -241,6 +241,7 @@ options (int argc,
 : help_ (),
   version_ (),
   output_dir_ (),
+  generate_modifier_ (),
   suppress_inline_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -278,6 +279,7 @@ options (int start,
 : help_ (),
   version_ (),
   output_dir_ (),
+  generate_modifier_ (),
   suppress_inline_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -315,6 +317,7 @@ options (int argc,
 : help_ (),
   version_ (),
   output_dir_ (),
+  generate_modifier_ (),
   suppress_inline_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -353,6 +356,7 @@ options (int start,
 : help_ (),
   version_ (),
   output_dir_ (),
+  generate_modifier_ (),
   suppress_inline_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -390,6 +394,9 @@ print_usage (::std::ostream& os)
 
   os << "--output-dir|-o <dir>        Write the generated files to <dir> instead of the" << ::std::endl
      << "                             current directory." << ::std::endl;
+
+  os << "--generate-modifier          Generate option value modifiers in addition to" << ::std::endl
+     << "                             accessors." << ::std::endl;
 
   os << "--suppress-inline            Generate all functions non-inline." << ::std::endl;
 
@@ -477,6 +484,8 @@ struct _cli_options_map_init
     &::cli::thunk< options, std::string, &options::output_dir_ >;
     _cli_options_map_["-o"] = 
     &::cli::thunk< options, std::string, &options::output_dir_ >;
+    _cli_options_map_["--generate-modifier"] = 
+    &::cli::thunk< options, bool, &options::generate_modifier_ >;
     _cli_options_map_["--suppress-inline"] = 
     &::cli::thunk< options, bool, &options::suppress_inline_ >;
     _cli_options_map_["--suppress-usage"] = 

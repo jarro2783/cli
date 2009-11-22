@@ -607,9 +607,10 @@ public:
   <p>An option class is mapped to a C++ class with the same name. The
      C++ class defines a set of public overloaded constructors, a public
      copy constructor and an assignment operator, as well as a set of public
-     accessor functions corresponding to option definitions. It also
-     defines a public static <code>print_usage()</code> function that
-     can be used to print the usage information for the options
+     accessor functions and, if the <code>--generate-modifier</code> CLI
+     compiler option is specified, modifier functions corresponding to option
+     definitions. It also defines a public static <code>print_usage()</code>
+     function that can be used to print the usage information for the options
      defined by the class.</p>
 
   <p>The <code>argc/argv</code> arguments in the overloaded constructors
@@ -779,11 +780,11 @@ namespace cli
 
 <p>The name component specifies the option name as it will be entered
    in the command line. A name can contain any number of aliases separated
-   by <code>|</code>. The C++ accessor function name is derived from the
-   first name by removing any leading special characters, such as
-   <code>-</code>, <code>/</code>, etc., and replacing special characters
-   in other places with underscores. For example, the following option
-   definition:</p>
+   by <code>|</code>. The C++ accessor and modifier function names are
+   derived from the first name by removing any leading special characters,
+   such as <code>-</code>, <code>/</code>, etc., and replacing special
+   characters in other places with underscores. For example, the following
+   option definition:</p>
 
   <pre>
 class options

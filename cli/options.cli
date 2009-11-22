@@ -23,6 +23,11 @@ class options
     "Write the generated files to <dir> instead of the current directory."
   };
 
+  bool --generate-modifier
+  {
+    "Generate option value modifiers in addition to accessors."
+  };
+
   bool --suppress-inline
   {
     "Generate all functions non-inline. By default simple functions are

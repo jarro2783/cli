@@ -23,8 +23,15 @@ namespace
       os << inl << "const " << type << "& " << scope << "::" << endl
          << name << " () const"
          << "{"
-         << "return " << emember (o) << ";"
+         << "return this->" << emember (o) << ";"
          << "}";
+
+      if (modifier)
+        os << inl << "void " << scope << "::" << endl
+           << name << "(const " << type << "& x)"
+           << "{"
+           << "this->" << emember (o) << " = x;"
+           << "}";
     }
   };
 
