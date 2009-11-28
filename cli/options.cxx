@@ -90,98 +90,155 @@ namespace cli
     return "invalid option value";
   }
 
+  // eos_reached
+  //
+  void eos_reached::
+  print (std::ostream& os) const
+  {
+    os << what ();
+  }
+
+  const char* eos_reached::
+  what () const throw ()
+  {
+    return "end of argument stream reached";
+  }
+
+  // scanner
+  //
+  scanner::
+  ~scanner ()
+  {
+  }
+
+  // argv_scanner
+  //
+  bool argv_scanner::
+  more ()
+  {
+    return i_ < argc_;
+  }
+
+  const char* argv_scanner::
+  peek ()
+  {
+    if (i_ < argc_)
+      return argv_[i_];
+    else
+      throw eos_reached ();
+  }
+
+  const char* argv_scanner::
+  next ()
+  {
+    if (i_ < argc_)
+      return argv_[i_++];
+    else
+      throw eos_reached ();
+  }
+
+  void argv_scanner::
+  skip ()
+  {
+    if (i_ < argc_)
+      i_++;
+    else
+      throw eos_reached ();
+  }
+
   template <typename X>
   struct parser
   {
-    static int
-    parse (X& x, char** argv, int n)
+    static void
+    parse (X& x, scanner& s)
     {
-      if (n > 1)
+      const char* o (s.next ());
+
+      if (s.more ())
       {
-        std::istringstream is (argv[1]);
+        const char* v (s.next ());
+        std::istringstream is (v);
         if (!(is >> x && is.eof ()))
-          throw invalid_value (argv[0], argv[1]);
-        return 2;
+          throw invalid_value (o, v);
       }
       else
-        throw missing_value (argv[0]);
+        throw missing_value (o);
     }
   };
 
   template <>
   struct parser<bool>
   {
-    static int
-    parse (bool& x, char**, int)
+    static void
+    parse (bool& x, scanner& s)
     {
+      s.next ();
       x = true;
-      return 1;
     }
   };
 
   template <>
   struct parser<std::string>
   {
-    static int
-    parse (std::string& x, char** argv, int n)
+    static void
+    parse (std::string& x, scanner& s)
     {
-      if (n > 1)
-      {
-        x = argv[1];
-        return 2;
-      }
+      const char* o (s.next ());
+
+      if (s.more ())
+        x = s.next ();
       else
-        throw missing_value (argv[0]);
+        throw missing_value (o);
     }
   };
 
   template <typename X>
   struct parser<std::vector<X> >
   {
-    static int
-    parse (std::vector<X>& v, char** argv, int n)
+    static void
+    parse (std::vector<X>& c, scanner& s)
     {
       X x;
-      int i = parser<X>::parse (x, argv, n);
-      v.push_back (x);
-      return i;
+      parser<X>::parse (x, s);
+      c.push_back (x);
     }
   };
 
   template <typename X>
   struct parser<std::set<X> >
   {
-    static int
-    parse (std::set<X>& s, char** argv, int n)
+    static void
+    parse (std::set<X>& c, scanner& s)
     {
       X x;
-      int i = parser<X>::parse (x, argv, n);
-      s.insert (x);
-      return i;
+      parser<X>::parse (x, s);
+      c.insert (x);
     }
   };
 
   template <typename K, typename V>
   struct parser<std::map<K, V> >
   {
-    static int
-    parse (std::map<K, V>& m, char** argv, int n)
+    static void
+    parse (std::map<K, V>& m, scanner& s)
     {
-      if (n > 1)
+      const char* o (s.next ());
+
+      if (s.more ())
       {
-        std::string s (argv[1]);
-        std::string::size_type p = s.find ('=');
+        std::string ov (s.next ());
+        std::string::size_type p = ov.find ('=');
 
         if (p == std::string::npos)
         {
           K k = K ();
 
-          if (!s.empty ())
+          if (!ov.empty ())
           {
-            std::istringstream ks (s);
+            std::istringstream ks (ov);
 
             if (!(ks >> k && ks.eof ()))
-              throw invalid_value (argv[0], argv[1]);
+              throw invalid_value (o, ov);
           }
 
           m[k] = V ();
@@ -190,15 +247,15 @@ namespace cli
         {
           K k = K ();
           V v = V ();
-          std::string kstr (s, 0, p);
-          std::string vstr (s, p + 1);
+          std::string kstr (ov, 0, p);
+          std::string vstr (ov, p + 1);
 
           if (!kstr.empty ())
           {
             std::istringstream ks (kstr);
 
             if (!(ks >> k && ks.eof ()))
-              throw invalid_value (argv[0], argv[1]);
+              throw invalid_value (o, ov);
           }
 
           if (!vstr.empty ())
@@ -206,24 +263,22 @@ namespace cli
             std::istringstream vs (vstr);
 
             if (!(vs >> v && vs.eof ()))
-              throw invalid_value (argv[0], argv[1]);
+              throw invalid_value (o, ov);
           }
 
           m[k] = v;
         }
-
-        return 2;
       }
       else
-        throw missing_value (argv[0]);
+        throw missing_value (o);
     }
   };
 
   template <typename X, typename T, T X::*P>
-  int
-  thunk (X& x, char** argv, int n)
+  void
+  thunk (X& x, scanner& s)
   {
-    return parser<T>::parse (x.*P, argv, n);
+    parser<T>::parse (x.*P, s);
   }
 }
 
@@ -267,7 +322,8 @@ options (int argc,
   guard_prefix_ (),
   reserved_name_ ()
 {
-  _parse (1, argc, argv, opt, arg);
+  ::cli::argv_scanner s (argc, argv);
+  _parse (s, opt, arg);
 }
 
 options::
@@ -305,7 +361,8 @@ options (int start,
   guard_prefix_ (),
   reserved_name_ ()
 {
-  _parse (start, argc, argv, opt, arg);
+  ::cli::argv_scanner s (start, argc, argv);
+  _parse (s, opt, arg);
 }
 
 options::
@@ -343,7 +400,9 @@ options (int argc,
   guard_prefix_ (),
   reserved_name_ ()
 {
-  end = _parse (1, argc, argv, opt, arg);
+  ::cli::argv_scanner s (argc, argv);
+  _parse (s, opt, arg);
+  end = s.end ();
 }
 
 options::
@@ -382,7 +441,9 @@ options (int start,
   guard_prefix_ (),
   reserved_name_ ()
 {
-  end = _parse (start, argc, argv, opt, arg);
+  ::cli::argv_scanner s (start, argc, argv);
+  _parse (s, opt, arg);
+  end = s.end ();
 }
 
 void options::
@@ -467,7 +528,7 @@ print_usage (::std::ostream& os)
 }
 
 typedef
-std::map<std::string, int (*) (options&, char**, int)>
+std::map<std::string, void (*) (options&, ::cli::scanner&)>
 _cli_options_map;
 
 static _cli_options_map _cli_options_map_;
@@ -537,40 +598,38 @@ struct _cli_options_map_init
   }
 } _cli_options_map_init_;
 
-int options::
-_parse (int start,
-        int argc,
-        char** argv,
+void options::
+_parse (::cli::scanner& s,
         ::cli::unknown_mode opt_mode,
         ::cli::unknown_mode arg_mode)
 {
   bool opt = true;
 
-  for (; start < argc;)
+  while (s.more ())
   {
-    const char* s = argv[start];
+    const char* o = s.peek ();
 
-    if (std::strcmp (s, "--") == 0)
+    if (std::strcmp (o, "--") == 0)
     {
-      start++;
+      s.skip ();
       opt = false;
       continue;
     }
 
     _cli_options_map::const_iterator i (
-      opt ? _cli_options_map_.find (s) : _cli_options_map_.end ());
+      opt ? _cli_options_map_.find (o) : _cli_options_map_.end ());
 
     if (i != _cli_options_map_.end ())
     {
-      start += (*(i->second)) (*this, argv + start, argc - start);
+      (*(i->second)) (*this, s);
     }
-    else if (opt && std::strncmp (s, "-", 1) == 0 && s[1] != '\0')
+    else if (opt && std::strncmp (o, "-", 1) == 0 && o[1] != '\0')
     {
       switch (opt_mode)
       {
         case ::cli::unknown_mode::skip:
         {
-          start++;
+          s.skip ();
           continue;
         }
         case ::cli::unknown_mode::stop:
@@ -579,7 +638,7 @@ _parse (int start,
         }
         case ::cli::unknown_mode::fail:
         {
-          throw ::cli::unknown_option (s);
+          throw ::cli::unknown_option (o);
         }
       }
 
@@ -591,7 +650,7 @@ _parse (int start,
       {
         case ::cli::unknown_mode::skip:
         {
-          start++;
+          s.skip ();
           continue;
         }
         case ::cli::unknown_mode::stop:
@@ -600,14 +659,12 @@ _parse (int start,
         }
         case ::cli::unknown_mode::fail:
         {
-          throw ::cli::unknown_argument (s);
+          throw ::cli::unknown_argument (o);
         }
       }
 
       break;
     }
   }
-
-  return start;
 }
 

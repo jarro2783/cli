@@ -145,5 +145,65 @@ generate_runtime_header (context& ctx)
      << "std::string value_;"
      << "};";
 
+  os << "class eos_reached: public exception"
+     << "{"
+     << "public:" << endl
+     << "virtual void" << endl
+     << "print (std::ostream&) const;"
+     << endl
+     << "virtual const char*" << endl
+     << "what () const throw ();"
+     << "};";
+
+  // scanner
+  //
+  os << "class scanner"
+     << "{"
+     << "public:" << endl
+     << "virtual" << endl
+     << "~scanner ();"
+     << endl
+     << "virtual bool" << endl
+     << "more () = 0;"
+     << endl
+     << "virtual const char*" << endl
+     << "peek () = 0;"
+     << endl
+     << "virtual const char*" << endl
+     << "next () = 0;"
+     << endl
+     << "virtual void" << endl
+     << "skip () = 0;"
+     << "};";
+
+  // argv_scanner
+  //
+  os << "class argv_scanner: public scanner"
+     << "{"
+     << "public:" << endl
+     << "argv_scanner (int argc, char** argv);"
+     << "argv_scanner (int start, int argc, char** argv);"
+     << endl
+     << "int" << endl
+     << "end () const;"
+     << endl
+     << "virtual bool" << endl
+     << "more ();"
+     << endl
+     << "virtual const char*" << endl
+     << "peek ();"
+     << endl
+     << "virtual const char*" << endl
+     << "next ();"
+     << endl
+     << "virtual void" << endl
+     << "skip ();"
+     << endl
+     << "private:"
+     << "int i_;"
+     << "int argc_;"
+     << "char** argv_;"
+     << "};";
+
   os << "}"; // namespace cli
 }

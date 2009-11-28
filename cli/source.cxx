@@ -367,7 +367,8 @@ namespace
         names (c, names_init);
       }
       os << "{"
-         << "_parse (1, argc, argv, opt, arg);"
+         << "::cli::argv_scanner s (argc, argv);"
+         << "_parse (s, opt, arg);"
          << "}";
 
       os << name << "::" << endl
@@ -383,7 +384,8 @@ namespace
         names (c, names_init);
       }
       os << "{"
-         << "_parse (start, argc, argv, opt, arg);"
+         << "::cli::argv_scanner s (start, argc, argv);"
+         << "_parse (s, opt, arg);"
          << "}";
 
       os << name << "::" << endl
@@ -399,7 +401,9 @@ namespace
         names (c, names_init);
       }
       os << "{"
-         << "end = _parse (1, argc, argv, opt, arg);"
+         << "::cli::argv_scanner s (argc, argv);"
+         << "_parse (s, opt, arg);"
+         << "end = s.end ();"
          << "}";
 
       os << name << "::" << endl
@@ -416,7 +420,9 @@ namespace
         names (c, names_init);
       }
       os << "{"
-         << "end = _parse (start, argc, argv, opt, arg);"
+         << "::cli::argv_scanner s (start, argc, argv);"
+         << "_parse (s, opt, arg);"
+         << "end = s.end ();"
          << "}";
 
       // usage
@@ -468,8 +474,8 @@ namespace
       string map ("_cli_" + name + "_map");
 
       os << "typedef" << endl
-         << "std::map<std::string, int (*) (" <<
-        name << "&, char**, int)>" << endl
+         << "std::map<std::string, void (*) (" <<
+        name << "&, ::cli::scanner&)>" << endl
          << map << ";"
          << endl
          << "static " << map << " " << map << "_;"
@@ -489,10 +495,8 @@ namespace
       bool pfx (!opt_prefix.empty ());
       bool sep (!opt_sep.empty ());
 
-      os << "int " << name << "::" << endl
-         << "_parse (int start," << endl
-         << "int argc," << endl
-         << "char** argv," << endl
+      os << "void " << name << "::" << endl
+         << "_parse (::cli::scanner& s," << endl
          << um << " opt_mode," << endl
          << um << " arg_mode)"
          << "{";
@@ -501,27 +505,27 @@ namespace
         os << "bool opt = true;" // Still recognizing options.
            << endl;
 
-      os << "for (; start < argc;)"
+      os << "while (s.more ())"
          << "{"
-         << "const char* s = argv[start];";
+         << "const char* o = s.peek ();";
 
       if (sep)
         os << endl
-           << "if (std::strcmp (s, \"" << opt_sep << "\") == 0)"
+           << "if (std::strcmp (o, \"" << opt_sep << "\") == 0)"
            << "{"
-           << "start++;"
+           << "s.skip ();" // We don't want to remove the separator.
            << "opt = false;"
            << "continue;"
            << "}"
            << map << "::const_iterator i (" << endl
-           << "opt ? " << map << "_.find (s) : " << map << "_.end ());";
+           << "opt ? " << map << "_.find (o) : " << map << "_.end ());";
       else
-        os << map << "::const_iterator i (" << map << "_.find (s));";
+        os << map << "::const_iterator i (" << map << "_.find (o));";
 
       os << endl
          << "if (i != " << map << "_.end ())"
          << "{"
-         << "start += (*(i->second)) (*this, argv + start, argc - start);"
+         << "(*(i->second)) (*this, s);"
          << "}";
 
       // Unknown option.
@@ -535,14 +539,14 @@ namespace
         if (sep)
           os << "opt && ";
 
-        os << "std::strncmp (s, \"" << opt_prefix << "\", " <<
-          n << ") == 0 && s[" << n << "] != '\\0')"
+        os << "std::strncmp (o, \"" << opt_prefix << "\", " <<
+          n << ") == 0 && o[" << n << "] != '\\0')"
            << "{"
            << "switch (opt_mode)"
            << "{"
            << "case ::cli::unknown_mode::skip:" << endl
            << "{"
-           << "start++;"
+           << "s.skip ();"
            << "continue;"
            << "}"
            << "case ::cli::unknown_mode::stop:" << endl
@@ -551,7 +555,7 @@ namespace
            << "}"
            << "case ::cli::unknown_mode::fail:" << endl
            << "{"
-           << "throw ::cli::unknown_option (s);"
+           << "throw ::cli::unknown_option (o);"
            << "}"
            << "}" // switch
            << "break;" // The stop case.
@@ -566,7 +570,7 @@ namespace
          << "{"
          << "case ::cli::unknown_mode::skip:" << endl
          << "{"
-         << "start++;"
+         << "s.skip ();"
          << "continue;"
          << "}"
          << "case ::cli::unknown_mode::stop:" << endl
@@ -575,14 +579,13 @@ namespace
          << "}"
          << "case ::cli::unknown_mode::fail:" << endl
          << "{"
-         << "throw ::cli::unknown_argument (s);"
+         << "throw ::cli::unknown_argument (o);"
          << "}"
          << "}" // switch
          << "break;" // The stop case.
          << "}"
 
          << "}" // for
-         << "return start;"
          << "}";
     }
 

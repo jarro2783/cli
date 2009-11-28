@@ -123,10 +123,8 @@ namespace
       // _parse()
       //
       os << "private:" << endl
-         << "int" << endl
-         << "_parse (int start," << endl
-         << "int argc," << endl
-         << "char** argv," << endl
+         << "void" << endl
+         << "_parse (::cli::scanner&," << endl
          << um << " option," << endl
          << um << " argument);"
          << endl;

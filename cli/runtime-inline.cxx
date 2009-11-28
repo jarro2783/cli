@@ -103,5 +103,26 @@ generate_runtime_inline (context& ctx)
      << "return value_;"
      << "}";
 
+  os << "// argv_scanner" << endl
+     << "//" << endl;
+
+  os << inl << "argv_scanner::" << endl
+     << "argv_scanner (int argc, char** argv)" << endl
+     << ": i_ (1), argc_ (argc), argv_ (argv)"
+     << "{"
+     << "}";
+
+  os << inl << "argv_scanner::" << endl
+     << "argv_scanner (int start, int argc, char** argv)" << endl
+     << ": i_ (start), argc_ (argc), argv_ (argv)"
+     << "{"
+     << "}";
+
+  os << inl << "int argv_scanner::" << endl
+     << "end () const"
+     << "{"
+     << "return i_;"
+     << "}";
+
   os << "}"; // namespace cli
 }

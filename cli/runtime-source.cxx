@@ -100,23 +100,87 @@ generate_runtime_source (context& ctx)
      << "return \"invalid option value\";"
      << "}";
 
+  // eos_reached
+  //
+  os << "// eos_reached" << endl
+     << "//" << endl
+     << "void eos_reached::" << endl
+     << "print (std::ostream& os) const"
+     << "{"
+     << "os << what ();"
+     << "}"
+     << "const char* eos_reached::" << endl
+     << "what () const throw ()"
+     << "{"
+     << "return \"end of argument stream reached\";"
+     << "}";
+
+  // scanner
+  //
+  os << "// scanner" << endl
+     << "//" << endl
+     << "scanner::" << endl
+     << "~scanner ()"
+     << "{"
+     << "}";
+
+  // argv_scanner
+  //
+  os << "// argv_scanner" << endl
+     << "//" << endl
+
+     << "bool argv_scanner::" << endl
+     << "more ()"
+     << "{"
+     << "return i_ < argc_;"
+     << "}"
+
+     << "const char* argv_scanner::" << endl
+     << "peek ()"
+     << "{"
+     << "if (i_ < argc_)" << endl
+     << "return argv_[i_];"
+     << "else" << endl
+     << "throw eos_reached ();"
+     << "}"
+
+     << "const char* argv_scanner::" << endl
+     << "next ()"
+     << "{"
+     << "if (i_ < argc_)" << endl
+     << "return argv_[i_++];"
+     << "else" << endl
+     << "throw eos_reached ();"
+     << "}"
+
+     << "void argv_scanner::" << endl
+     << "skip ()"
+     << "{"
+     << "if (i_ < argc_)" << endl
+     << "i_++;"
+     << "else" << endl
+     << "throw eos_reached ();"
+     << "}";
+
   // parser class template & its specializations
   //
   os << "template <typename X>" << endl
      << "struct parser"
      << "{"
-     << "static int" << endl
-     << "parse (X& x, char** argv, int n)"
+     << "static void" << endl
+     << "parse (X& x, scanner& s)"
      << "{"
-     << "if (n > 1)"
+     << "const char* o (s.next ());"
+     << endl
+     << "if (s.more ())"
      << "{"
-     << "std::istringstream is (argv[1]);"
+     << "const char* v (s.next ());"
+     << "std::istringstream is (v);"
      << "if (!(is >> x && is.eof ()))" << endl
-     << "throw invalid_value (argv[0], argv[1]);"
-     << "return 2;"
+     << "throw invalid_value (o, v);"
      << "}"
      << "else" << endl
-     << "throw missing_value (argv[0]);"
+     << "throw missing_value (o);"
      << "}"
      << "};";
 
@@ -125,11 +189,11 @@ generate_runtime_source (context& ctx)
   os << "template <>" << endl
      << "struct parser<bool>"
      << "{"
-     << "static int" << endl
-     << "parse (bool& x, char**, int)"
+     << "static void" << endl
+     << "parse (bool& x, scanner& s)"
      << "{"
+     << "s.next ();"
      << "x = true;"
-     << "return 1;"
      << "}"
      << "};";
 
@@ -138,16 +202,15 @@ generate_runtime_source (context& ctx)
   os << "template <>" << endl
      << "struct parser<std::string>"
      << "{"
-     << "static int" << endl
-     << "parse (std::string& x, char** argv, int n)"
+     << "static void" << endl
+     << "parse (std::string& x, scanner& s)"
      << "{"
-     << "if (n > 1)"
-     << "{"
-     << "x = argv[1];"
-     << "return 2;"
-     << "}"
+     << "const char* o (s.next ());"
+     << endl
+     << "if (s.more ())" << endl
+     << "x = s.next ();"
      << "else" << endl
-     << "throw missing_value (argv[0]);"
+     << "throw missing_value (o);"
      << "}"
      << "};";
 
@@ -156,13 +219,12 @@ generate_runtime_source (context& ctx)
   os << "template <typename X>" << endl
      << "struct parser<std::vector<X> >"
      << "{"
-     << "static int" << endl
-     << "parse (std::vector<X>& v, char** argv, int n)"
+     << "static void" << endl
+     << "parse (std::vector<X>& c, scanner& s)"
      << "{"
      << "X x;"
-     << "int i = parser<X>::parse (x, argv, n);"
-     << "v.push_back (x);"
-     << "return i;"
+     << "parser<X>::parse (x, s);"
+     << "c.push_back (x);"
      << "}"
      << "};";
 
@@ -171,13 +233,12 @@ generate_runtime_source (context& ctx)
   os << "template <typename X>" << endl
      << "struct parser<std::set<X> >"
      << "{"
-     << "static int" << endl
-     << "parse (std::set<X>& s, char** argv, int n)"
+     << "static void" << endl
+     << "parse (std::set<X>& c, scanner& s)"
      << "{"
      << "X x;"
-     << "int i = parser<X>::parse (x, argv, n);"
-     << "s.insert (x);"
-     << "return i;"
+     << "parser<X>::parse (x, s);"
+     << "c.insert (x);"
      << "}"
      << "};";
 
@@ -186,24 +247,26 @@ generate_runtime_source (context& ctx)
   os << "template <typename K, typename V>" << endl
      << "struct parser<std::map<K, V> >"
      << "{"
-     << "static int" << endl
-     << "parse (std::map<K, V>& m, char** argv, int n)"
+     << "static void" << endl
+     << "parse (std::map<K, V>& m, scanner& s)"
      << "{"
-     << "if (n > 1)"
+     << "const char* o (s.next ());"
+     << endl
+     << "if (s.more ())"
      << "{"
-     << "std::string s (argv[1]);"
-     << "std::string::size_type p = s.find ('=');"
+     << "std::string ov (s.next ());"
+     << "std::string::size_type p = ov.find ('=');"
      << endl
      << "if (p == std::string::npos)"
      << "{"
      << "K k = K ();"
      << endl
-     << "if (!s.empty ())"
+     << "if (!ov.empty ())"
      << "{"
-     << "std::istringstream ks (s);"
+     << "std::istringstream ks (ov);"
      << endl
      << "if (!(ks >> k && ks.eof ()))" << endl
-     << "throw invalid_value (argv[0], argv[1]);"
+     << "throw invalid_value (o, ov);"
      << "}"
      << "m[k] = V ();"
      << "}"
@@ -211,39 +274,38 @@ generate_runtime_source (context& ctx)
      << "{"
      << "K k = K ();"
      << "V v = V ();"
-     << "std::string kstr (s, 0, p);"
-     << "std::string vstr (s, p + 1);"
+     << "std::string kstr (ov, 0, p);"
+     << "std::string vstr (ov, p + 1);"
      << endl
      << "if (!kstr.empty ())"
      << "{"
      << "std::istringstream ks (kstr);"
      << endl
      << "if (!(ks >> k && ks.eof ()))" << endl
-     << "throw invalid_value (argv[0], argv[1]);"
+     << "throw invalid_value (o, ov);"
      << "}"
      << "if (!vstr.empty ())"
      << "{"
      << "std::istringstream vs (vstr);"
      << endl
      << "if (!(vs >> v && vs.eof ()))" << endl
-     << "throw invalid_value (argv[0], argv[1]);"
+     << "throw invalid_value (o, ov);"
      << "}"
      << "m[k] = v;"
      << "}"
-     << "return 2;"
      << "}"
      << "else" << endl
-     << "throw missing_value (argv[0]);"
+     << "throw missing_value (o);"
      << "}"
      << "};";
 
   // Parser thunk.
   //
   os << "template <typename X, typename T, T X::*P>" << endl
-     << "int" << endl
-     << "thunk (X& x, char** argv, int n)"
+     << "void" << endl
+     << "thunk (X& x, scanner& s)"
      << "{"
-     << "return parser<T>::parse (x.*P, argv, n);"
+     << "parser<T>::parse (x.*P, s);"
      << "}";
 
   os << "}"; // namespace cli

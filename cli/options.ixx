@@ -83,6 +83,26 @@ namespace cli
   {
     return value_;
   }
+
+  // argv_scanner
+  //
+  inline argv_scanner::
+  argv_scanner (int argc, char** argv)
+  : i_ (1), argc_ (argc), argv_ (argv)
+  {
+  }
+
+  inline argv_scanner::
+  argv_scanner (int start, int argc, char** argv)
+  : i_ (start), argc_ (argc), argv_ (argv)
+  {
+  }
+
+  inline int argv_scanner::
+  end () const
+  {
+    return i_;
+  }
 }
 
 // options

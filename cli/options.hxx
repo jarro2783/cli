@@ -133,6 +133,61 @@ namespace cli
     std::string option_;
     std::string value_;
   };
+
+  class eos_reached: public exception
+  {
+    public:
+    virtual void
+    print (std::ostream&) const;
+
+    virtual const char*
+    what () const throw ();
+  };
+
+  class scanner
+  {
+    public:
+    virtual
+    ~scanner ();
+
+    virtual bool
+    more () = 0;
+
+    virtual const char*
+    peek () = 0;
+
+    virtual const char*
+    next () = 0;
+
+    virtual void
+    skip () = 0;
+  };
+
+  class argv_scanner: public scanner
+  {
+    public:
+    argv_scanner (int argc, char** argv);
+    argv_scanner (int start, int argc, char** argv);
+
+    int
+    end () const;
+
+    virtual bool
+    more ();
+
+    virtual const char*
+    peek ();
+
+    virtual const char*
+    next ();
+
+    virtual void
+    skip ();
+
+    private:int i_;
+    int argc_;
+    char** argv_;
+  };
 }
 
 #include <map>
@@ -264,10 +319,8 @@ class options
   print_usage (::std::ostream&);
 
   private:
-  int
-  _parse (int start,
-          int argc,
-          char** argv,
+  void
+  _parse (::cli::scanner&,
           ::cli::unknown_mode option,
           ::cli::unknown_mode argument);
 
