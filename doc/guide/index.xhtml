@@ -561,27 +561,35 @@ class options
 class options
 {
 public:
-  options (int argc,
+  options (int&amp; argc,
            char** argv,
+           bool erase = false,
            cli::unknown_mode opt_mode = cli::unknown_mode::fail,
            cli::unknown_mode arg_mode = cli::unknown_mode::stop);
 
   options (int start,
-           int argc,
+           int&amp; argc,
            char** argv,
+           bool erase = false,
            cli::unknown_mode opt_mode = cli::unknown_mode::fail,
            cli::unknown_mode arg_mode = cli::unknown_mode::stop);
 
-  options (int argc,
+  options (int&amp; argc,
            char** argv,
            int&amp; end,
+           bool erase = false,
            cli::unknown_mode opt_mode = cli::unknown_mode::fail,
            cli::unknown_mode arg_mode = cli::unknown_mode::stop);
 
   options (int start,
-           int argc,
+           int&amp; argc,
            char** argv,
            int&amp; end,
+           bool erase = false,
+           cli::unknown_mode opt_mode = cli::unknown_mode::fail,
+           cli::unknown_mode arg_mode = cli::unknown_mode::stop);
+
+  options (cli::scanner&amp;,
            cli::unknown_mode opt_mode = cli::unknown_mode::fail,
            cli::unknown_mode arg_mode = cli::unknown_mode::stop);
 
@@ -621,7 +629,10 @@ public:
      from position 1, skipping the executable name in <code>argv[0]</code>.
      The <code>end</code> argument is used to return the position in
      the arguments array where the parsing of options stopped. This is the
-     position of the first program argument, if any.</p>
+     position of the first program argument, if any. If the <code>erase</code>
+     argument is <code>true</code>, then the recognized options and their
+     values are removed from the <code>argv</code> array and the
+     <code>argc</code> count is updated accordingly.</p>
 
   <p>The <code>opt_mode</code> and <code>arg_mode</code> arguments
      specify the parser behavior when it encounters an unknown option
@@ -657,8 +668,96 @@ namespace cli
      exception (described blow) on encountering an unknown option or argument,
      respectively.</p>
 
-  <p>The parsing constructor (those with the <code>argc/argv</code> arguments)
-     can throw the following exceptions: <code>cli::unknown_option</code>,
+  <p>Instead of the <code>argc/argv</code> arguments, the last overloaded
+     constructor accepts the <code>cli::scanner</code> object. It is part
+     of the generated CLI runtime support code and has the following
+     abstract interface:</p>
+
+  <pre>
+namespace cli
+{
+  class scanner
+  {
+  public:
+    virtual bool
+    more () = 0;
+
+    virtual const char*
+    peek () = 0;
+
+    virtual const char*
+    next () = 0;
+
+    virtual void
+    skip () = 0;
+  };
+}
+  </pre>
+
+  <p>The CLI runtime also provides two implementations of this interface:
+     <code>cli::argv_scanner</code> and <code>cli::argv_file_scanner</code>.
+     The first implementation is a simple scanner for the <code>argv</code>
+     array (it is used internally by all the other constructors) and has the
+     following interface:</p>
+
+  <pre>
+namespace cli
+{
+  class argv_scanner
+  {
+  public:
+    argv_scanner (int&amp; argc, char** argv, bool erase = false);
+    argv_scanner (int start, int&amp; argc, char** argv, bool erase = false);
+
+    int
+    end () const;
+
+    ...
+  };
+}
+  </pre>
+
+  <p>The <code>cli::argv_file_scanner</code> implementation provides
+     support for reading command line arguments from the <code>argv</code>
+     array as well as files specified with command line options. It is
+     generated only if explicitly requested with the
+     <code>--generate-file-scanner</code> CLI compiler option and has
+     the following interface:</p>
+
+  <pre>
+namespace cli
+{
+  class argv_file_scanner
+  {
+  public:
+    argv_file_scanner (int&amp; argc,
+                       char** argv,
+                       const std::string&amp; file_option,
+                       bool erase = false);
+
+    argv_file_scanner (int start,
+                       int&amp; argc,
+                       char** argv,
+                       const std::string&amp; file_option,
+                       bool erase = false);
+    ...
+  };
+}
+  </pre>
+
+  <p>The <code>file_option</code> argument is used to pass the option name
+     that should be recognized as specifying the file containing additional
+     options. Such a file contains a set of options, each appearing on a
+     separate line optionally followed by space and an argument. Empty lines
+     and lines starting with <code>#</code> are ignored. The semantics
+     of providing options in a file is equivalent to providing the same set
+     of options in the same order on the command line at the point where the
+     options file is specified, except that shell escaping and quoting is not
+     required. Multiple files can be specified by including several file
+     options on the command line or inside other files.</p>
+
+  <p>The parsing constructor (those with the <code>argc/argv</code> or
+     <code>cli::scanner</code> arguments) can throw the following exceptions: <code>cli::unknown_option</code>,
      <code>cli::unknown_argument</code>, <code>cli::missing_value</code>, and
      <code>cli::invalid_value</code>. The first two exceptions are thrown
      on encountering unknown options and arguments, respectively, as
@@ -666,6 +765,16 @@ namespace cli
      an option value is missing. The <code>invalid_value</code> exception is
      thrown when an option value is invalid, for example, a non-integer value
      is specified for an option of type <code>int</code>.</p>
+
+  <p>Furthermore, all scanners (and thus the parsing constructors that
+     call them) can throw the <code>cli::eos_reached</code> exception
+     which indicates that one of the <code>peek()</code>, <code>next()</code>,
+     or <code>skip()</code> functions were called while <code>more()</code>
+     returns <code>false</code>. Catching this exception normally indicates an
+     error in an option parser implementation. The <code>argv_file_scanner</code>
+     class can also throw the <code>cli::file_io_failure</code> exception
+     which indicates that a file could not be opened or there was a reading
+     error.</p>
 
   <p>All CLI exceptions are derived from the common <code>cli::exception</code>
      class which implements the polymorphic <code>std::ostream</code> insertion.
@@ -752,6 +861,31 @@ namespace cli
 
     const std::string&amp;
     value () const;
+
+    virtual void
+    print (std::ostream&amp;) const;
+
+    virtual const char*
+    what () const throw ();
+  };
+
+  class eos_reached: public exception
+  {
+  public:
+    virtual void
+    print (std::ostream&amp;) const;
+
+    virtual const char*
+    what () const throw ();
+  };
+
+  class file_io_failure: public exception
+  {
+  public:
+    file_io_failure (const std::string&amp; file);
+
+    const std::string&amp;
+    file () const;
 
     virtual void
     print (std::ostream&amp;) const;

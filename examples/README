@@ -9,3 +9,7 @@ hello
 
 features
   Shows how to use various features of the CLI language.
+
+file
+  Shows how to allow the users of your application to supply options in 
+  files in addition to the command line.

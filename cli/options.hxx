@@ -166,8 +166,8 @@ namespace cli
   class argv_scanner: public scanner
   {
     public:
-    argv_scanner (int argc, char** argv);
-    argv_scanner (int start, int argc, char** argv);
+    argv_scanner (int& argc, char** argv, bool erase = false);
+    argv_scanner (int start, int& argc, char** argv, bool erase = false);
 
     int
     end () const;
@@ -184,9 +184,11 @@ namespace cli
     virtual void
     skip ();
 
-    private:int i_;
-    int argc_;
+    private:
+    int i_;
+    int& argc_;
     char** argv_;
+    bool erase_;
   };
 }
 
@@ -202,27 +204,35 @@ class options
 {
   public:
 
-  options (int argc,
+  options (int& argc,
            char** argv,
+           bool erase = false,
            ::cli::unknown_mode option = ::cli::unknown_mode::fail,
            ::cli::unknown_mode argument = ::cli::unknown_mode::stop);
 
   options (int start,
-           int argc,
+           int& argc,
            char** argv,
+           bool erase = false,
            ::cli::unknown_mode option = ::cli::unknown_mode::fail,
            ::cli::unknown_mode argument = ::cli::unknown_mode::stop);
 
-  options (int argc,
+  options (int& argc,
            char** argv,
            int& end,
+           bool erase = false,
            ::cli::unknown_mode option = ::cli::unknown_mode::fail,
            ::cli::unknown_mode argument = ::cli::unknown_mode::stop);
 
   options (int start,
-           int argc,
+           int& argc,
            char** argv,
            int& end,
+           bool erase = false,
+           ::cli::unknown_mode option = ::cli::unknown_mode::fail,
+           ::cli::unknown_mode argument = ::cli::unknown_mode::stop);
+
+  options (::cli::scanner&,
            ::cli::unknown_mode option = ::cli::unknown_mode::fail,
            ::cli::unknown_mode argument = ::cli::unknown_mode::stop);
 
@@ -240,6 +250,9 @@ class options
 
   const bool&
   generate_modifier () const;
+
+  const bool&
+  generate_file_scanner () const;
 
   const bool&
   suppress_inline () const;
@@ -329,6 +342,7 @@ class options
   bool version_;
   std::string output_dir_;
   bool generate_modifier_;
+  bool generate_file_scanner_;
   bool suppress_inline_;
   bool suppress_usage_;
   bool long_usage_;

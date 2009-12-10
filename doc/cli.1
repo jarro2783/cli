@@ -73,6 +73,11 @@ Write the generated files to \fIdir\fP instead of the current directory\.
 .IP "\fB--generate-modifier\fP"
 Generate option value modifiers in addition to accessors\.
 
+.IP "\fB--generate-file-scanner\fP"
+Generate the argv_file_scanner implementation\. This scanner is capable of
+reading command line arguments from the argv array as well as files
+specified with command line options\.
+
 .IP "\fB--suppress-inline\fP"
 Generate all functions non-inline\. By default simple functions are made
 inline\. This option suppresses creation of the inline file\.

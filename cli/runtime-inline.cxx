@@ -103,18 +103,36 @@ generate_runtime_inline (context& ctx)
      << "return value_;"
      << "}";
 
+  if (ctx.options.generate_file_scanner ())
+  {
+    os << "// file_io_failure" << endl
+       << "//" << endl
+
+       << inl << "file_io_failure::" << endl
+       << "file_io_failure (const std::string& file)" << endl
+       << ": file_ (file)"
+       << "{"
+       << "}"
+
+       << inl << "const std::string& file_io_failure::" << endl
+       << "file () const"
+       << "{"
+       << "return file_;"
+       << "}";
+  }
+
   os << "// argv_scanner" << endl
      << "//" << endl;
 
   os << inl << "argv_scanner::" << endl
-     << "argv_scanner (int argc, char** argv)" << endl
-     << ": i_ (1), argc_ (argc), argv_ (argv)"
+     << "argv_scanner (int& argc, char** argv, bool erase)" << endl
+     << ": i_ (1), argc_ (argc), argv_ (argv), erase_ (erase)"
      << "{"
      << "}";
 
   os << inl << "argv_scanner::" << endl
-     << "argv_scanner (int start, int argc, char** argv)" << endl
-     << ": i_ (start), argc_ (argc), argv_ (argv)"
+     << "argv_scanner (int start, int& argc, char** argv, bool erase)" << endl
+     << ": i_ (start), argc_ (argc), argv_ (argv), erase_ (erase)"
      << "{"
      << "}";
 
@@ -123,6 +141,43 @@ generate_runtime_inline (context& ctx)
      << "{"
      << "return i_;"
      << "}";
+
+  // argv_file_scanner
+  //
+  if (ctx.options.generate_file_scanner ())
+  {
+    bool sep (!ctx.opt_sep.empty ());
+
+    os << "// argv_file_scanner" << endl
+       << "//" << endl;
+
+    os << inl << "argv_file_scanner::" << endl
+       << "argv_file_scanner (int& argc," << endl
+       << "char** argv," << endl
+       << "const std::string& option," << endl
+       << "bool erase)" << endl
+       << ": argv_scanner (argc, argv, erase)," << endl
+       << "  option_ (option)";
+    if (sep)
+      os << "," << endl
+         << "  skip_ (false)";
+    os << "{"
+       << "}";
+
+    os << inl << "argv_file_scanner::" << endl
+       << "argv_file_scanner (int start," << endl
+       << "int& argc," << endl
+       << "char** argv," << endl
+       << "const std::string& option," << endl
+       << "bool erase)" << endl
+       << ": argv_scanner (start, argc, argv, erase)," << endl
+       << "  option_ (option)";
+    if (sep)
+      os << "," << endl
+         << "  skip_ (false)";
+    os << "{"
+       << "}";
+  }
 
   os << "}"; // namespace cli
 }

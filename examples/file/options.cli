@@ -1,0 +1,7 @@
+include <vector>;
+
+class options
+{
+  int --verbose;
+  std::vector<int> --val;
+};

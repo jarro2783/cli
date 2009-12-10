@@ -24,7 +24,11 @@ namespace
         os << "," << endl
            << "  ";
       else
+      {
+        os << endl
+           << ": ";
         comma_ = true;
+      }
 
       os << emember (o);
 
@@ -356,73 +360,86 @@ namespace
       string um ("::cli::unknown_mode");
 
       os << name << "::" << endl
-         << name << " (int argc," << endl
+         << name << " (int& argc," << endl
          << "char** argv," << endl
+         << "bool erase," << endl
          << um << " opt," << endl
-         << um << " arg)" << endl
-         << ": ";
+         << um << " arg)";
       {
         option_init init (*this);
         traversal::names names_init (init);
         names (c, names_init);
       }
       os << "{"
-         << "::cli::argv_scanner s (argc, argv);"
+         << "::cli::argv_scanner s (argc, argv, erase);"
          << "_parse (s, opt, arg);"
          << "}";
 
       os << name << "::" << endl
          << name << " (int start," << endl
-         << "int argc," << endl
+         << "int& argc," << endl
          << "char** argv," << endl
+         << "bool erase," << endl
          << um << " opt," << endl
-         << um << " arg)" << endl
-         << ": ";
+         << um << " arg)";
       {
         option_init init (*this);
         traversal::names names_init (init);
         names (c, names_init);
       }
       os << "{"
-         << "::cli::argv_scanner s (start, argc, argv);"
+         << "::cli::argv_scanner s (start, argc, argv, erase);"
          << "_parse (s, opt, arg);"
          << "}";
 
       os << name << "::" << endl
-         << name << " (int argc," << endl
+         << name << " (int& argc," << endl
          << "char** argv," << endl
          << "int& end," << endl
+         << "bool erase," << endl
          << um << " opt," << endl
-         << um << " arg)" << endl
-         << ": ";
+         << um << " arg)";
       {
         option_init init (*this);
         traversal::names names_init (init);
         names (c, names_init);
       }
       os << "{"
-         << "::cli::argv_scanner s (argc, argv);"
+         << "::cli::argv_scanner s (argc, argv, erase);"
          << "_parse (s, opt, arg);"
          << "end = s.end ();"
          << "}";
 
       os << name << "::" << endl
          << name << " (int start," << endl
-         << "int argc," << endl
+         << "int& argc," << endl
          << "char** argv," << endl
          << "int& end," << endl
+         << "bool erase," << endl
          << um << " opt," << endl
-         << um << " arg)" << endl
-         << ": ";
+         << um << " arg)";
       {
         option_init init (*this);
         traversal::names names_init (init);
         names (c, names_init);
       }
       os << "{"
-         << "::cli::argv_scanner s (start, argc, argv);"
+         << "::cli::argv_scanner s (start, argc, argv, erase);"
          << "_parse (s, opt, arg);"
          << "end = s.end ();"
+         << "}";
+
+      os << name << "::" << endl
+         << name << " (::cli::scanner& s," << endl
+         << um << " opt," << endl
+         << um << " arg)";
+      {
+        option_init init (*this);
+        traversal::names names_init (init);
+        names (c, names_init);
+      }
+      os << "{"
+         << "_parse (s, opt, arg);"
          << "}";
 
       // usage

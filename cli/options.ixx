@@ -87,14 +87,14 @@ namespace cli
   // argv_scanner
   //
   inline argv_scanner::
-  argv_scanner (int argc, char** argv)
-  : i_ (1), argc_ (argc), argv_ (argv)
+  argv_scanner (int& argc, char** argv, bool erase)
+  : i_ (1), argc_ (argc), argv_ (argv), erase_ (erase)
   {
   }
 
   inline argv_scanner::
-  argv_scanner (int start, int argc, char** argv)
-  : i_ (start), argc_ (argc), argv_ (argv)
+  argv_scanner (int start, int& argc, char** argv, bool erase)
+  : i_ (start), argc_ (argc), argv_ (argv), erase_ (erase)
   {
   }
 
@@ -130,6 +130,12 @@ inline const bool& options::
 generate_modifier () const
 {
   return this->generate_modifier_;
+}
+
+inline const bool& options::
+generate_file_scanner () const
+{
+  return this->generate_file_scanner_;
 }
 
 inline const bool& options::

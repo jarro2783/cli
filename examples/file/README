@@ -1,0 +1,38 @@
+This example shows how to allow the users of your application to supply
+options in files in addition to the command line.
+
+The example consists of the following files:
+
+options.cli
+  Command line interface description in the CLI language.
+
+options.hxx
+options.ixx
+options.cxx
+  Command line interface implementation in C++. These files are generated 
+  by the CLI compiler from options.cli using the following command line:
+
+  cli --generate-file-scanner hello.cli
+
+  We use the --generate-file-scanner CLI compiler option to include the 
+  argv_file_scanner scanner implementation which provides support for 
+  reading options from files in addition to the command line.
+
+driver.cxx
+  Driver for the example. It first creates the argv_file_scanner object 
+  and indicates that the values for the --options-file option should be 
+  recognized as files containing additional options. It then passes this
+  scanner object to the option class which parses the command line. The
+  driver then prints the option values.
+
+test.ops
+  Sample options file.
+
+To run this example you can try the following command line:
+
+$ ./driver --verbose 2 --val 1 --options-file test.ops --val 4
+
+The output will be:
+
+verbosity: 5
+values: 1 2 3 4

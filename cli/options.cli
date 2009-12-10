@@ -3,8 +3,8 @@
 // copyright : Copyright (c) 2009 Code Synthesis Tools CC
 // license   : MIT; see accompanying LICENSE file
 
-// NOTE: Make sure you have a working CLI compiler around
-// before modifying this file.
+// NOTE: Make sure you have a working CLI compiler around before
+// modifying this file.
 //
 
 include <map>;
@@ -26,6 +26,13 @@ class options
   bool --generate-modifier
   {
     "Generate option value modifiers in addition to accessors."
+  };
+
+  bool --generate-file-scanner
+  {
+    "Generate the \c{argv_file_scanner} implementation. This scanner is
+     capable of reading command line arguments from the \c{argv} array as
+     well as files specified with command line options."
   };
 
   bool --suppress-inline

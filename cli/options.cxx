@@ -132,7 +132,22 @@ namespace cli
   next ()
   {
     if (i_ < argc_)
-      return argv_[i_++];
+    {
+      const char* r (argv_[i_]);
+
+      if (erase_)
+      {
+        for (int i (i_ + 1); i < argc_; ++i)
+          argv_[i - 1] = argv_[i];
+
+        --argc_;
+        argv_[argc_] = 0;
+      }
+      else
+        ++i_;
+
+      return r;
+    }
     else
       throw eos_reached ();
   }
@@ -141,7 +156,7 @@ namespace cli
   skip ()
   {
     if (i_ < argc_)
-      i_++;
+      ++i_;
     else
       throw eos_reached ();
   }
@@ -289,14 +304,16 @@ namespace cli
 //
 
 options::
-options (int argc,
+options (int& argc,
          char** argv,
+         bool erase,
          ::cli::unknown_mode opt,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
   output_dir_ (),
   generate_modifier_ (),
+  generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -322,20 +339,22 @@ options (int argc,
   guard_prefix_ (),
   reserved_name_ ()
 {
-  ::cli::argv_scanner s (argc, argv);
+  ::cli::argv_scanner s (argc, argv, erase);
   _parse (s, opt, arg);
 }
 
 options::
 options (int start,
-         int argc,
+         int& argc,
          char** argv,
+         bool erase,
          ::cli::unknown_mode opt,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
   output_dir_ (),
   generate_modifier_ (),
+  generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -361,20 +380,22 @@ options (int start,
   guard_prefix_ (),
   reserved_name_ ()
 {
-  ::cli::argv_scanner s (start, argc, argv);
+  ::cli::argv_scanner s (start, argc, argv, erase);
   _parse (s, opt, arg);
 }
 
 options::
-options (int argc,
+options (int& argc,
          char** argv,
          int& end,
+         bool erase,
          ::cli::unknown_mode opt,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
   output_dir_ (),
   generate_modifier_ (),
+  generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -400,22 +421,24 @@ options (int argc,
   guard_prefix_ (),
   reserved_name_ ()
 {
-  ::cli::argv_scanner s (argc, argv);
+  ::cli::argv_scanner s (argc, argv, erase);
   _parse (s, opt, arg);
   end = s.end ();
 }
 
 options::
 options (int start,
-         int argc,
+         int& argc,
          char** argv,
          int& end,
+         bool erase,
          ::cli::unknown_mode opt,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
   output_dir_ (),
   generate_modifier_ (),
+  generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -441,9 +464,46 @@ options (int start,
   guard_prefix_ (),
   reserved_name_ ()
 {
-  ::cli::argv_scanner s (start, argc, argv);
+  ::cli::argv_scanner s (start, argc, argv, erase);
   _parse (s, opt, arg);
   end = s.end ();
+}
+
+options::
+options (::cli::scanner& s,
+         ::cli::unknown_mode opt,
+         ::cli::unknown_mode arg)
+: help_ (),
+  version_ (),
+  output_dir_ (),
+  generate_modifier_ (),
+  generate_file_scanner_ (),
+  suppress_inline_ (),
+  suppress_usage_ (),
+  long_usage_ (),
+  option_length_ (0),
+  generate_cxx_ (),
+  generate_man_ (),
+  generate_html_ (),
+  man_prologue_ (),
+  man_epilogue_ (),
+  html_prologue_ (),
+  html_epilogue_ (),
+  class__ (),
+  stdout_ (),
+  hxx_suffix_ (".hxx"),
+  ixx_suffix_ (".ixx"),
+  cxx_suffix_ (".cxx"),
+  man_suffix_ (".1"),
+  html_suffix_ (".html"),
+  option_prefix_ ("-"),
+  option_separator_ ("--"),
+  include_with_brackets_ (),
+  include_prefix_ (),
+  guard_prefix_ (),
+  reserved_name_ ()
+{
+  _parse (s, opt, arg);
 }
 
 void options::
@@ -458,6 +518,8 @@ print_usage (::std::ostream& os)
 
   os << "--generate-modifier          Generate option value modifiers in addition to" << ::std::endl
      << "                             accessors." << ::std::endl;
+
+  os << "--generate-file-scanner      Generate the 'argv_file_scanner' implementation." << ::std::endl;
 
   os << "--suppress-inline            Generate all functions non-inline." << ::std::endl;
 
@@ -547,6 +609,8 @@ struct _cli_options_map_init
     &::cli::thunk< options, std::string, &options::output_dir_ >;
     _cli_options_map_["--generate-modifier"] = 
     &::cli::thunk< options, bool, &options::generate_modifier_ >;
+    _cli_options_map_["--generate-file-scanner"] = 
+    &::cli::thunk< options, bool, &options::generate_file_scanner_ >;
     _cli_options_map_["--suppress-inline"] = 
     &::cli::thunk< options, bool, &options::suppress_inline_ >;
     _cli_options_map_["--suppress-usage"] = 

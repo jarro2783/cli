@@ -73,30 +73,39 @@ namespace
       //
       string um ("::cli::unknown_mode");
 
-      os << name << " (int argc," << endl
+      os << name << " (int& argc," << endl
          << "char** argv," << endl
+         << "bool erase = false," << endl
          << um << " option = " << um << "::fail," << endl
          << um << " argument = " << um << "::stop);"
          << endl;
 
       os << name << " (int start," << endl
-         << "int argc," << endl
+         << "int& argc," << endl
          << "char** argv," << endl
+         << "bool erase = false," << endl
          << um << " option = " << um << "::fail," << endl
          << um << " argument = " << um << "::stop);"
          << endl;
 
-      os << name << " (int argc," << endl
+      os << name << " (int& argc," << endl
          << "char** argv," << endl
          << "int& end," << endl
+         << "bool erase = false," << endl
          << um << " option = " << um << "::fail," << endl
          << um << " argument = " << um << "::stop);"
          << endl;
 
       os << name << " (int start," << endl
-         << "int argc," << endl
+         << "int& argc," << endl
          << "char** argv," << endl
          << "int& end," << endl
+         << "bool erase = false," << endl
+         << um << " option = " << um << "::fail," << endl
+         << um << " argument = " << um << "::stop);"
+         << endl;
+
+      os << name << " (::cli::scanner&," << endl
          << um << " option = " << um << "::fail," << endl
          << um << " argument = " << um << "::stop);"
          << endl;

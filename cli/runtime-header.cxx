@@ -12,6 +12,9 @@ generate_runtime_header (context& ctx)
 {
   ostream& os (ctx.os);
 
+  if (ctx.options.generate_file_scanner ())
+    os << "#include <deque>" << endl;
+
   os << "#include <iosfwd>" << endl
      << "#include <string>" << endl
      << "#include <exception>" << endl
@@ -155,6 +158,30 @@ generate_runtime_header (context& ctx)
      << "what () const throw ();"
      << "};";
 
+  if (ctx.options.generate_file_scanner ())
+  {
+    os << "class file_io_failure: public exception"
+       << "{"
+       << "public:" << endl
+       << "virtual" << endl
+       << "~file_io_failure () throw ();"
+       << endl
+       << "file_io_failure (const std::string& file);"
+       << endl
+       << "const std::string&" << endl
+       << "file () const;"
+       << endl
+       << "virtual void" << endl
+       << "print (std::ostream&) const;"
+       << endl
+       << "virtual const char*" << endl
+       << "what () const throw ();"
+       << endl
+       << "private:" << endl
+       << "std::string file_;"
+       << "};";
+  }
+
   // scanner
   //
   os << "class scanner"
@@ -181,8 +208,8 @@ generate_runtime_header (context& ctx)
   os << "class argv_scanner: public scanner"
      << "{"
      << "public:" << endl
-     << "argv_scanner (int argc, char** argv);"
-     << "argv_scanner (int start, int argc, char** argv);"
+     << "argv_scanner (int& argc, char** argv, bool erase = false);"
+     << "argv_scanner (int start, int& argc, char** argv, bool erase = false);"
      << endl
      << "int" << endl
      << "end () const;"
@@ -199,11 +226,58 @@ generate_runtime_header (context& ctx)
      << "virtual void" << endl
      << "skip ();"
      << endl
-     << "private:"
+     << "private:" << endl
      << "int i_;"
-     << "int argc_;"
+     << "int& argc_;"
      << "char** argv_;"
+     << "bool erase_;"
      << "};";
+
+  // argv_file_scanner
+  //
+  if (ctx.options.generate_file_scanner ())
+  {
+    os << "class argv_file_scanner: public argv_scanner"
+       << "{"
+       << "public:" << endl
+       << "argv_file_scanner (int& argc," << endl
+       << "char** argv," << endl
+       << "const std::string& file_option," << endl
+       << "bool erase = false);"
+       << endl
+       << "argv_file_scanner (int start," << endl
+       << "int& argc," << endl
+       << "char** argv," << endl
+       << "const std::string& file_option," << endl
+       << "bool erase = false);"
+       << endl
+       << "virtual bool" << endl
+       << "more ();"
+       << endl
+       << "virtual const char*" << endl
+       << "peek ();"
+       << endl
+       << "virtual const char*" << endl
+       << "next ();"
+       << endl
+       << "virtual void" << endl
+       << "skip ();"
+       << endl
+       << "private:" << endl
+       << "void" << endl
+       << "load (const char* file);"
+       << endl
+       << "typedef argv_scanner base;"
+       << endl
+       << "const std::string option_;"
+       << "std::string hold_;"
+       << "std::deque<std::string> args_;";
+
+    if (!ctx.opt_sep.empty ())
+      os << "bool skip_;";
+
+    os << "};";
+  }
 
   os << "}"; // namespace cli
 }

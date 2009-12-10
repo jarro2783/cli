@@ -17,8 +17,13 @@ generate_runtime_source (context& ctx)
      << "#include <string>" << endl
      << "#include <vector>" << endl
      << "#include <ostream>" << endl
-     << "#include <sstream>" << endl
-     << endl;
+     << "#include <sstream>" << endl;
+
+  if (ctx.options.generate_file_scanner ())
+    os << "#include <cstring>" << endl
+       << "#include <fstream>" << endl;
+
+  os << endl;
 
   os << "namespace cli"
      << "{";
@@ -31,11 +36,13 @@ generate_runtime_source (context& ctx)
      << "~unknown_option () throw ()"
      << "{"
      << "}"
+
      << "void unknown_option::" << endl
      << "print (std::ostream& os) const"
      << "{"
      << "os << \"unknown option '\" << option () << \"'\";"
      << "}"
+
      << "const char* unknown_option::" << endl
      << "what () const throw ()"
      << "{"
@@ -50,11 +57,13 @@ generate_runtime_source (context& ctx)
      << "~unknown_argument () throw ()"
      << "{"
      << "}"
+
      << "void unknown_argument::" << endl
      << "print (std::ostream& os) const"
      << "{"
      << "os << \"unknown argument '\" << argument () << \"'\";"
      << "}"
+
      << "const char* unknown_argument::" << endl
      << "what () const throw ()"
      << "{"
@@ -69,11 +78,13 @@ generate_runtime_source (context& ctx)
      << "~missing_value () throw ()"
      << "{"
      << "}"
+
      << "void missing_value::" << endl
      << "print (std::ostream& os) const"
      << "{"
      << "os << \"missing value for option '\" << option () << \"'\";"
      << "}"
+
      << "const char* missing_value::" << endl
      << "what () const throw ()"
      << "{"
@@ -88,12 +99,14 @@ generate_runtime_source (context& ctx)
      << "~invalid_value () throw ()"
      << "{"
      << "}"
+
      << "void invalid_value::" << endl
      << "print (std::ostream& os) const"
      << "{"
      << "os << \"invalid value '\" << value () << \"' for option '\"" << endl
      << "   << option () << \"'\";"
      << "}"
+
      << "const char* invalid_value::" << endl
      << "what () const throw ()"
      << "{"
@@ -109,11 +122,36 @@ generate_runtime_source (context& ctx)
      << "{"
      << "os << what ();"
      << "}"
+
      << "const char* eos_reached::" << endl
      << "what () const throw ()"
      << "{"
      << "return \"end of argument stream reached\";"
      << "}";
+
+  // file_io_failure
+  //
+  if (ctx.options.generate_file_scanner ())
+  {
+    os << "// file_io_failure" << endl
+       << "//" << endl
+       << "file_io_failure::" << endl
+       << "~file_io_failure () throw ()"
+       << "{"
+       << "}"
+
+       << "void file_io_failure::" << endl
+       << "print (std::ostream& os) const"
+       << "{"
+       << "os << \"unable to open file '\" << file () << \"' or read failure\";"
+       << "}"
+
+       << "const char* file_io_failure::" << endl
+       << "what () const throw ()"
+       << "{"
+       << "return \"unable to open file or read failure\";"
+       << "}";
+  }
 
   // scanner
   //
@@ -147,8 +185,23 @@ generate_runtime_source (context& ctx)
      << "const char* argv_scanner::" << endl
      << "next ()"
      << "{"
-     << "if (i_ < argc_)" << endl
-     << "return argv_[i_++];"
+     << "if (i_ < argc_)"
+     << "{"
+     << "const char* r (argv_[i_]);"
+     << endl
+     << "if (erase_)"
+     << "{"
+     << "for (int i (i_ + 1); i < argc_; ++i)" << endl
+     << "argv_[i - 1] = argv_[i];"
+     << endl
+     << "--argc_;"
+     << "argv_[argc_] = 0;"
+     << "}"
+     << "else" << endl
+     << "++i_;"
+     << endl
+     << "return r;"
+     << "}"
      << "else" << endl
      << "throw eos_reached ();"
      << "}"
@@ -157,10 +210,175 @@ generate_runtime_source (context& ctx)
      << "skip ()"
      << "{"
      << "if (i_ < argc_)" << endl
-     << "i_++;"
+     << "++i_;"
      << "else" << endl
      << "throw eos_reached ();"
      << "}";
+
+  // argv_file_scanner
+  //
+  if (ctx.options.generate_file_scanner ())
+  {
+    bool sep (!ctx.opt_sep.empty ());
+
+    os << "// argv_file_scanner" << endl
+       << "//" << endl
+
+       << "bool argv_file_scanner::" << endl
+       << "more ()"
+       << "{"
+       << "if (!args_.empty ())" << endl
+       << "return true;"
+       << endl
+       << "while (base::more ())"
+       << "{"
+       << "// See if the next argument is the file option." << endl
+       << "//" << endl
+       << "const char* a (base::peek ());"
+       << endl
+       << "if (" << (sep ? "!skip_ && " : "") << "a == option_)"
+       << "{"
+       << "base::next ();"
+       << endl
+       << "if (!base::more ())" << endl
+       << "throw missing_value (option_);"
+       << endl
+       << "load (base::next ());"
+       << endl
+       << "if (!args_.empty ())" << endl
+       << "return true;"
+       << "}"
+       << "else"
+       << "{";
+    if (sep)
+      os << "if (!skip_)" << endl
+         << "skip_ = (std::strcmp (a, \"" << ctx.opt_sep << "\") == 0);"
+         << endl;
+    os << "return true;"
+       << "}"
+       << "}" // while
+       << "return false;"
+       << "}"
+
+       << "const char* argv_file_scanner::" << endl
+       << "peek ()"
+       << "{"
+       << "if (!more ())" << endl
+       << "throw eos_reached ();"
+       << endl
+       << "return args_.empty () ? base::peek () : args_.front ().c_str ();"
+       << "}"
+
+       << "const char* argv_file_scanner::" << endl
+       << "next ()"
+       << "{"
+       << "if (!more ())" << endl
+       << "throw eos_reached ();"
+       << endl
+       << "if (args_.empty ())" << endl
+       << "return base::next ();"
+       << "else"
+       << "{"
+       << "hold_.swap (args_.front ());"
+       << "args_.pop_front ();"
+       << "return hold_.c_str ();"
+       << "}"
+       << "}"
+
+       << "void argv_file_scanner::" << endl
+       << "skip ()"
+       << "{"
+       << "if (!more ())" << endl
+       << "throw eos_reached ();"
+       << endl
+       << "if (args_.empty ())" << endl
+       << "return base::skip ();"
+       << "else" << endl
+       << "args_.pop_front ();"
+       << "}"
+
+       << "void argv_file_scanner::" << endl
+       << "load (const char* file)"
+       << "{"
+       << "using namespace std;"
+       << endl
+       << "ifstream is (file);"
+       << endl
+       << "if (!is.is_open ())" << endl
+       << "throw file_io_failure (file);"
+       << endl
+       << "while (!is.eof ())"
+       << "{"
+       << "string line;"
+       << "getline (is, line);"
+       << endl
+       << "if (is.fail () && !is.eof ())" << endl
+       << "throw file_io_failure (file);"
+       << endl
+       << "string::size_type n (line.size ());"
+       << endl
+       << "// Trim the line from leading and trailing whitespaces." << endl
+       << "//" << endl
+       << "if (n != 0)"
+       << "{"
+       << "const char* f (line.c_str ());"
+       << "const char* l (f + n);"
+       << endl
+       << "const char* of (f);"
+       << "while (f < l && (*f == ' ' || *f == '\\t' || *f == '\\r'))" << endl
+       << "++f;"
+       << endl
+       << "--l;"
+       << endl
+       << "const char* ol (l);"
+       << "while (l > f && (*l == ' ' || *l == '\\t' || *l == '\\r'))" << endl
+       << "--l;"
+       << endl
+       << "if (f != of || l != ol)" << endl
+       << "line = f <= l ? string (f, l - f + 1) : string ();"
+       << "}"
+       << "// Ignore empty lines, those that start with #." << endl
+       << "//" << endl
+       << "if (line.empty () || line[0] == '#')" << endl
+       << "continue;"
+       << endl
+       << "string::size_type p (line.find (' '));"
+       << endl
+       << "if (p == string::npos)"
+       << "{";
+    if (sep)
+      os << "if (!skip_)" << endl
+         << "skip_ = (line == \"" << ctx.opt_sep << "\");"
+         << endl;
+    os << "args_.push_back (line);"
+       << "}"
+       << "else"
+       << "{"
+       << "string s1 (line, 0, p);"
+       << endl
+       << "// Skip leading whitespaces in the argument." << endl
+       << "//" << endl
+       << "n = line.size ();"
+       << "for (++p; p < n; ++p)"
+       << "{"
+       << "char c (line[p]);"
+       << endl
+       << "if (c != ' ' && c != '\\t' && c != '\\r')" << endl
+       << "break;"
+       << "}"
+       << "string s2 (line, p);"
+       << endl
+       << "if (" << (sep ? "!skip_ && " : "") << "s1 == option_)" << endl
+       << "load (s2.c_str ());"
+       << "else"
+       << "{"
+       << "args_.push_back (s1);"
+       << "args_.push_back (s2);"
+       << "}"
+       << "}"
+       << "}" // while
+       << "}";
+  }
 
   // parser class template & its specializations
   //
