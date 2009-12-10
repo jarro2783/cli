@@ -84,6 +84,20 @@ namespace cli
     return value_;
   }
 
+  // file_io_failure
+  //
+  inline file_io_failure::
+  file_io_failure (const std::string& file)
+  : file_ (file)
+  {
+  }
+
+  inline const std::string& file_io_failure::
+  file () const
+  {
+    return file_;
+  }
+
   // argv_scanner
   //
   inline argv_scanner::
@@ -102,6 +116,31 @@ namespace cli
   end () const
   {
     return i_;
+  }
+
+  // argv_file_scanner
+  //
+  inline argv_file_scanner::
+  argv_file_scanner (int& argc,
+                     char** argv,
+                     const std::string& option,
+                     bool erase)
+  : argv_scanner (argc, argv, erase),
+    option_ (option),
+    skip_ (false)
+  {
+  }
+
+  inline argv_file_scanner::
+  argv_file_scanner (int start,
+                     int& argc,
+                     char** argv,
+                     const std::string& option,
+                     bool erase)
+  : argv_scanner (start, argc, argv, erase),
+    option_ (option),
+    skip_ (false)
+  {
   }
 }
 
@@ -280,5 +319,11 @@ inline const std::map<std::string, std::string>& options::
 reserved_name () const
 {
   return this->reserved_name_;
+}
+
+inline const std::string& options::
+options_file () const
+{
+  return this->options_file_;
 }
 

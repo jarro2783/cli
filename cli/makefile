@@ -64,7 +64,7 @@ genf := $(cli_tun:.cli=.hxx) $(cli_tun:.cli=.ixx) $(cli_tun:.cli=.cxx)
 gen  := $(addprefix $(out_base)/,$(genf))
 
 $(gen): cli := $(out_root)/cli/cli
-$(gen): cli_options := --guard-prefix CLI
+$(gen): cli_options := --generate-file-scanner --guard-prefix CLI
 
 $(call include-dep,$(cxx_od),$(cxx_obj),$(gen))
 

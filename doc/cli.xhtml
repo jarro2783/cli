@@ -204,6 +204,16 @@
   that should not be used as identifiers. If provided, the replacement name is
   used instead. All C++ keywords are already in this list.</dd>
 
+  <dt><code><b>--options-file</b></code> <i>file</i></dt>
+  <dd>Read additional options from <i>file</i> with each option appearing on a
+  separate line optionally followed by space and an option value. Empty lines
+  and lines starting with <code><b>#</b></code> are ignored. The semantics of
+  providing options in a file is equivalent to providing the same set of
+  options in the same order on the command line at the point where the
+  <code><b>--options-file</b></code> option is specified except that shell
+  escaping and quoting is not required. Repeat this option to specify more
+  than one options files.</dd>
+
 </dl>
   <h1>DIAGNOSTICS</h1>
 

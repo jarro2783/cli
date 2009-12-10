@@ -43,6 +43,9 @@ Version 1.1.0
     3.1, "Option Class Definition" in the Getting Started Guide as well as
     the 'file' example.
 
+  * New option, --options-file, allows additional CLI command line options
+    to be provided in files (implemented using argv_file_scanner).
+
 Version 1.0.0
 
   * First public release.

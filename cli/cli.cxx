@@ -20,11 +20,12 @@ int
 main (int argc, char* argv[])
 {
   ostream& e (cerr);
+  const char* file (0);
 
   try
   {
-    int end;
-    options ops (argc, argv, end);
+    cli::argv_file_scanner scan (argc, argv, "--options-file");
+    options ops (scan);
 
     // Handle --version
     //
@@ -53,7 +54,7 @@ main (int argc, char* argv[])
       return 0;
     }
 
-    if (end == argc)
+    if (!scan.more ())
     {
       e << "error: no input file specified" << endl
         << "info: try '" << argv[0] << " --help' for more information" << endl;
@@ -61,7 +62,8 @@ main (int argc, char* argv[])
       return 1;
     }
 
-    semantics::path path (argv[end]);
+    file = scan.next ();
+    semantics::path path (file);
 
     ifstream ifs (path.string ().c_str ());
     if (!ifs.is_open ())
@@ -91,7 +93,7 @@ main (int argc, char* argv[])
   }
   catch (std::ios_base::failure const&)
   {
-    e << argv[1] << ": error: read failure" << endl;
+    e << file << ": error: read failure" << endl;
     return 1;
   }
   catch (parser::invalid_input const&)

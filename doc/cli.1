@@ -178,6 +178,15 @@ Add \fIname\fP with an optional \fIrep\fP replacement to the list of names
 that should not be used as identifiers\. If provided, the replacement name
 is used instead\. All C++ keywords are already in this list\.
 
+.IP "\fB--options-file\fP \fIfile\fP"
+Read additional options from \fIfile\fP with each option appearing on a
+separate line optionally followed by space and an option value\. Empty lines
+and lines starting with \fB#\fP are ignored\. The semantics of providing
+options in a file is equivalent to providing the same set of options in the
+same order on the command line at the point where the \fB--options-file\fP
+option is specified except that shell escaping and quoting is not required\.
+Repeat this option to specify more than one options files\.
+
 .\"
 .\" DIAGNOSTICS
 .\"

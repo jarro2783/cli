@@ -5,6 +5,7 @@
 #ifndef CLI_OPTIONS_HXX
 #define CLI_OPTIONS_HXX
 
+#include <deque>
 #include <iosfwd>
 #include <string>
 #include <exception>
@@ -144,6 +145,27 @@ namespace cli
     what () const throw ();
   };
 
+  class file_io_failure: public exception
+  {
+    public:
+    virtual
+    ~file_io_failure () throw ();
+
+    file_io_failure (const std::string& file);
+
+    const std::string&
+    file () const;
+
+    virtual void
+    print (std::ostream&) const;
+
+    virtual const char*
+    what () const throw ();
+
+    private:
+    std::string file_;
+  };
+
   class scanner
   {
     public:
@@ -189,6 +211,44 @@ namespace cli
     int& argc_;
     char** argv_;
     bool erase_;
+  };
+
+  class argv_file_scanner: public argv_scanner
+  {
+    public:
+    argv_file_scanner (int& argc,
+                       char** argv,
+                       const std::string& file_option,
+                       bool erase = false);
+
+    argv_file_scanner (int start,
+                       int& argc,
+                       char** argv,
+                       const std::string& file_option,
+                       bool erase = false);
+
+    virtual bool
+    more ();
+
+    virtual const char*
+    peek ();
+
+    virtual const char*
+    next ();
+
+    virtual void
+    skip ();
+
+    private:
+    void
+    load (const char* file);
+
+    typedef argv_scanner base;
+
+    const std::string option_;
+    std::string hold_;
+    std::deque<std::string> args_;
+    bool skip_;
   };
 }
 
@@ -326,6 +386,9 @@ class options
   const std::map<std::string, std::string>&
   reserved_name () const;
 
+  const std::string&
+  options_file () const;
+
   // Print usage information.
   //
   static void
@@ -367,6 +430,7 @@ class options
   std::string include_prefix_;
   std::string guard_prefix_;
   std::map<std::string, std::string> reserved_name_;
+  std::string options_file_;
 };
 
 #include "options.ixx"

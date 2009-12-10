@@ -10,6 +10,8 @@
 #include <vector>
 #include <ostream>
 #include <sstream>
+#include <cstring>
+#include <fstream>
 
 namespace cli
 {
@@ -104,6 +106,25 @@ namespace cli
     return "end of argument stream reached";
   }
 
+  // file_io_failure
+  //
+  file_io_failure::
+  ~file_io_failure () throw ()
+  {
+  }
+
+  void file_io_failure::
+  print (std::ostream& os) const
+  {
+    os << "unable to open file '" << file () << "' or read failure";
+  }
+
+  const char* file_io_failure::
+  what () const throw ()
+  {
+    return "unable to open file or read failure";
+  }
+
   // scanner
   //
   scanner::
@@ -159,6 +180,164 @@ namespace cli
       ++i_;
     else
       throw eos_reached ();
+  }
+
+  // argv_file_scanner
+  //
+  bool argv_file_scanner::
+  more ()
+  {
+    if (!args_.empty ())
+      return true;
+
+    while (base::more ())
+    {
+      // See if the next argument is the file option.
+      //
+      const char* a (base::peek ());
+
+      if (!skip_ && a == option_)
+      {
+        base::next ();
+
+        if (!base::more ())
+          throw missing_value (option_);
+
+        load (base::next ());
+
+        if (!args_.empty ())
+          return true;
+      }
+      else
+      {
+        if (!skip_)
+          skip_ = (std::strcmp (a, "--") == 0);
+
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  const char* argv_file_scanner::
+  peek ()
+  {
+    if (!more ())
+      throw eos_reached ();
+
+    return args_.empty () ? base::peek () : args_.front ().c_str ();
+  }
+
+  const char* argv_file_scanner::
+  next ()
+  {
+    if (!more ())
+      throw eos_reached ();
+
+    if (args_.empty ())
+      return base::next ();
+    else
+    {
+      hold_.swap (args_.front ());
+      args_.pop_front ();
+      return hold_.c_str ();
+    }
+  }
+
+  void argv_file_scanner::
+  skip ()
+  {
+    if (!more ())
+      throw eos_reached ();
+
+    if (args_.empty ())
+      return base::skip ();
+    else
+      args_.pop_front ();
+  }
+
+  void argv_file_scanner::
+  load (const char* file)
+  {
+    using namespace std;
+
+    ifstream is (file);
+
+    if (!is.is_open ())
+      throw file_io_failure (file);
+
+    while (!is.eof ())
+    {
+      string line;
+      getline (is, line);
+
+      if (is.fail () && !is.eof ())
+        throw file_io_failure (file);
+
+      string::size_type n (line.size ());
+
+      // Trim the line from leading and trailing whitespaces.
+      //
+      if (n != 0)
+      {
+        const char* f (line.c_str ());
+        const char* l (f + n);
+
+        const char* of (f);
+        while (f < l && (*f == ' ' || *f == '\t' || *f == '\r'))
+          ++f;
+
+        --l;
+
+        const char* ol (l);
+        while (l > f && (*l == ' ' || *l == '\t' || *l == '\r'))
+          --l;
+
+        if (f != of || l != ol)
+          line = f <= l ? string (f, l - f + 1) : string ();
+      }
+
+      // Ignore empty lines, those that start with #.
+      //
+      if (line.empty () || line[0] == '#')
+        continue;
+
+      string::size_type p (line.find (' '));
+
+      if (p == string::npos)
+      {
+        if (!skip_)
+          skip_ = (line == "--");
+
+        args_.push_back (line);
+      }
+      else
+      {
+        string s1 (line, 0, p);
+
+        // Skip leading whitespaces in the argument.
+        //
+        n = line.size ();
+        for (++p; p < n; ++p)
+        {
+          char c (line[p]);
+
+          if (c != ' ' && c != '\t' && c != '\r')
+            break;
+        }
+
+        string s2 (line, p);
+
+        if (!skip_ && s1 == option_)
+          load (s2.c_str ());
+        else
+        {
+          args_.push_back (s1);
+          args_.push_back (s2);
+        }
+      }
+    }
   }
 
   template <typename X>
@@ -337,7 +516,8 @@ options (int& argc,
   include_with_brackets_ (),
   include_prefix_ (),
   guard_prefix_ (),
-  reserved_name_ ()
+  reserved_name_ (),
+  options_file_ ()
 {
   ::cli::argv_scanner s (argc, argv, erase);
   _parse (s, opt, arg);
@@ -378,7 +558,8 @@ options (int start,
   include_with_brackets_ (),
   include_prefix_ (),
   guard_prefix_ (),
-  reserved_name_ ()
+  reserved_name_ (),
+  options_file_ ()
 {
   ::cli::argv_scanner s (start, argc, argv, erase);
   _parse (s, opt, arg);
@@ -419,7 +600,8 @@ options (int& argc,
   include_with_brackets_ (),
   include_prefix_ (),
   guard_prefix_ (),
-  reserved_name_ ()
+  reserved_name_ (),
+  options_file_ ()
 {
   ::cli::argv_scanner s (argc, argv, erase);
   _parse (s, opt, arg);
@@ -462,7 +644,8 @@ options (int start,
   include_with_brackets_ (),
   include_prefix_ (),
   guard_prefix_ (),
-  reserved_name_ ()
+  reserved_name_ (),
+  options_file_ ()
 {
   ::cli::argv_scanner s (start, argc, argv, erase);
   _parse (s, opt, arg);
@@ -501,7 +684,8 @@ options (::cli::scanner& s,
   include_with_brackets_ (),
   include_prefix_ (),
   guard_prefix_ (),
-  reserved_name_ ()
+  reserved_name_ (),
+  options_file_ ()
 {
   _parse (s, opt, arg);
 }
@@ -587,6 +771,10 @@ print_usage (::std::ostream& os)
   os << "--reserved-name <name>=<rep> Add <name> with an optional <rep> replacement to" << ::std::endl
      << "                             the list of names that should not be used as" << ::std::endl
      << "                             identifiers." << ::std::endl;
+
+  os << "--options-file <file>        Read additional options from <file> with each" << ::std::endl
+     << "                             option appearing on a separate line optionally" << ::std::endl
+     << "                             followed by space and an option value." << ::std::endl;
 }
 
 typedef
@@ -659,6 +847,8 @@ struct _cli_options_map_init
     &::cli::thunk< options, std::string, &options::guard_prefix_ >;
     _cli_options_map_["--reserved-name"] = 
     &::cli::thunk< options, std::map<std::string, std::string>, &options::reserved_name_ >;
+    _cli_options_map_["--options-file"] = 
+    &::cli::thunk< options, std::string, &options::options_file_ >;
   }
 } _cli_options_map_init_;
 
