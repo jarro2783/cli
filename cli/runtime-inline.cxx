@@ -16,93 +16,107 @@ generate_runtime_inline (context& ctx)
   os << "namespace cli"
      << "{";
 
+  // unknown_mode
+  //
   os << "// unknown_mode" << endl
-     << "//" << endl;
+     << "//" << endl
 
-  os << inl << "unknown_mode::" << endl
+     << inl << "unknown_mode::" << endl
      << "unknown_mode (value v)" << endl
      << ": v_ (v)"
      << "{"
      << "}";
 
+  // exception
+  //
   os << "// exception" << endl
-     << "//" << endl;
+     << "//" << endl
 
-  os << inl << "std::ostream&" << endl
+     << inl << "std::ostream&" << endl
      << "operator<< (std::ostream& os, const exception& e)"
      << "{"
      << "e.print (os);"
      << "return os;"
      << "}";
 
+  // unknown_option
+  //
   os << "// unknown_option" << endl
-     << "//" << endl;
+     << "//" << endl
 
-  os << inl << "unknown_option::" << endl
+     << inl << "unknown_option::" << endl
      << "unknown_option (const std::string& option)" << endl
      << ": option_ (option)"
      << "{"
-     << "}";
+     << "}"
 
-  os << inl << "const std::string& unknown_option::" << endl
+     << inl << "const std::string& unknown_option::" << endl
      << "option () const"
      << "{"
      << "return option_;"
      << "}";
 
+  // unknown_argument
+  //
   os << "// unknown_argument" << endl
-     << "//" << endl;
+     << "//" << endl
 
-  os << inl << "unknown_argument::" << endl
+     << inl << "unknown_argument::" << endl
      << "unknown_argument (const std::string& argument)" << endl
      << ": argument_ (argument)"
      << "{"
-     << "}";
+     << "}"
 
-  os << inl << "const std::string& unknown_argument::" << endl
+     << inl << "const std::string& unknown_argument::" << endl
      << "argument () const"
      << "{"
      << "return argument_;"
      << "}";
 
+  // missing_value
+  //
   os << "// missing_value" << endl
-     << "//" << endl;
+     << "//" << endl
 
-  os << inl << "missing_value::" << endl
+     << inl << "missing_value::" << endl
      << "missing_value (const std::string& option)" << endl
      << ": option_ (option)"
      << "{"
-     << "}";
+     << "}"
 
-  os << inl << "const std::string& missing_value::" << endl
+     << inl << "const std::string& missing_value::" << endl
      << "option () const"
      << "{"
      << "return option_;"
      << "}";
 
+  // invalid_value
+  //
   os << "// invalid_value" << endl
-     << "//" << endl;
+     << "//" << endl
 
-  os << inl << "invalid_value::" << endl
+     << inl << "invalid_value::" << endl
      << "invalid_value (const std::string& option," << endl
      << "const std::string& value)" << endl
      << ": option_ (option),"
      << "  value_ (value)"
      << "{"
-     << "}";
+     << "}"
 
-  os << inl << "const std::string& invalid_value::" << endl
+     << inl << "const std::string& invalid_value::" << endl
      << "option () const"
      << "{"
      << "return option_;"
-     << "}";
+     << "}"
 
-  os << inl << "const std::string& invalid_value::" << endl
+     << inl << "const std::string& invalid_value::" << endl
      << "value () const"
      << "{"
      << "return value_;"
      << "}";
 
+  // file_io_failure
+  //
   if (ctx.options.generate_file_scanner ())
   {
     os << "// file_io_failure" << endl
@@ -121,6 +135,8 @@ generate_runtime_inline (context& ctx)
        << "}";
   }
 
+  // argv_scanner
+  //
   os << "// argv_scanner" << endl
      << "//" << endl;
 
