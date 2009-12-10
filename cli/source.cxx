@@ -350,6 +350,7 @@ namespace
     traverse (type& c)
     {
       string name (escape (c.name ()));
+      bool ho (has<semantics::option> (c));
 
       os << "// " << name << endl
          << "//" << endl
@@ -447,7 +448,7 @@ namespace
       if (usage)
       {
         os << "void " << name << "::" << endl
-           << "print_usage (::std::ostream& os)"
+           << "print_usage (::std::ostream&" << (ho ? " os" : "") << ")"
            << "{";
 
         // Calculate option length.

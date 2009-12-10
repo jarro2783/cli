@@ -113,6 +113,20 @@ private:
   operator= (context const&);
 };
 
+// Checks if scope Y names any of X.
+//
+template <typename X, typename Y>
+bool
+has (Y& y)
+{
+  for (semantics::scope::names_iterator i (y.names_begin ()),
+         e (y.names_end ()); i != e; ++i)
+    if (i->named ().is_a<X> ())
+      return true;
+
+  return false;
+}
+
 // Standard namespace traverser.
 //
 struct namespace_: traversal::namespace_, context
