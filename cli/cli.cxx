@@ -16,7 +16,8 @@
 using namespace std;
 using namespace cutl;
 
-int main (int argc, char* argv[])
+int
+main (int argc, char* argv[])
 {
   ostream& e (cerr);
 
