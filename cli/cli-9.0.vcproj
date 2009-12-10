@@ -356,6 +356,14 @@
 				RelativePath=".\semantics\unit.cxx"
 				>
 			</File>
+			<File
+				RelativePath=".\html.cxx"
+				>
+			</File>
+			<File
+				RelativePath=".\man.cxx"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
