@@ -31,7 +31,7 @@ main (int argc, char* argv[])
     //
     if (ops.version ())
     {
-      e << "CodeSynthesis CLI command line interface compiler 1.0.0" << endl
+      e << "CodeSynthesis CLI command line interface compiler 1.1.0" << endl
         << "Copyright (C) 2009 Code Synthesis Tools CC" << endl;
 
       e << "This is free software; see the source for copying conditions. "
