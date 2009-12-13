@@ -121,7 +121,7 @@ has (Y& y)
 {
   for (semantics::scope::names_iterator i (y.names_begin ()),
          e (y.names_end ()); i != e; ++i)
-    if (i->named ().is_a<X> ())
+    if (i->named (). template is_a<X> ())
       return true;
 
   return false;
