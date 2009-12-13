@@ -111,7 +111,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
     if (!gen_cxx && !gen_man && !gen_html)
       gen_cxx = true;
 
-    if (ops.stdout ())
+    if (ops.stdout_ ())
     {
       if (gen_cxx)
       {
@@ -306,7 +306,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
 
       ofstream man;
 
-      if (!ops.stdout ())
+      if (!ops.stdout_ ())
       {
         path man_path (base + ops.man_suffix ());
 
@@ -325,7 +325,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
         auto_rm.add (man_path);
       }
 
-      ostream& os (ops.stdout () ? cout : man);
+      ostream& os (ops.stdout_ () ? cout : man);
 
       if (prologue.is_open ())
         os << prologue.rdbuf ();
@@ -362,7 +362,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
 
       ofstream html;
 
-      if (!ops.stdout ())
+      if (!ops.stdout_ ())
       {
         path html_path (base + ops.html_suffix ());
 
@@ -381,7 +381,7 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
         auto_rm.add (html_path);
       }
 
-      ostream& os (ops.stdout () ? cout : html);
+      ostream& os (ops.stdout_ () ? cout : html);
 
       if (prologue.is_open ())
         os << prologue.rdbuf ();

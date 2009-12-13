@@ -351,7 +351,7 @@ class options
   class_ () const;
 
   const bool&
-  stdout () const;
+  stdout_ () const;
 
   const std::string&
   hxx_suffix () const;
@@ -418,7 +418,7 @@ class options
   std::string html_prologue_;
   std::string html_epilogue_;
   std::string class__;
-  bool stdout_;
+  bool stdout__;
   std::string hxx_suffix_;
   std::string ixx_suffix_;
   std::string cxx_suffix_;

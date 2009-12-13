@@ -250,9 +250,9 @@ class_ () const
 }
 
 inline const bool& options::
-stdout () const
+stdout_ () const
 {
-  return this->stdout_;
+  return this->stdout__;
 }
 
 inline const std::string& options::
