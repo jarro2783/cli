@@ -325,7 +325,9 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
         auto_rm.add (man_path);
       }
 
-      ostream& os (ops.stdout_ () ? cout : man);
+      // The explicit cast helps VC++ 8.0 overcome its issues.
+      //
+      ostream& os (ops.stdout_ () ? cout : static_cast<ostream&> (man));
 
       if (prologue.is_open ())
         os << prologue.rdbuf ();
@@ -381,7 +383,9 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
         auto_rm.add (html_path);
       }
 
-      ostream& os (ops.stdout_ () ? cout : html);
+      // The explicit cast helps VC++ 8.0 overcome its issues.
+      //
+      ostream& os (ops.stdout_ () ? cout : static_cast<ostream&> (html));
 
       if (prologue.is_open ())
         os << prologue.rdbuf ();
