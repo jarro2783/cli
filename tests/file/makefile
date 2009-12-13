@@ -53,12 +53,11 @@ $(out_base)/.test-000: $(driver) $(src_base)/test-000.ops
 
 $(out_base)/.test-001: $(driver) $(src_base)/test-001.ops
 	$(call message,test $(out_base)/001,$(driver) -a 1 -- --file \
-$(src_base)/test-001.ops b | diff -u $(src_base)/test-001.std -)
+test-001.ops b | diff -u $(src_base)/test-001.std -)
 
 $(out_base)/.test-002: $(driver) $(src_base)/test-002.ops
 	$(call message,test $(out_base)/002,$(driver) -a 1 --file \
-$(src_base)/test-002.ops --file $(src_base)/empty.ops b | \
-diff -u $(src_base)/test-002.std -)
+$(src_base)/test-002.ops --file empty.ops b | diff -u $(src_base)/test-002.std -)
 
 $(out_base)/.test-003: $(driver)
 	$(call message,test $(out_base)/003,$(driver) -a 1 --file \

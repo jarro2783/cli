@@ -13,5 +13,5 @@ base.ops
 12
 a
 --file
-/home/boris/work/cli/cli/tests/file/empty.ops
+empty.ops
 b
