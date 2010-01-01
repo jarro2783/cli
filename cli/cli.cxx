@@ -1,6 +1,6 @@
 // file      : cli/cli.cxx
 // author    : Boris Kolpackov <boris@codesynthesis.com>
-// copyright : Copyright (c) 2009 Code Synthesis Tools CC
+// copyright : Copyright (c) 2009-2010 Code Synthesis Tools CC
 // license   : MIT; see accompanying LICENSE file
 
 #include <memory>   // std::auto_ptr
@@ -32,7 +32,7 @@ main (int argc, char* argv[])
     if (ops.version ())
     {
       e << "CodeSynthesis CLI command line interface compiler 1.1.0" << endl
-        << "Copyright (C) 2009 Code Synthesis Tools CC" << endl;
+        << "Copyright (C) 2009-2010 Code Synthesis Tools CC" << endl;
 
       e << "This is free software; see the source for copying conditions. "
         << "There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS "
