@@ -8,7 +8,7 @@ the following dependencies:
 
 Additionally, for UNIX-like operating systems:
 
-  build   >= 0.3.5 http://kolpackov.net/projects/build/
+  build   >= 0.3.5 http://www.codesynthesis.com/projects/build/
 
 The cli+dep package comes with the necessary dependencies bundled.
 
