@@ -115,10 +115,10 @@ generate_runtime_inline (context& ctx)
      << "return value_;"
      << "}";
 
-  // file_io_failure
-  //
   if (ctx.options.generate_file_scanner ())
   {
+    // file_io_failure
+    //
     os << "// file_io_failure" << endl
        << "//" << endl
 
@@ -132,6 +132,23 @@ generate_runtime_inline (context& ctx)
        << "file () const"
        << "{"
        << "return file_;"
+       << "}";
+
+    // unmatched_option
+    //
+    os << "// unmatched_quote" << endl
+       << "//" << endl
+
+       << inl << "unmatched_quote::" << endl
+       << "unmatched_quote (const std::string& argument)" << endl
+       << ": argument_ (argument)"
+       << "{"
+       << "}"
+
+       << inl << "const std::string& unmatched_quote::" << endl
+       << "argument () const"
+       << "{"
+       << "return argument_;"
        << "}";
   }
 

@@ -129,10 +129,10 @@ generate_runtime_source (context& ctx)
      << "return \"end of argument stream reached\";"
      << "}";
 
-  // file_io_failure
-  //
   if (ctx.options.generate_file_scanner ())
   {
+    // file_io_failure
+    //
     os << "// file_io_failure" << endl
        << "//" << endl
        << "file_io_failure::" << endl
@@ -150,6 +150,27 @@ generate_runtime_source (context& ctx)
        << "what () const throw ()"
        << "{"
        << "return \"unable to open file or read failure\";"
+       << "}";
+
+    // unmatched_argument
+    //
+    os << "// unmatched_quote" << endl
+       << "//" << endl
+       << "unmatched_quote::" << endl
+       << "~unmatched_quote () throw ()"
+       << "{"
+       << "}"
+
+       << "void unmatched_quote::" << endl
+       << "print (std::ostream& os) const"
+       << "{"
+       << "os << \"unmatched quote in argument '\" << argument () << \"'\";"
+       << "}"
+
+       << "const char* unmatched_quote::" << endl
+       << "what () const throw ()"
+       << "{"
+       << "return \"unmatched quote\";"
        << "}";
   }
 
@@ -368,6 +389,17 @@ generate_runtime_source (context& ctx)
        << "}"
        << "string s2 (line, p);"
        << endl
+       << "// If the string is wrapped in quotes, remove them." << endl
+       << "//" << endl
+       << "n = s2.size ();"
+       << endl
+       << "if (s2[0] == '\"' || s2[n - 1] == '\"')"
+       << "{"
+       << "if (n == 1 || s2[0] != s2[n - 1])" << endl
+       << "throw unmatched_quote (s2);"
+       << endl
+       << "s2 = string (s2, 1, n - 2);"
+       << "}"
        << "if (" << (sep ? "!skip_ && " : "") << "s1 == option_)" << endl
        << "load (s2.c_str ());"
        << "else"

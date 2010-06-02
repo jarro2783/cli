@@ -180,6 +180,27 @@ generate_runtime_header (context& ctx)
        << "private:" << endl
        << "std::string file_;"
        << "};";
+
+    os << "class unmatched_quote: public exception"
+       << "{"
+       << "public:" << endl
+       << "virtual" << endl
+       << "~unmatched_quote () throw ();"
+       << endl
+       << "unmatched_quote (const std::string& argument);"
+       << endl
+       << "const std::string&" << endl
+       << "argument () const;"
+       << endl
+       << "virtual void" << endl
+       << "print (std::ostream&) const;"
+       << endl
+       << "virtual const char*" << endl
+       << "what () const throw ();"
+       << endl
+       << "private:" << endl
+       << "std::string argument_;"
+       << "};";
   }
 
   // scanner
