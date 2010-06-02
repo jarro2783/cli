@@ -166,6 +166,27 @@ namespace cli
     std::string file_;
   };
 
+  class unmatched_quote: public exception
+  {
+    public:
+    virtual
+    ~unmatched_quote () throw ();
+
+    unmatched_quote (const std::string& argument);
+
+    const std::string&
+    argument () const;
+
+    virtual void
+    print (std::ostream&) const;
+
+    virtual const char*
+    what () const throw ();
+
+    private:
+    std::string argument_;
+  };
+
   class scanner
   {
     public:

@@ -73,6 +73,10 @@ Write the generated files to \fIdir\fP instead of the current directory\.
 .IP "\fB--generate-modifier\fP"
 Generate option value modifiers in addition to accessors\.
 
+.IP "\fB--generate-specifier\fP"
+Generate functions for determining whether the option was specified on the
+command line\.
+
 .IP "\fB--generate-file-scanner\fP"
 Generate the argv_file_scanner implementation\. This scanner is capable of
 reading command line arguments from the argv array as well as files
@@ -181,11 +185,18 @@ is used instead\. All C++ keywords are already in this list\.
 .IP "\fB--options-file\fP \fIfile\fP"
 Read additional options from \fIfile\fP with each option appearing on a
 separate line optionally followed by space and an option value\. Empty lines
-and lines starting with \fB#\fP are ignored\. The semantics of providing
-options in a file is equivalent to providing the same set of options in the
-same order on the command line at the point where the \fB--options-file\fP
-option is specified except that shell escaping and quoting is not required\.
-Repeat this option to specify more than one options files\.
+and lines starting with \fB#\fP are ignored\. Option values can be enclosed
+in double quotes (\fB""\fP) to preserve leading and trailing whitespaces as
+well as to specify empty values\. If the value itself contains trailing or
+leading double quote, enclose it with an extra pair of double quotes, for
+example \fB""x""\fP\. Non-leading and non-trailing quotes are interpreted as
+being part of the option value\.
+
+The semantics of providing options in a file is equivalent to providing the
+same set of options in the same order on the command line at the point where
+the \fB--options-file\fP option is specified except that the shell escaping
+and quoting is not required\. Repeat this option to specify more than one
+options files\.
 
 .\"
 .\" DIAGNOSTICS

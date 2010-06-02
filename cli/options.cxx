@@ -125,6 +125,25 @@ namespace cli
     return "unable to open file or read failure";
   }
 
+  // unmatched_quote
+  //
+  unmatched_quote::
+  ~unmatched_quote () throw ()
+  {
+  }
+
+  void unmatched_quote::
+  print (std::ostream& os) const
+  {
+    os << "unmatched quote in argument '" << argument () << "'";
+  }
+
+  const char* unmatched_quote::
+  what () const throw ()
+  {
+    return "unmatched quote";
+  }
+
   // scanner
   //
   scanner::
@@ -329,6 +348,18 @@ namespace cli
 
         string s2 (line, p);
 
+        // If the string is wrapped in quotes, remove them.
+        //
+        n = s2.size ();
+
+        if (s2[0] == '"' || s2[n - 1] == '"')
+        {
+          if (n == 1 || s2[0] != s2[n - 1])
+            throw unmatched_quote (s2);
+
+          s2 = string (s2, 1, n - 2);
+        }
+
         if (!skip_ && s1 == option_)
           load (s2.c_str ());
         else
@@ -468,11 +499,11 @@ namespace cli
     }
   };
 
-  template <typename X, typename T, T X::*P>
+  template <typename X, typename T, T X::*M>
   void
   thunk (X& x, scanner& s)
   {
-    parser<T>::parse (x.*P, s);
+    parser<T>::parse (x.*M, s);
   }
 }
 

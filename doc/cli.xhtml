@@ -96,6 +96,10 @@
   <dt><code><b>--generate-modifier</b></code></dt>
   <dd>Generate option value modifiers in addition to accessors.</dd>
 
+  <dt><code><b>--generate-specifier</b></code></dt>
+  <dd>Generate functions for determining whether the option was specified on the
+  command line.</dd>
+
   <dt><code><b>--generate-file-scanner</b></code></dt>
   <dd>Generate the <code>argv_file_scanner</code> implementation. This scanner is
   capable of reading command line arguments from the <code>argv</code> array
@@ -207,12 +211,18 @@
   <dt><code><b>--options-file</b></code> <i>file</i></dt>
   <dd>Read additional options from <i>file</i> with each option appearing on a
   separate line optionally followed by space and an option value. Empty lines
-  and lines starting with <code><b>#</b></code> are ignored. The semantics of
-  providing options in a file is equivalent to providing the same set of
-  options in the same order on the command line at the point where the
-  <code><b>--options-file</b></code> option is specified except that shell
-  escaping and quoting is not required. Repeat this option to specify more
-  than one options files.</dd>
+  and lines starting with <code><b>#</b></code> are ignored. Option values can
+  be enclosed in double quotes (<code><b>""</b></code>) to preserve leading
+  and trailing whitespaces as well as to specify empty values. If the value
+  itself contains trailing or leading double quote, enclose it with an extra
+  pair of double quotes, for example <code><b>""x""</b></code>. Non-leading
+  and non-trailing quotes are interpreted as being part of the option value.
+
+  <p>The semantics of providing options in a file is equivalent to providing
+  the same set of options in the same order on the command line at the point
+  where the <code><b>--options-file</b></code> option is specified except that
+  the shell escaping and quoting is not required. Repeat this option to
+  specify more than one options files.</p></dd>
 
 </dl>
   <h1>DIAGNOSTICS</h1>

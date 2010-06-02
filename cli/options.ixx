@@ -98,6 +98,20 @@ namespace cli
     return file_;
   }
 
+  // unmatched_quote
+  //
+  inline unmatched_quote::
+  unmatched_quote (const std::string& argument)
+  : argument_ (argument)
+  {
+  }
+
+  inline const std::string& unmatched_quote::
+  argument () const
+  {
+    return argument_;
+  }
+
   // argv_scanner
   //
   inline argv_scanner::
