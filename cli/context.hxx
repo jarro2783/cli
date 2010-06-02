@@ -39,6 +39,7 @@ public:
   options_type const& options;
 
   bool modifier;
+  bool specifier;
   bool usage;
 
   string const& inl;
@@ -92,9 +93,21 @@ public:
   }
 
   static string const&
+  especifier (semantics::nameable& n)
+  {
+    return n.context ().get<string> ("specifier");
+  }
+
+  static string const&
   emember (semantics::nameable& n)
   {
     return n.context ().get<string> ("member");
+  }
+
+  static string const&
+  especifier_member (semantics::nameable& n)
+  {
+    return n.context ().get<string> ("specifier-member");
   }
 
 public:

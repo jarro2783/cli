@@ -172,6 +172,12 @@ generate_modifier () const
 }
 
 inline const bool& options::
+generate_specifier () const
+{
+  return this->generate_specifier_;
+}
+
+inline const bool& options::
 generate_file_scanner () const
 {
   return this->generate_file_scanner_;

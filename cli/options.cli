@@ -28,6 +28,12 @@ class options
     "Generate option value modifiers in addition to accessors."
   };
 
+  bool --generate-specifier
+  {
+    "Generate functions for determining whether the option was specified
+     on the command line."
+  };
+
   bool --generate-file-scanner
   {
     "Generate the \c{argv_file_scanner} implementation. This scanner is

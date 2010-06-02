@@ -27,6 +27,20 @@ namespace
         os << "void" << endl
            << name << " (const " << type << "&);"
            << endl;
+
+      if (specifier && type != "bool")
+      {
+        string spec (especifier (o));
+
+        os << "bool" << endl
+           << spec << " () const;"
+           << endl;
+
+        if (modifier)
+          os << "void" << endl
+             << spec << " (bool);"
+             << endl;
+      }
     }
   };
 
@@ -43,6 +57,9 @@ namespace
       string type (o.type ().name ());
 
       os << type << " " << member << ";";
+
+      if (specifier && type != "bool")
+        os << "bool " << especifier_member (o) << ";";
     }
   };
 

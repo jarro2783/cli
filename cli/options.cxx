@@ -492,6 +492,7 @@ options (int& argc,
   version_ (),
   output_dir_ (),
   generate_modifier_ (),
+  generate_specifier_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_usage_ (),
@@ -534,6 +535,7 @@ options (int start,
   version_ (),
   output_dir_ (),
   generate_modifier_ (),
+  generate_specifier_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_usage_ (),
@@ -576,6 +578,7 @@ options (int& argc,
   version_ (),
   output_dir_ (),
   generate_modifier_ (),
+  generate_specifier_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_usage_ (),
@@ -620,6 +623,7 @@ options (int start,
   version_ (),
   output_dir_ (),
   generate_modifier_ (),
+  generate_specifier_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_usage_ (),
@@ -660,6 +664,7 @@ options (::cli::scanner& s,
   version_ (),
   output_dir_ (),
   generate_modifier_ (),
+  generate_specifier_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_usage_ (),
@@ -702,6 +707,9 @@ print_usage (::std::ostream& os)
 
   os << "--generate-modifier          Generate option value modifiers in addition to" << ::std::endl
      << "                             accessors." << ::std::endl;
+
+  os << "--generate-specifier         Generate functions for determining whether the" << ::std::endl
+     << "                             option was specified on the command line." << ::std::endl;
 
   os << "--generate-file-scanner      Generate the 'argv_file_scanner' implementation." << ::std::endl;
 
@@ -797,6 +805,8 @@ struct _cli_options_map_init
     &::cli::thunk< options, std::string, &options::output_dir_ >;
     _cli_options_map_["--generate-modifier"] = 
     &::cli::thunk< options, bool, &options::generate_modifier_ >;
+    _cli_options_map_["--generate-specifier"] = 
+    &::cli::thunk< options, bool, &options::generate_specifier_ >;
     _cli_options_map_["--generate-file-scanner"] = 
     &::cli::thunk< options, bool, &options::generate_file_scanner_ >;
     _cli_options_map_["--suppress-inline"] = 

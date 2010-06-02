@@ -58,6 +58,10 @@ namespace
       }
       else
         os << " ()";
+
+      if (specifier && o.type ().name () != "bool")
+        os << "," << endl
+           << "  " << especifier_member (o) << " (false)";
     }
 
   private:
@@ -86,7 +90,13 @@ namespace
       {
         os << "_cli_" << scope << "_map_[\"" << *i << "\"] = " << endl
            << "&::cli::thunk< " << scope << ", " << type << ", " <<
-          "&" << scope << "::" << member << " >;";
+          "&" << scope << "::" << member;
+
+        if (specifier && type != "bool")
+          os << "," << endl
+             << "  &" << scope << "::" << especifier_member (o);
+
+        os << " >;";
       }
     }
   };

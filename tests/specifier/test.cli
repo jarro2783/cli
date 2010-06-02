@@ -1,0 +1,13 @@
+// file      : tests/specifier/test.cli
+// author    : Boris Kolpackov <boris@codesynthesis.com>
+// copyright : Copyright (c) 2009-2010 Code Synthesis Tools CC
+// license   : MIT; see accompanying LICENSE file
+
+include <string>;
+
+class options
+{
+  bool -a;
+  int -b = 1;
+  std::string -c;
+};

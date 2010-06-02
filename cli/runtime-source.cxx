@@ -380,13 +380,15 @@ generate_runtime_source (context& ctx)
        << "}";
   }
 
+  bool sp (ctx.specifier);
+
   // parser class template & its specializations
   //
   os << "template <typename X>" << endl
      << "struct parser"
      << "{"
      << "static void" << endl
-     << "parse (X& x, scanner& s)"
+     << "parse (X& x, " << (sp ? "bool& xs, " : "") << "scanner& s)"
      << "{"
      << "const char* o (s.next ());"
      << endl
@@ -398,8 +400,13 @@ generate_runtime_source (context& ctx)
      << "throw invalid_value (o, v);"
      << "}"
      << "else" << endl
-     << "throw missing_value (o);"
-     << "}"
+     << "throw missing_value (o);";
+
+  if (sp)
+    os << endl
+       << "xs = true;";
+
+  os << "}"
      << "};";
 
   // parser<bool>
@@ -421,15 +428,20 @@ generate_runtime_source (context& ctx)
      << "struct parser<std::string>"
      << "{"
      << "static void" << endl
-     << "parse (std::string& x, scanner& s)"
+     << "parse (std::string& x, " << (sp ? "bool& xs, " : "") << "scanner& s)"
      << "{"
      << "const char* o (s.next ());"
      << endl
      << "if (s.more ())" << endl
      << "x = s.next ();"
      << "else" << endl
-     << "throw missing_value (o);"
-     << "}"
+     << "throw missing_value (o);";
+
+  if (sp)
+    os << endl
+       << "xs = true;";
+
+  os << "}"
      << "};";
 
   // parser<std::vector<X>>
@@ -438,12 +450,17 @@ generate_runtime_source (context& ctx)
      << "struct parser<std::vector<X> >"
      << "{"
      << "static void" << endl
-     << "parse (std::vector<X>& c, scanner& s)"
+     << "parse (std::vector<X>& c, " << (sp ? "bool& xs, " : "") <<
+    "scanner& s)"
      << "{"
      << "X x;"
      << "parser<X>::parse (x, s);"
-     << "c.push_back (x);"
-     << "}"
+     << "c.push_back (x);";
+
+  if (sp)
+    os << "xs = true;";
+
+  os << "}"
      << "};";
 
   // parser<std::set<X>>
@@ -452,12 +469,16 @@ generate_runtime_source (context& ctx)
      << "struct parser<std::set<X> >"
      << "{"
      << "static void" << endl
-     << "parse (std::set<X>& c, scanner& s)"
+     << "parse (std::set<X>& c, " << (sp ? "bool& xs, " : "") << "scanner& s)"
      << "{"
      << "X x;"
      << "parser<X>::parse (x, s);"
-     << "c.insert (x);"
-     << "}"
+     << "c.insert (x);";
+
+  if (sp)
+    os << "xs = true;";
+
+  os << "}"
      << "};";
 
   // parser<std::map<K,V>>
@@ -466,7 +487,8 @@ generate_runtime_source (context& ctx)
      << "struct parser<std::map<K, V> >"
      << "{"
      << "static void" << endl
-     << "parse (std::map<K, V>& m, scanner& s)"
+     << "parse (std::map<K, V>& m, " << (sp ? "bool& xs, " : "") <<
+    "scanner& s)"
      << "{"
      << "const char* o (s.next ());"
      << endl
@@ -513,18 +535,31 @@ generate_runtime_source (context& ctx)
      << "}"
      << "}"
      << "else" << endl
-     << "throw missing_value (o);"
-     << "}"
+     << "throw missing_value (o);";
+
+  if (sp)
+    os << endl
+       << "xs = true;";
+
+  os << "}"
      << "};";
 
   // Parser thunk.
   //
-  os << "template <typename X, typename T, T X::*P>" << endl
+  os << "template <typename X, typename T, T X::*M>" << endl
      << "void" << endl
      << "thunk (X& x, scanner& s)"
      << "{"
-     << "parser<T>::parse (x.*P, s);"
+     << "parser<T>::parse (x.*M, s);"
      << "}";
+
+  if (ctx.specifier)
+    os << "template <typename X, typename T, T X::*M, bool X::*S>" << endl
+       << "void" << endl
+       << "thunk (X& x, scanner& s)"
+       << "{"
+       << "parser<T>::parse (x.*M, x.*S, s);"
+       << "}";
 
   os << "}"; // namespace cli
 }

@@ -45,8 +45,7 @@ main (int argc, char* argv[])
     //
     if (ops.help ())
     {
-      e << "Usage: " << argv[0] << " [options] file"
-        << endl
+      e << "Usage: " << argv[0] << " [options] file" << endl
         << "Options:" << endl;
 
       options::print_usage (e);

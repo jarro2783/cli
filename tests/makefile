@@ -5,7 +5,7 @@
 
 include $(dir $(lastword $(MAKEFILE_LIST)))../build/bootstrap.make
 
-tests := ctor erase file lexer parser
+tests := ctor erase file lexer parser specifier
 
 default   := $(out_base)/
 test      := $(out_base)/.test

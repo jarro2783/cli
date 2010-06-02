@@ -75,6 +75,28 @@ namespace
     name_set& set_;
   };
 
+  struct intermediate_option: traversal::option, context
+  {
+    intermediate_option (context& c, name_set& set)
+        : context (c), set_ (set)
+    {
+    }
+
+    virtual void
+    traverse (type& o)
+    {
+      if (specifier && o.type ().name () != "bool")
+      {
+        semantics::context& oc (o.context ());
+        string const& base (oc.get<string> ("name"));
+        oc.set ("specifier", find_name (base + "_specified", set_));
+      }
+    }
+
+  private:
+    name_set& set_;
+  };
+
   struct secondary_option: traversal::option, context
   {
     secondary_option (context& c, name_set& set)
@@ -88,6 +110,12 @@ namespace
       semantics::context& oc (o.context ());
       string const& base (oc.get<string> ("name"));
       oc.set ("member", find_name (base + "_", set_));
+
+      if (specifier && o.type ().name () != "bool")
+      {
+        string const& base (oc.get<string> ("specifier"));
+        oc.set ("specifier-member", find_name (base + "_", set_));
+      }
     }
 
   private:
@@ -117,7 +145,16 @@ namespace
         class_::names (c, names);
       }
 
-      // Then assign secondary names.
+      // Then assign intermediate names.
+      //
+      {
+        intermediate_option option (*this, member_set);
+        traversal::names names (option);
+
+        class_::names (c, names);
+      }
+
+      // Finally assign secondary names.
       //
       {
         secondary_option option (*this, member_set);

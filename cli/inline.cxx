@@ -32,6 +32,24 @@ namespace
            << "{"
            << "this->" << emember (o) << " = x;"
            << "}";
+
+      if (specifier && type != "bool")
+      {
+        string spec (especifier (o));
+
+        os << inl << "bool " << scope << "::" << endl
+           << spec << " () const"
+           << "{"
+           << "return this->" << especifier_member (o) << ";"
+           << "}";
+
+        if (modifier)
+          os << inl << "void " << scope << "::" << endl
+             << spec << "(bool x)"
+             << "{"
+             << "this->" << especifier_member (o) << " = x;"
+             << "}";
+      }
     }
   };
 
