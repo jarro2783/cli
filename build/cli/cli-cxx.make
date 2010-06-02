@@ -3,17 +3,20 @@
 # copyright : Copyright (c) 2009-2010 Code Synthesis Tools CC
 # license   : MIT; see accompanying LICENSE file
 
-#@@ Need to use extensions from cxx config.
+# Get the C++ file extensions.
 #
+$(call include,$(bld_root)/cxx/configuration-static.make)
 
-cli_pattern :=        \
-$(out_base)/%.cxx     \
-$(out_base)/%.hxx     \
-$(out_base)/%.ixx     \
-$(out_base)/%-fwd.hxx
+cli_pattern :=                \
+$(out_base)/%.$(cxx_s_suffix) \
+$(out_base)/%.$(cxx_h_suffix) \
+$(out_base)/%.$(cxx_i_suffix)
 
 $(cli_pattern): cli := cli
-$(cli_pattern): cli_options :=
+$(cli_pattern): cli_options := \
+--hxx-suffix .$(cxx_h_suffix)  \
+--ixx-suffix .$(cxx_i_suffix)  \
+--cxx-suffix .$(cxx_s_suffix)
 
 .PRECIOUS: $(cli_pattern)
 
@@ -34,7 +37,6 @@ endif
 .PHONY: $(out_base)/%.cxx.cli.clean
 
 $(out_base)/%.cxx.cli.clean:
-	$(call message,rm $(@:.cxx.cli.clean=.cxx),rm -f $(@:.cxx.cli.clean=.cxx))
-	$(call message,rm $(@:.cxx.cli.clean=.hxx),rm -f $(@:.cxx.cli.clean=.hxx))
-	$(call message,rm $(@:.cxx.cli.clean=.ixx),rm -f $(@:.cxx.cli.clean=.ixx))
-	$(call message,rm $(@:.cxx.cli.clean=-fwd.hxx),rm -f $(@:.cxx.cli.clean=-fwd.hxx))
+	$(call message,rm $$1,rm -f $$1,$(@:.cxx.cli.clean=.$(cxx_s_suffix)))
+	$(call message,rm $$1,rm -f $$1,$(@:.cxx.cli.clean=.$(cxx_h_suffix)))
+	$(call message,rm $$1,rm -f $$1,$(@:.cxx.cli.clean=.$(cxx_i_suffix)))
