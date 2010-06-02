@@ -29,7 +29,7 @@ gen  := $(addprefix $(out_base)/,$(genf))
 
 $(gen): $(out_root)/cli/cli
 $(gen): cli := $(out_root)/cli/cli
-$(gen): cli_options := --generate-file-scanner
+$(gen): cli_options += --generate-file-scanner
 
 $(call include-dep,$(cxx_od),$(cxx_obj),$(gen))
 

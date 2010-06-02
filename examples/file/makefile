@@ -25,7 +25,7 @@ genf := $(cli:.cli=.hxx) $(cli:.cli=.ixx) $(cli:.cli=.cxx)
 gen  := $(addprefix $(out_base)/,$(genf))
 
 $(gen): cli := $(out_root)/cli/cli
-$(gen): cli_options := --generate-file-scanner
+$(gen): cli_options += --generate-file-scanner
 $(gen): $(out_root)/cli/cli
 
 $(call include-dep,$(dep),$(obj),$(gen))
