@@ -8,7 +8,7 @@ include $(dir $(lastword $(MAKEFILE_LIST)))../../build/bootstrap.make
 cxx_tun := driver.cxx
 cli_tun := test.cli
 
-tests := 000 001 002 003 004 005 006 007
+tests := 000 001 002 003 004 005 006 007 008 009 010 011 012
 
 #
 #
@@ -63,21 +63,9 @@ $(out_base)/.test-003: $(driver)
 	$(call message,test $(out_base)/003,$(driver) -a 1 --file \
 $(src_base)/base.ops --file test-003.ops b | diff -u $(src_base)/test-003.std -)
 
-$(out_base)/.test-004: $(driver) $(src_base)/test-004.ops
-	$(call message,test $(out_base)/004,$(driver) --file \
-$(src_base)/test-004.ops | diff -u $(src_base)/test-004.std -)
-
-$(out_base)/.test-005: $(driver) $(src_base)/test-005.ops
-	$(call message,test $(out_base)/005,$(driver) --file \
-$(src_base)/test-005.ops | diff -u $(src_base)/test-005.std -)
-
-$(out_base)/.test-006: $(driver) $(src_base)/test-006.ops
-	$(call message,test $(out_base)/006,$(driver) --file \
-$(src_base)/test-006.ops | diff -u $(src_base)/test-006.std -)
-
-$(out_base)/.test-007: $(driver) $(src_base)/test-007.ops
-	$(call message,test $(out_base)/007,$(driver) --file \
-$(src_base)/test-007.ops | diff -u $(src_base)/test-007.std -)
+$(out_base)/.test-%: $(driver) $(src_base)/test-%.ops $(src_base)/test-%.std
+	$(call message,test $(out_base)/$*,$(driver) --file \
+$(src_base)/test-$*.ops | diff -u $(src_base)/test-$*.std -)
 
 # Clean.
 #

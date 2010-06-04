@@ -351,10 +351,11 @@ namespace cli
         // If the string is wrapped in quotes, remove them.
         //
         n = s2.size ();
+        char cf (s2[0]), cl (s2[n - 1]);
 
-        if (s2[0] == '"' || s2[n - 1] == '"')
+        if (cf == '"' || cf == '\'' || cl == '"' || cl == '\'')
         {
-          if (n == 1 || s2[0] != s2[n - 1])
+          if (n == 1 || cf != cl)
             throw unmatched_quote (s2);
 
           s2 = string (s2, 1, n - 2);
