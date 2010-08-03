@@ -487,7 +487,8 @@ generate_runtime_source (context& ctx)
     "scanner& s)"
      << "{"
      << "X x;"
-     << "parser<X>::parse (x, s);"
+     << "bool dummy;"
+     << "parser<X>::parse (x, dummy, s);"
      << "c.push_back (x);";
 
   if (sp)
@@ -505,7 +506,8 @@ generate_runtime_source (context& ctx)
      << "parse (std::set<X>& c, " << (sp ? "bool& xs, " : "") << "scanner& s)"
      << "{"
      << "X x;"
-     << "parser<X>::parse (x, s);"
+     << "bool dummy;"
+     << "parser<X>::parse (x, dummy, s);"
      << "c.insert (x);";
 
   if (sp)
