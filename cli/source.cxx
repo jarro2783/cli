@@ -89,7 +89,7 @@ namespace
       for (names::name_iterator i (n.name_begin ()); i != n.name_end (); ++i)
       {
         os << "_cli_" << scope << "_map_[\"" << *i << "\"] = " << endl
-           << "&::cli::thunk< " << scope << ", " << type << ", " <<
+           << "&" << cli << "::thunk< " << scope << ", " << type << ", " <<
           "&" << scope << "::" << member;
 
         if (specifier && type != "bool")
@@ -368,7 +368,7 @@ namespace
 
       // c-tors
       //
-      string um ("::cli::unknown_mode");
+      string um (cli + "::unknown_mode");
 
       os << name << "::" << endl
          << name << " (int& argc," << endl
@@ -382,7 +382,7 @@ namespace
         names (c, names_init);
       }
       os << "{"
-         << "::cli::argv_scanner s (argc, argv, erase);"
+         << cli << "::argv_scanner s (argc, argv, erase);"
          << "_parse (s, opt, arg);"
          << "}";
 
@@ -399,7 +399,7 @@ namespace
         names (c, names_init);
       }
       os << "{"
-         << "::cli::argv_scanner s (start, argc, argv, erase);"
+         << cli << "::argv_scanner s (start, argc, argv, erase);"
          << "_parse (s, opt, arg);"
          << "}";
 
@@ -416,7 +416,7 @@ namespace
         names (c, names_init);
       }
       os << "{"
-         << "::cli::argv_scanner s (argc, argv, erase);"
+         << cli << "::argv_scanner s (argc, argv, erase);"
          << "_parse (s, opt, arg);"
          << "end = s.end ();"
          << "}";
@@ -435,13 +435,13 @@ namespace
         names (c, names_init);
       }
       os << "{"
-         << "::cli::argv_scanner s (start, argc, argv, erase);"
+         << cli << "::argv_scanner s (start, argc, argv, erase);"
          << "_parse (s, opt, arg);"
          << "end = s.end ();"
          << "}";
 
       os << name << "::" << endl
-         << name << " (::cli::scanner& s," << endl
+         << name << " (" << cli << "::scanner& s," << endl
          << um << " opt," << endl
          << um << " arg)";
       {
@@ -503,7 +503,7 @@ namespace
 
       os << "typedef" << endl
          << "std::map<std::string, void (*) (" <<
-        name << "&, ::cli::scanner&)>" << endl
+        name << "&, " << cli << "::scanner&)>" << endl
          << map << ";"
          << endl
          << "static " << map << " " << map << "_;"
@@ -524,7 +524,7 @@ namespace
       bool sep (!opt_sep.empty ());
 
       os << "void " << name << "::" << endl
-         << "_parse (::cli::scanner& s," << endl
+         << "_parse (" << cli << "::scanner& s," << endl
          << um << " opt_mode," << endl
          << um << " arg_mode)"
          << "{";
@@ -572,18 +572,18 @@ namespace
            << "{"
            << "switch (opt_mode)"
            << "{"
-           << "case ::cli::unknown_mode::skip:" << endl
+           << "case " << cli << "::unknown_mode::skip:" << endl
            << "{"
            << "s.skip ();"
            << "continue;"
            << "}"
-           << "case ::cli::unknown_mode::stop:" << endl
+           << "case " << cli << "::unknown_mode::stop:" << endl
            << "{"
            << "break;"
            << "}"
-           << "case ::cli::unknown_mode::fail:" << endl
+           << "case " << cli << "::unknown_mode::fail:" << endl
            << "{"
-           << "throw ::cli::unknown_option (o);"
+           << "throw " << cli << "::unknown_option (o);"
            << "}"
            << "}" // switch
            << "break;" // The stop case.
@@ -596,18 +596,18 @@ namespace
          << "{"
          << "switch (arg_mode)"
          << "{"
-         << "case ::cli::unknown_mode::skip:" << endl
+         << "case " << cli << "::unknown_mode::skip:" << endl
          << "{"
          << "s.skip ();"
          << "continue;"
          << "}"
-         << "case ::cli::unknown_mode::stop:" << endl
+         << "case " << cli << "::unknown_mode::stop:" << endl
          << "{"
          << "break;"
          << "}"
-         << "case ::cli::unknown_mode::fail:" << endl
+         << "case " << cli << "::unknown_mode::fail:" << endl
          << "{"
-         << "throw ::cli::unknown_argument (o);"
+         << "throw " << cli << "::unknown_argument (o);"
          << "}"
          << "}" // switch
          << "break;" // The stop case.

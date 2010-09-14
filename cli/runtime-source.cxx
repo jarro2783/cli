@@ -25,8 +25,7 @@ generate_runtime_source (context& ctx)
 
   os << endl;
 
-  os << "namespace cli"
-     << "{";
+  ctx.cli_open ();
 
   // unknown_option
   //
@@ -596,5 +595,5 @@ generate_runtime_source (context& ctx)
        << "parser<T>::parse (x.*M, x.*S, s);"
        << "}";
 
-  os << "}"; // namespace cli
+  ctx.cli_close ();
 }

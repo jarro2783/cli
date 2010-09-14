@@ -350,6 +350,9 @@ class options
   const std::size_t&
   option_length () const;
 
+  const std::string&
+  cli_namespace () const;
+
   const bool&
   generate_cxx () const;
 
@@ -435,6 +438,7 @@ class options
   bool suppress_usage_;
   bool long_usage_;
   std::size_t option_length_;
+  std::string cli_namespace_;
   bool generate_cxx_;
   bool generate_man_;
   bool generate_html_;

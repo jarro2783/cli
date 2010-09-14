@@ -13,8 +13,7 @@ generate_runtime_inline (context& ctx)
   ostream& os (ctx.os);
   string const& inl (ctx.inl);
 
-  os << "namespace cli"
-     << "{";
+  ctx.cli_open ();
 
   // unknown_mode
   //
@@ -212,5 +211,5 @@ generate_runtime_inline (context& ctx)
        << "}";
   }
 
-  os << "}"; // namespace cli
+  ctx.cli_close ();
 }

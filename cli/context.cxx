@@ -105,11 +105,17 @@ context (ostream& os_,
       inl (data_->inl_),
       opt_prefix (options.option_prefix ()),
       opt_sep (options.option_separator ()),
+      cli (data_->cli_),
       reserved_name_map (options.reserved_name ()),
       keyword_set (data_->keyword_set_)
 {
   if (!options.suppress_inline ())
     data_->inl_ = "inline ";
+
+  data_->cli_ = options.cli_namespace ();
+
+  if (!cli.empty () && cli[0] != ':')
+    data_->cli_ = "::" + data_->cli_;
 
   for (size_t i (0); i < sizeof (keywords) / sizeof (char*); ++i)
     data_->keyword_set_.insert (keywords[i]);
@@ -127,6 +133,7 @@ context (context& c)
       inl (c.inl),
       opt_prefix (c.opt_prefix),
       opt_sep (c.opt_sep),
+      cli (c.cli),
       reserved_name_map (c.reserved_name_map),
       keyword_set (c.keyword_set)
 {
@@ -612,6 +619,52 @@ fq_name (semantics::nameable& n, bool cxx_name)
   }
 
   return r;
+}
+
+void context::
+cli_open ()
+{
+  string::size_type b (0), e;
+
+  do
+  {
+    e = cli.find ("::", b);
+    string n (cli, b, e == string::npos ? e : e - b);
+
+    if (!n.empty ())
+      os << "namespace " << n << "{";
+
+    b = e;
+
+    if (b == string::npos)
+      break;
+
+    b += 2;
+
+  } while (true);
+}
+
+void context::
+cli_close ()
+{
+  string::size_type b (0), e;
+
+  do
+  {
+    e = cli.find ("::", b);
+    string n (cli, b, e == string::npos ? e : e - b);
+
+    if (!n.empty ())
+      os << "}";
+
+    b = e;
+
+    if (b == string::npos)
+      break;
+
+    b += 2;
+
+  } while (true);
 }
 
 // namespace

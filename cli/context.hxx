@@ -45,6 +45,7 @@ public:
   string const& inl;
   string const& opt_prefix;
   string const& opt_sep;
+  string const& cli;
 
   typedef std::map<string, string> reserved_name_map_type;
   reserved_name_map_type const& reserved_name_map;
@@ -56,6 +57,7 @@ private:
   struct data
   {
     string inl_;
+    string cli_;
     keyword_set_type keyword_set_;
   };
 
@@ -115,6 +117,15 @@ public:
   //
   string
   fq_name (semantics::nameable& n, bool cxx_name = true);
+
+  // Open/close cli namespace.
+  //
+public:
+  void
+  cli_open ();
+
+  void
+  cli_close ();
 
 public:
   context (std::ostream&, semantics::cli_unit&, options_type const&);

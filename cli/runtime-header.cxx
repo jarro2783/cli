@@ -20,8 +20,7 @@ generate_runtime_header (context& ctx)
      << "#include <exception>" << endl
      << endl;
 
-  os << "namespace cli"
-     << "{";
+  ctx.cli_open ();
 
   // unknown_mode
   //
@@ -300,5 +299,5 @@ generate_runtime_header (context& ctx)
     os << "};";
   }
 
-  os << "}"; // namespace cli
+  ctx.cli_close ();
 }

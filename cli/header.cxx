@@ -88,7 +88,7 @@ namespace
 
       // c-tors
       //
-      string um ("::cli::unknown_mode");
+      string um (cli + "::unknown_mode");
 
       os << name << " (int& argc," << endl
          << "char** argv," << endl
@@ -122,7 +122,7 @@ namespace
          << um << " argument = " << um << "::stop);"
          << endl;
 
-      os << name << " (::cli::scanner&," << endl
+      os << name << " (" << cli << "::scanner&," << endl
          << um << " option = " << um << "::fail," << endl
          << um << " argument = " << um << "::stop);"
          << endl;
@@ -150,7 +150,7 @@ namespace
       //
       os << "private:" << endl
          << "void" << endl
-         << "_parse (::cli::scanner&," << endl
+         << "_parse (" << cli << "::scanner&," << endl
          << um << " option," << endl
          << um << " argument);"
          << endl;

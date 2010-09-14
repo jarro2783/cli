@@ -221,6 +221,12 @@ option_length () const
   return this->option_length_;
 }
 
+inline const std::string& options::
+cli_namespace () const
+{
+  return this->cli_namespace_;
+}
+
 inline const bool& options::
 generate_cxx () const
 {

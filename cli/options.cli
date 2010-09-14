@@ -67,6 +67,15 @@ class options
      files, and would like their usage to have the same indentation level."
   };
 
+  std::string --cli-namespace = "::cli"
+  {
+    "<ns>"
+    "Generate the CLI support types in the <ns> namespace (\cb{cli} by
+     default). The namespace can be nested, for example \cb{details::cli}.
+     If the namespace is empty, then the support types are generated in
+     the global namespace."
+  };
+
   bool --generate-cxx
   {
     "Generate C++ code. If neither \cb{--generate-man} nor \cb{--generate-html}
@@ -225,6 +234,6 @@ class options
      the same set of options in the same order on the command line at the
      point where the \cb{--options-file} option is specified except that
      the shell escaping and quoting is not required. Repeat this option
-     to specify more than one options files."
+     to specify more than one options file."
   };
 };
