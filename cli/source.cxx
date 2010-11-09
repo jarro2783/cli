@@ -115,6 +115,11 @@ namespace
     {
       using semantics::names;
 
+      type::doc_list const& doc (o.doc ());
+
+      if (options.suppress_undocumented () && doc.empty ())
+        return;
+
       size_t l (0);
       names& n (o.named ());
 
@@ -132,10 +137,8 @@ namespace
       {
         l++; // ' ' seperator
 
-        type::doc_list const& d (o.doc ());
-
-        if (d.size () > 0)
-          l += d[0].size ();
+        if (doc.size () > 0)
+          l += doc[0].size ();
         else
           l += 5; // <arg>
       }
@@ -163,6 +166,11 @@ namespace
     {
       using semantics::names;
 
+      type::doc_list const& doc (o.doc ());
+
+      if (options.suppress_undocumented () && doc.empty ())
+        return;
+
       size_t l (0);
       names& n (o.named ());
 
@@ -180,7 +188,6 @@ namespace
         l += i->size ();
       }
 
-      type::doc_list const& doc (o.doc ());
       string type (o.type ().name ());
 
       if (type != "bool")

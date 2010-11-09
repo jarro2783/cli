@@ -3,6 +3,9 @@ Version 1.2.0
   * New option, --generate-specifier, triggers the generation of functions
     for determining whether the option was specified on the command line.
 
+  * New option, --suppress-undocumented, suppresses the generation of
+    documentation entries for undocumented options.
+
   * New option, --cli-namespace, allows changing of the namespace for the
     generated CLI support types.
 

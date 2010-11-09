@@ -16,6 +16,11 @@ namespace
     {
       using semantics::names;
 
+      type::doc_list const& doc (o.doc ());
+
+      if (options.suppress_undocumented () && doc.empty ())
+        return;
+
       names& n (o.named ());
 
       os << ".IP \"\\fB";
@@ -30,7 +35,6 @@ namespace
 
       os << "\\fP";
 
-      type::doc_list const& doc (o.doc ());
       string type (o.type ().name ());
 
       std::set<string> arg_set;

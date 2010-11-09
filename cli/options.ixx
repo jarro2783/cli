@@ -204,6 +204,12 @@ suppress_inline () const
 }
 
 inline const bool& options::
+suppress_undocumented () const
+{
+  return this->suppress_undocumented_;
+}
+
+inline const bool& options::
 suppress_usage () const
 {
   return this->suppress_usage_;

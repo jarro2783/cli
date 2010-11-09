@@ -529,6 +529,7 @@ options (int& argc,
   generate_specifier_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
   option_length_ (0),
@@ -573,6 +574,7 @@ options (int start,
   generate_specifier_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
   option_length_ (0),
@@ -617,6 +619,7 @@ options (int& argc,
   generate_specifier_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
   option_length_ (0),
@@ -663,6 +666,7 @@ options (int start,
   generate_specifier_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
   option_length_ (0),
@@ -705,6 +709,7 @@ options (::cli::scanner& s,
   generate_specifier_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
   option_length_ (0),
@@ -737,69 +742,97 @@ options (::cli::scanner& s,
 void options::
 print_usage (::std::ostream& os)
 {
-  os << "--help                                                                                                                                                                                                                                               Print usage information and exit." << ::std::endl;
+  os << "--help                       Print usage information and exit." << ::std::endl;
 
-  os << "--version                                                                                                                                                                                                                                            Print version and exit." << ::std::endl;
+  os << "--version                    Print version and exit." << ::std::endl;
 
-  os << "--output-dir|-o <dir>                                                                                                                                                                                                                                Write the generated files to <dir> instead of the current directory." << ::std::endl;
+  os << "--output-dir|-o <dir>        Write the generated files to <dir> instead of the" << ::std::endl
+     << "                             current directory." << ::std::endl;
 
-  os << "--generate-modifier                                                                                                                                                                                                                                  Generate option value modifiers in addition to accessors." << ::std::endl;
+  os << "--generate-modifier          Generate option value modifiers in addition to" << ::std::endl
+     << "                             accessors." << ::std::endl;
 
-  os << "--generate-specifier                                                                                                                                                                                                                                 Generate functions for determining whether the option was specified on the command line." << ::std::endl;
+  os << "--generate-specifier         Generate functions for determining whether the" << ::std::endl
+     << "                             option was specified on the command line." << ::std::endl;
 
-  os << "--generate-file-scanner                                                                                                                                                                                                                              Generate the 'argv_file_scanner' implementation." << ::std::endl;
+  os << "--generate-file-scanner      Generate the 'argv_file_scanner' implementation." << ::std::endl;
 
-  os << "--suppress-inline                                                                                                                                                                                                                                    Generate all functions non-inline." << ::std::endl;
+  os << "--suppress-inline            Generate all functions non-inline." << ::std::endl;
 
-  os << "--suppress-usage                                                                                                                                                                                                                                     Suppress the generation of the usage printing code." << ::std::endl;
+  os << "--suppress-undocumented      Suppress the generation of documentation entries" << ::std::endl
+     << "                             for undocumented options." << ::std::endl;
 
-  os << "--long-usage                                                                                                                                                                                                                                         If no short documentation string is provided, use the complete long documentation string in usage." << ::std::endl;
+  os << "--suppress-usage             Suppress the generation of the usage printing code." << ::std::endl;
 
-  os << "--option-length <len>                                                                                                                                                                                                                                Indent option descriptions <len> characters when printing usage." << ::std::endl;
+  os << "--long-usage                 If no short documentation string is provided, use" << ::std::endl
+     << "                             the complete long documentation string in usage." << ::std::endl;
 
-  os << "--cli-namespace <ns>Generate the CLI support types in the <ns> namespace ('cli' by default). The namespace can be nested, for example 'details::cli'. If the namespace is empty, then the support types are generated in the global namespace." << std::endl;
+  os << "--option-length <len>        Indent option descriptions <len> characters when" << ::std::endl
+     << "                             printing usage." << ::std::endl;
 
-  os << "--generate-cxx                                                                                                                                                                                                                                       Generate C++ code." << ::std::endl;
+  os << "--cli-namespace <ns>         Generate the CLI support types in the <ns>" << ::std::endl
+     << "                             namespace ('cli' by default)." << ::std::endl;
 
-  os << "--generate-man                                                                                                                                                                                                                                       Generate documentation in the man page format." << ::std::endl;
+  os << "--generate-cxx               Generate C++ code." << ::std::endl;
 
-  os << "--generate-html                                                                                                                                                                                                                                      Generate documentation in the HTML format." << ::std::endl;
+  os << "--generate-man               Generate documentation in the man page format." << ::std::endl;
 
-  os << "--man-prologue <file>                                                                                                                                                                                                                                Insert the content of <file> at the beginning of the man page file." << ::std::endl;
+  os << "--generate-html              Generate documentation in the HTML format." << ::std::endl;
 
-  os << "--man-epilogue <file>                                                                                                                                                                                                                                Insert the content of <file> at the end of the man page file." << ::std::endl;
+  os << "--man-prologue <file>        Insert the content of <file> at the beginning of" << ::std::endl
+     << "                             the man page file." << ::std::endl;
 
-  os << "--html-prologue <file>                                                                                                                                                                                                                               Insert the content of <file> at the beginning of the HTML file." << ::std::endl;
+  os << "--man-epilogue <file>        Insert the content of <file> at the end of the man" << ::std::endl
+     << "                             page file." << ::std::endl;
 
-  os << "--html-epilogue <file>                                                                                                                                                                                                                               Insert the content of <file> at the end of the HTML file." << ::std::endl;
+  os << "--html-prologue <file>       Insert the content of <file> at the beginning of" << ::std::endl
+     << "                             the HTML file." << ::std::endl;
 
-  os << "--class <fq-name>                                                                                                                                                                                                                                    Generate the man page or HTML documentation only for the <fq-name> options class." << ::std::endl;
+  os << "--html-epilogue <file>       Insert the content of <file> at the end of the HTML" << ::std::endl
+     << "                             file." << ::std::endl;
 
-  os << "--stdout                                                                                                                                                                                                                                             Write output to STDOUT instead of a file." << ::std::endl;
+  os << "--class <fq-name>            Generate the man page or HTML documentation only" << ::std::endl
+     << "                             for the <fq-name> options class." << ::std::endl;
 
-  os << "--hxx-suffix <suffix>                                                                                                                                                                                                                                Use <suffix> instead of the default '.hxx' to construct the name of the generated header file." << ::std::endl;
+  os << "--stdout                     Write output to STDOUT instead of a file." << ::std::endl;
 
-  os << "--ixx-suffix <suffix>                                                                                                                                                                                                                                Use <suffix> instead of the default '.ixx' to construct the name of the generated inline file." << ::std::endl;
+  os << "--hxx-suffix <suffix>        Use <suffix> instead of the default '.hxx' to" << ::std::endl
+     << "                             construct the name of the generated header file." << ::std::endl;
 
-  os << "--cxx-suffix <suffix>                                                                                                                                                                                                                                Use <suffix> instead of the default '.cxx' to construct the name of the generated source file." << ::std::endl;
+  os << "--ixx-suffix <suffix>        Use <suffix> instead of the default '.ixx' to" << ::std::endl
+     << "                             construct the name of the generated inline file." << ::std::endl;
 
-  os << "--man-suffix <suffix>                                                                                                                                                                                                                                Use <suffix> instead of the default '.1' to construct the name of the generated man page file." << ::std::endl;
+  os << "--cxx-suffix <suffix>        Use <suffix> instead of the default '.cxx' to" << ::std::endl
+     << "                             construct the name of the generated source file." << ::std::endl;
 
-  os << "--html-suffix <suffix>                                                                                                                                                                                                                               Use <suffix> instead of the default '.html' to construct the name of the generated HTML file." << ::std::endl;
+  os << "--man-suffix <suffix>        Use <suffix> instead of the default '.1' to" << ::std::endl
+     << "                             construct the name of the generated man page file." << ::std::endl;
 
-  os << "--option-prefix <prefix>                                                                                                                                                                                                                             Use <prefix> instead of the default '-' as an option prefix." << ::std::endl;
+  os << "--html-suffix <suffix>       Use <suffix> instead of the default '.html' to" << ::std::endl
+     << "                             construct the name of the generated HTML file." << ::std::endl;
 
-  os << "--option-separator <sep>                                                                                                                                                                                                                             Use <sep> instead of the default '--' as an optional separator between options and arguments." << ::std::endl;
+  os << "--option-prefix <prefix>     Use <prefix> instead of the default '-' as an" << ::std::endl
+     << "                             option prefix." << ::std::endl;
 
-  os << "--include-with-brackets                                                                                                                                                                                                                              Use angle brackets (<>) instead of quotes (\"\") in the generated '#include' directives." << ::std::endl;
+  os << "--option-separator <sep>     Use <sep> instead of the default '--' as an" << ::std::endl
+     << "                             optional separator between options and arguments." << ::std::endl;
 
-  os << "--include-prefix <prefix>                                                                                                                                                                                                                            Add <prefix> to the generated '#include' directive paths." << ::std::endl;
+  os << "--include-with-brackets      Use angle brackets (<>) instead of quotes (\"\") in" << ::std::endl
+     << "                             the generated '#include' directives." << ::std::endl;
 
-  os << "--guard-prefix <prefix>                                                                                                                                                                                                                              Add <prefix> to the generated header inclusion guards." << ::std::endl;
+  os << "--include-prefix <prefix>    Add <prefix> to the generated '#include' directive" << ::std::endl
+     << "                             paths." << ::std::endl;
 
-  os << "--reserved-name <name>=<rep>                                                                                                                                                                                                                         Add <name> with an optional <rep> replacement to the list of names that should not be used as identifiers." << ::std::endl;
+  os << "--guard-prefix <prefix>      Add <prefix> to the generated header inclusion" << ::std::endl
+     << "                             guards." << ::std::endl;
 
-  os << "--options-file <file>                                                                                                                                                                                                                                Read additional options from <file> with each option appearing on a separate line optionally followed by space and an option value." << ::std::endl;
+  os << "--reserved-name <name>=<rep> Add <name> with an optional <rep> replacement to" << ::std::endl
+     << "                             the list of names that should not be used as" << ::std::endl
+     << "                             identifiers." << ::std::endl;
+
+  os << "--options-file <file>        Read additional options from <file> with each" << ::std::endl
+     << "                             option appearing on a separate line optionally" << ::std::endl
+     << "                             followed by space and an option value." << ::std::endl;
 }
 
 typedef
@@ -828,6 +861,8 @@ struct _cli_options_map_init
     &::cli::thunk< options, bool, &options::generate_file_scanner_ >;
     _cli_options_map_["--suppress-inline"] = 
     &::cli::thunk< options, bool, &options::suppress_inline_ >;
+    _cli_options_map_["--suppress-undocumented"] = 
+    &::cli::thunk< options, bool, &options::suppress_undocumented_ >;
     _cli_options_map_["--suppress-usage"] = 
     &::cli::thunk< options, bool, &options::suppress_usage_ >;
     _cli_options_map_["--long-usage"] = 

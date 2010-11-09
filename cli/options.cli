@@ -47,6 +47,12 @@ class options
      made inline. This option suppresses creation of the inline file."
   };
 
+  bool --suppress-undocumented
+  {
+    "Suppress the generation of documentation entries for undocumented
+     options."
+  };
+
   bool --suppress-usage
   {
     "Suppress the generation of the usage printing code."
@@ -69,7 +75,7 @@ class options
 
   std::string --cli-namespace = "::cli"
   {
-    "<ns>"
+    "<ns>",
     "Generate the CLI support types in the <ns> namespace (\cb{cli} by
      default). The namespace can be nested, for example \cb{details::cli}.
      If the namespace is empty, then the support types are generated in

@@ -342,6 +342,9 @@ class options
   suppress_inline () const;
 
   const bool&
+  suppress_undocumented () const;
+
+  const bool&
   suppress_usage () const;
 
   const bool&
@@ -435,6 +438,7 @@ class options
   bool generate_specifier_;
   bool generate_file_scanner_;
   bool suppress_inline_;
+  bool suppress_undocumented_;
   bool suppress_usage_;
   bool long_usage_;
   std::size_t option_length_;
