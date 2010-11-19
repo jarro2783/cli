@@ -336,6 +336,9 @@ class options
   generate_specifier () const;
 
   const bool&
+  generate_description () const;
+
+  const bool&
   generate_file_scanner () const;
 
   const bool&
@@ -436,6 +439,7 @@ class options
   std::string output_dir_;
   bool generate_modifier_;
   bool generate_specifier_;
+  bool generate_description_;
   bool generate_file_scanner_;
   bool suppress_inline_;
   bool suppress_undocumented_;

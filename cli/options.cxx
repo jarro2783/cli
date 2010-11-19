@@ -527,6 +527,7 @@ options (int& argc,
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
+  generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_undocumented_ (),
@@ -572,6 +573,7 @@ options (int start,
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
+  generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_undocumented_ (),
@@ -617,6 +619,7 @@ options (int& argc,
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
+  generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_undocumented_ (),
@@ -664,6 +667,7 @@ options (int start,
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
+  generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_undocumented_ (),
@@ -707,6 +711,7 @@ options (::cli::scanner& s,
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
+  generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
   suppress_undocumented_ (),
@@ -754,6 +759,9 @@ print_usage (::std::ostream& os)
 
   os << "--generate-specifier         Generate functions for determining whether the" << ::std::endl
      << "                             option was specified on the command line." << ::std::endl;
+
+  os << "--generate-description       Generate the option description list that can be" << ::std::endl
+     << "                             examined at runtime." << ::std::endl;
 
   os << "--generate-file-scanner      Generate the 'argv_file_scanner' implementation." << ::std::endl;
 
@@ -857,6 +865,8 @@ struct _cli_options_map_init
     &::cli::thunk< options, bool, &options::generate_modifier_ >;
     _cli_options_map_["--generate-specifier"] = 
     &::cli::thunk< options, bool, &options::generate_specifier_ >;
+    _cli_options_map_["--generate-description"] = 
+    &::cli::thunk< options, bool, &options::generate_description_ >;
     _cli_options_map_["--generate-file-scanner"] = 
     &::cli::thunk< options, bool, &options::generate_file_scanner_ >;
     _cli_options_map_["--suppress-inline"] = 

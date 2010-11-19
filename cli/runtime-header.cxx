@@ -15,6 +15,10 @@ generate_runtime_header (context& ctx)
   if (ctx.options.generate_file_scanner ())
     os << "#include <deque>" << endl;
 
+  if (ctx.options.generate_description ())
+    os << "#include <map>" << endl
+       << "#include <vector>" << endl;
+
   os << "#include <iosfwd>" << endl
      << "#include <string>" << endl
      << "#include <exception>" << endl
@@ -297,6 +301,59 @@ generate_runtime_header (context& ctx)
       os << "bool skip_;";
 
     os << "};";
+  }
+
+  // Option description.
+  //
+  if (ctx.options.generate_description ())
+  {
+    os << "typedef std::vector<std::string> option_names;"
+       << endl;
+
+    os << "class option"
+       << "{"
+       << "public:" << endl
+       << endl
+       << "const std::string&" << endl
+       << "name () const;"
+       << endl
+       << "const option_names&" << endl
+       << "aliases () const;"
+       << endl
+       << "bool" << endl
+       << "flag () const;"
+       << endl
+       << "const std::string&" << endl
+       << "default_value () const;"
+       << endl
+       << "public:"
+       << "option ();"
+       << "option (const std::string& name," << endl
+       << "const option_names& aliases," << endl
+       << "bool flag," << endl
+       << "const std::string& default_value);"
+       << endl
+       << "private:"
+       << "std::string name_;"
+       << "option_names aliases_;"
+       << "bool flag_;"
+       << "std::string default_value_;"
+       << "};";
+
+    os << "class options: public std::vector<option>"
+       << "{"
+       << "public:" << endl
+       << "typedef std::vector<option> container_type;"
+       << endl
+       << "container_type::const_iterator" << endl
+       << "find (const std::string& name) const;"
+       << endl
+       << "void" << endl
+       << "push_back (const option&);"
+       << "private:"
+       << "typedef std::map<std::string, container_type::size_type> map_type;"
+       << "map_type map_;"
+       << "};";
   }
 
   ctx.cli_close ();

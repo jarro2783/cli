@@ -211,5 +211,59 @@ generate_runtime_inline (context& ctx)
        << "}";
   }
 
+  // Option description.
+  //
+  if (ctx.options.generate_description ())
+  {
+    // option
+    //
+    os << inl << "const std::string& option::" << endl
+       << "name () const"
+       << "{"
+       << "return name_;"
+       << "}";
+
+    os << inl << "const option_names& option::" << endl
+       << "aliases () const"
+       << "{"
+       << "return aliases_;"
+       << "}";
+
+    os << inl << "bool option::" << endl
+       << "flag () const"
+       << "{"
+       << "return flag_;"
+       << "}";
+
+    os << inl << "const std::string& option::" << endl
+       << "default_value () const"
+       << "{"
+       << "return default_value_;"
+       << "}";
+
+    os << inl << "option::" << endl
+       << "option ()"
+       << "{"
+       << "}";
+
+    os << inl << "option::" << endl
+       << "option (const std::string& n," << endl
+       << "const option_names& a," << endl
+       << "bool f," << endl
+       << "const std::string& dv)" << endl
+       << ": name_ (n), aliases_ (a), flag_ (f), default_value_ (dv)"
+       << "{"
+       << "}";
+
+    // options
+    //
+    os << inl << "options::container_type::const_iterator options::" << endl
+       << "find (const std::string& name) const"
+       << "{"
+       << "map_type::const_iterator i (map_.find (name));"
+       << "return i != map_.end () ? begin () + i->second : end ();"
+       << "}";
+  }
+
   ctx.cli_close ();
 }

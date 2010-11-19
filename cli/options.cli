@@ -34,6 +34,11 @@ class options
      on the command line."
   };
 
+  bool --generate-description
+  {
+    "Generate the option description list that can be examined at runtime."
+  };
+
   bool --generate-file-scanner
   {
     "Generate the \c{argv_file_scanner} implementation. This scanner is

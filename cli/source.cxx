@@ -103,6 +103,75 @@ namespace
 
   //
   //
+  struct option_desc: traversal::option, context
+  {
+    option_desc (context& c) : context (c) {}
+
+    virtual void
+    traverse (type& o)
+    {
+      using semantics::names;
+
+      names& n (o.named ());
+
+      os << "// " << o.name () << endl
+         << "//" << endl
+         << "{"
+         << cli << "::option_names a;";
+
+      for (names::name_iterator b (n.name_begin ()), i (b);
+           i != n.name_end (); ++i)
+      {
+        if (i == b) // Skip the primary name.
+          continue;
+
+        os << "a.push_back (\"" << *i << "\");";
+      }
+
+      if (o.initialized_p ())
+      {
+        using semantics::expression;
+        expression const& i (o.initializer ());
+
+        switch (i.type ())
+        {
+        case expression::string_lit:
+          {
+            os << "std::string dv (" << i.value () << ");";
+            break;
+          }
+        case expression::char_lit:
+          {
+            os << "std::string dv (1, " << i.value () << ");";
+            break;
+          }
+        case expression::bool_lit:
+        case expression::int_lit:
+        case expression::float_lit:
+          {
+            os << "std::string dv (\"" << i.value () << "\");";
+          }
+        case expression::identifier:
+        case expression::call_expr:
+          {
+            os << "std::string dv;";
+            break;
+          }
+        }
+      }
+      else
+        os << "std::string dv;";
+
+
+      os << cli << "::option o (\"" << o.name () << "\", a, " <<
+        (o.type ().name () == "bool" ? "true" : "false") << ", dv);"
+         << "os.push_back (o);"
+         << "}";
+    }
+  };
+
+  //
+  //
   struct option_length: traversal::option, context
   {
     option_length (context& c, size_t& l, type*& o)
@@ -358,9 +427,10 @@ namespace
   struct class_: traversal::class_, context
   {
     class_ (context& c)
-        : context (c), option_map_ (c)
+        : context (c), option_map_ (c), option_desc_ (c)
     {
       names_option_map_ >> option_map_;
+      names_option_desc_ >> option_desc_;
     }
 
     virtual void
@@ -460,7 +530,7 @@ namespace
          << "_parse (s, opt, arg);"
          << "}";
 
-      // usage
+      // Usage.
       //
       if (usage)
       {
@@ -504,6 +574,35 @@ namespace
         os << "}";
       }
 
+      // Description.
+      //
+      if (options.generate_description ())
+      {
+        string desc ("_cli_" + name + "_desc");
+
+        os << "static " << cli << "::options " << desc << "_;"
+           << endl;
+
+        os << "struct " << desc << "_init"
+           << "{"
+           << desc << "_init (" << cli << "::options& os)"
+           << "{";
+
+        names (c, names_option_desc_);
+
+        os << "}"
+           << "};"
+           << "static " << desc << "_init " << desc << "_init_ (" <<
+          desc << "_);"
+           << endl;
+
+        os << "const " << cli << "::options& " << name << "::" << endl
+           << "description ()"
+           << "{"
+           << "return " << desc << "_;"
+           << "};";
+      }
+
       // _parse()
       //
       string map ("_cli_" + name + "_map");
@@ -524,7 +623,8 @@ namespace
       names (c, names_option_map_);
 
       os << "}"
-         << "} " << map << "_init_;"
+         << "};"
+         << "static " << map << "_init " << map << "_init_;"
          << endl;
 
       bool pfx (!opt_prefix.empty ());
@@ -627,6 +727,9 @@ namespace
   private:
     option_map option_map_;
     traversal::names names_option_map_;
+
+    option_desc option_desc_;
+    traversal::names names_option_desc_;
   };
 }
 

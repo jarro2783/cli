@@ -412,6 +412,25 @@ generate_runtime_source (context& ctx)
        << "}";
   }
 
+  // Option description.
+  //
+  if (ctx.options.generate_description ())
+  {
+    // options
+    //
+    os << "void options::" << endl
+       << "push_back (const option& o)"
+       << "{"
+       << "container_type::size_type n (size ());"
+       << "container_type::push_back (o);"
+       << "map_[o.name ()] = n;"
+       << endl
+       << "for (option_names::const_iterator i (o.aliases ().begin ());" << endl
+       << "i != o.aliases ().end (); ++i)" << endl
+       << "map_[*i] = n;"
+       << "}";
+  }
+
   bool sp (ctx.specifier);
 
   // parser class template & its specializations

@@ -192,6 +192,12 @@ generate_specifier () const
 }
 
 inline const bool& options::
+generate_description () const
+{
+  return this->generate_description_;
+}
+
+inline const bool& options::
 generate_file_scanner () const
 {
   return this->generate_file_scanner_;

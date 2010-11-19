@@ -135,7 +135,7 @@ namespace
 
       names (c, names_option_);
 
-      // usage
+      // Usage.
       //
       if (usage)
       {
@@ -143,6 +143,17 @@ namespace
            << "//" << endl
            << "static void" << endl
            << "print_usage (::std::ostream&);"
+           << endl;
+      }
+
+      // Description.
+      //
+      if (options.generate_description ())
+      {
+        os << "// Option description." << endl
+           << "//" << endl
+           << "static const " << cli << "::options&" << endl
+           << "description ();"
            << endl;
       }
 
