@@ -504,9 +504,12 @@ generate_runtime_source (context& ctx)
      << "parse (std::vector<X>& c, " << (sp ? "bool& xs, " : "") <<
     "scanner& s)"
      << "{"
-     << "X x;"
-     << "bool dummy;"
-     << "parser<X>::parse (x, dummy, s);"
+     << "X x;";
+
+  if (sp)
+    os << "bool dummy;";
+
+  os << "parser<X>::parse (x, " << (sp ? "dummy, " : "") << "s);"
      << "c.push_back (x);";
 
   if (sp)
@@ -523,9 +526,12 @@ generate_runtime_source (context& ctx)
      << "static void" << endl
      << "parse (std::set<X>& c, " << (sp ? "bool& xs, " : "") << "scanner& s)"
      << "{"
-     << "X x;"
-     << "bool dummy;"
-     << "parser<X>::parse (x, dummy, s);"
+     << "X x;";
+
+  if (sp)
+    os << "bool dummy;";
+
+  os << "parser<X>::parse (x, " << (sp ? "dummy, " : "") << "s);"
      << "c.insert (x);";
 
   if (sp)
