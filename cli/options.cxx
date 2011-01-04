@@ -924,7 +924,9 @@ struct _cli_options_map_init
     _cli_options_map_["--options-file"] = 
     &::cli::thunk< options, std::string, &options::options_file_ >;
   }
-} _cli_options_map_init_;
+};
+
+static _cli_options_map_init _cli_options_map_init_;
 
 void options::
 _parse (::cli::scanner& s,
