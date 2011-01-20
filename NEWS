@@ -13,6 +13,9 @@ Version 1.2.0
     values in option files. This is useful to preserve leading and trailing
     whitespaces as well as to specify empty values.
 
+  * The argv_file_scanner now supports multiple file options as well as
+    file search callbacks.
+
 Version 1.1.0
 
   * Support for option documentation. Option documentation is used to print 

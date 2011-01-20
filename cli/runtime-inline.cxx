@@ -189,7 +189,44 @@ generate_runtime_inline (context& ctx)
        << "const std::string& option," << endl
        << "bool erase)" << endl
        << ": argv_scanner (argc, argv, erase)," << endl
-       << "  option_ (option)";
+       << "  option_ (option)," << endl
+       << "  options_ (&option_info_)," << endl
+       << "  options_count_ (1)";
+    if (sep)
+      os << "," << endl
+         << "  skip_ (false)";
+    os << "{"
+       << "option_info_.option = option_.c_str ();"
+       << "option_info_.search_func = 0;"
+       << "}";
+
+    os << inl << "argv_file_scanner::" << endl
+       << "argv_file_scanner (int start," << endl
+       << "int& argc," << endl
+       << "char** argv," << endl
+       << "const std::string& option," << endl
+       << "bool erase)" << endl
+       << ": argv_scanner (start, argc, argv, erase)," << endl
+       << "  option_ (option)," << endl
+       << "  options_ (&option_info_)," << endl
+       << "  options_count_ (1)";
+    if (sep)
+      os << "," << endl
+         << "  skip_ (false)";
+    os << "{"
+       << "option_info_.option = option_.c_str ();"
+       << "option_info_.search_func = 0;"
+       << "}";
+
+    os << inl << "argv_file_scanner::" << endl
+       << "argv_file_scanner (int& argc," << endl
+       << "char** argv," << endl
+       << "const option_info* options," << endl
+       << "std::size_t options_count," << endl
+       << "bool erase)" << endl
+       << ": argv_scanner (argc, argv, erase)," << endl
+       << "  options_ (options)," << endl
+       << "  options_count_ (options_count)";
     if (sep)
       os << "," << endl
          << "  skip_ (false)";
@@ -200,10 +237,12 @@ generate_runtime_inline (context& ctx)
        << "argv_file_scanner (int start," << endl
        << "int& argc," << endl
        << "char** argv," << endl
-       << "const std::string& option," << endl
+       << "const option_info* options," << endl
+       << "std::size_t options_count," << endl
        << "bool erase)" << endl
        << ": argv_scanner (start, argc, argv, erase)," << endl
-       << "  option_ (option)";
+       << "  options_ (options)," << endl
+       << "  options_count_ (options_count)";
     if (sep)
       os << "," << endl
          << "  skip_ (false)";

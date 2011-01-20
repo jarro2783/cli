@@ -732,22 +732,44 @@ namespace cli
   public:
     argv_file_scanner (int&amp; argc,
                        char** argv,
-                       const std::string&amp; file_option,
+                       const std::string&amp; option,
                        bool erase = false);
 
     argv_file_scanner (int start,
                        int&amp; argc,
                        char** argv,
-                       const std::string&amp; file_option,
+                       const std::string&amp; option,
+                       bool erase = false);
+
+    struct option_info
+    {
+        const char* option;
+        std::string (*search_func) (const char*, void* arg);
+        void* arg;
+    };
+
+    argv_file_scanner (int&amp; argc,
+                       char** argv,
+                       const option_info* options,
+                       std::size_t options_count,
+                       bool erase = false);
+
+    argv_file_scanner (int start,
+                       int&amp; argc,
+                       char** argv,
+                       const option_info* options,
+                       std::size_t options_count,
                        bool erase = false);
     ...
   };
 }
   </pre>
 
-  <p>The <code>file_option</code> argument is used to pass the option name
-     that should be recognized as specifying the file containing additional
-     options. Such a file contains a set of options, each appearing on a
+  <p>The <code>option</code> argument in the first two constructors and
+     the <code>options</code> and <code>options_count</code> arguments
+     in the last two are used to pass the option name(s) that should be
+     recognized as specifying the file containing additional options.
+     Such a file contains a set of options, each appearing on a
      separate line optionally followed by space and an option value. Empty lines
      and lines starting with <code>#</code> are ignored. Option values can
      be enclosed in double (<code>"</code>) or single (<code>'</code>)

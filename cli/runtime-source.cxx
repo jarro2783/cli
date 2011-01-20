@@ -255,14 +255,18 @@ generate_runtime_source (context& ctx)
        << "// See if the next argument is the file option." << endl
        << "//" << endl
        << "const char* a (base::peek ());"
+       << "const option_info* oi;"
        << endl
-       << "if (" << (sep ? "!skip_ && " : "") << "a == option_)"
+       << "if (" << (sep ? "!skip_ && " : "") << "(oi = find (a)))"
        << "{"
        << "base::next ();"
        << endl
        << "if (!base::more ())" << endl
-       << "throw missing_value (option_);"
+       << "throw missing_value (oi->option);"
        << endl
+       << "if (oi->search_func != 0)" << endl
+       << "load (oi->search_func (base::next (), oi->arg));"
+       << "else" << endl
        << "load (base::next ());"
        << endl
        << "if (!args_.empty ())" << endl
@@ -317,12 +321,22 @@ generate_runtime_source (context& ctx)
        << "args_.pop_front ();"
        << "}"
 
+       << "const argv_file_scanner::option_info* argv_file_scanner::" << endl
+       << "find (const char* a) const"
+       << "{"
+       << "for (std::size_t i (0); i < options_count_; ++i)" << endl
+       << "if (std::strcmp (a, options_[i].option) == 0)" << endl
+       << "return &options_[i];"
+       << endl
+       << "return 0;"
+       << "}"
+
        << "void argv_file_scanner::" << endl
-       << "load (const char* file)"
+       << "load (const std::string& file)"
        << "{"
        << "using namespace std;"
        << endl
-       << "ifstream is (file);"
+       << "ifstream is (file.c_str ());"
        << endl
        << "if (!is.is_open ())" << endl
        << "throw file_io_failure (file);"
@@ -400,8 +414,17 @@ generate_runtime_source (context& ctx)
        << endl
        << "s2 = string (s2, 1, n - 2);"
        << "}"
-       << "if (" << (sep ? "!skip_ && " : "") << "s1 == option_)" << endl
-       << "load (s2.c_str ());"
+       << "const option_info* oi;"
+       << "if (" << (sep ? "!skip_ && " : "") << "(oi = find (s1.c_str ())))" << endl
+       << "{"
+       << "if (s2.empty ())" << endl
+       << "throw missing_value (oi->option);"
+       << endl
+       << "if (oi->search_func != 0)" << endl
+       << "load (oi->search_func (s2.c_str (), oi->arg));"
+       << "else" << endl
+       << "load (s2);"
+       << "}"
        << "else"
        << "{"
        << "args_.push_back (s1);"

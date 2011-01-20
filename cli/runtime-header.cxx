@@ -21,6 +21,7 @@ generate_runtime_header (context& ctx)
 
   os << "#include <iosfwd>" << endl
      << "#include <string>" << endl
+     << "#include <cstddef>" << endl
      << "#include <exception>" << endl
      << endl;
 
@@ -266,13 +267,32 @@ generate_runtime_header (context& ctx)
        << "public:" << endl
        << "argv_file_scanner (int& argc," << endl
        << "char** argv," << endl
-       << "const std::string& file_option," << endl
+       << "const std::string& option," << endl
        << "bool erase = false);"
        << endl
        << "argv_file_scanner (int start," << endl
        << "int& argc," << endl
        << "char** argv," << endl
-       << "const std::string& file_option," << endl
+       << "const std::string& option," << endl
+       << "bool erase = false);"
+       << endl
+       << "struct option_info"
+       << "{"
+       << "  const char* option;"
+       << "  std::string (*search_func) (const char*, void* arg);"
+       << "  void* arg;"
+       << "};"
+       << "argv_file_scanner (int& argc," << endl
+       << "char** argv," << endl
+       << "const option_info* options," << endl
+       << "std::size_t options_count," << endl
+       << "bool erase = false);"
+       << endl
+       << "argv_file_scanner (int start," << endl
+       << "int& argc," << endl
+       << "char** argv," << endl
+       << "const option_info* options," << endl
+       << "std::size_t options_count," << endl
        << "bool erase = false);"
        << endl
        << "virtual bool" << endl
@@ -288,12 +308,19 @@ generate_runtime_header (context& ctx)
        << "skip ();"
        << endl
        << "private:" << endl
+       << "const option_info*" << endl
+       << "find (const char*) const;"
+       << endl
        << "void" << endl
-       << "load (const char* file);"
+       << "load (const std::string& file);"
        << endl
        << "typedef argv_scanner base;"
        << endl
        << "const std::string option_;"
+       << "option_info option_info_;"
+       << "const option_info* options_;"
+       << "std::size_t options_count_;"
+       << endl
        << "std::string hold_;"
        << "std::deque<std::string> args_;";
 
