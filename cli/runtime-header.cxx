@@ -278,9 +278,13 @@ generate_runtime_header (context& ctx)
        << endl
        << "struct option_info"
        << "{"
-       << "  const char* option;"
-       << "  std::string (*search_func) (const char*, void* arg);"
-       << "  void* arg;"
+       << "// If search_func is not NULL, it is called, with the arg" << endl
+       << "// value as the second argument, to locate the options file." << endl
+       << "// If it returns an empty string, then the file is ignored." << endl
+       << "//" << endl
+       << "const char* option;"
+       << "std::string (*search_func) (const char*, void* arg);"
+       << "void* arg;"
        << "};"
        << "argv_file_scanner (int& argc," << endl
        << "char** argv," << endl

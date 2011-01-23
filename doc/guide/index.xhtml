@@ -743,9 +743,13 @@ namespace cli
 
     struct option_info
     {
-        const char* option;
-        std::string (*search_func) (const char*, void* arg);
-        void* arg;
+      // If search_func is not NULL, it is called, with the arg
+      // value as the second argument, to locate the options file.
+      // If it returns an empty string, then the file is ignored.
+      //
+      const char* option;
+      std::string (*search_func) (const char*, void* arg);
+      void* arg;
     };
 
     argv_file_scanner (int&amp; argc,

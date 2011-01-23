@@ -264,8 +264,13 @@ generate_runtime_source (context& ctx)
        << "if (!base::more ())" << endl
        << "throw missing_value (oi->option);"
        << endl
-       << "if (oi->search_func != 0)" << endl
-       << "load (oi->search_func (base::next (), oi->arg));"
+       << "if (oi->search_func != 0)"
+       << "{"
+       << "std::string f (oi->search_func (base::next (), oi->arg));"
+       << endl
+       << "if (!f.empty ())" << endl
+       << "load (f);"
+       << "}"
        << "else" << endl
        << "load (base::next ());"
        << endl
@@ -420,8 +425,13 @@ generate_runtime_source (context& ctx)
        << "if (s2.empty ())" << endl
        << "throw missing_value (oi->option);"
        << endl
-       << "if (oi->search_func != 0)" << endl
-       << "load (oi->search_func (s2.c_str (), oi->arg));"
+       << "if (oi->search_func != 0)"
+       << "{"
+       << "std::string f (oi->search_func (s2.c_str (), oi->arg));"
+       << endl
+       << "if (!f.empty ())" << endl
+       << "load (f);"
+       << "}"
        << "else" << endl
        << "load (s2);"
        << "}"
