@@ -474,11 +474,11 @@ generate_runtime_source (context& ctx)
      << "static void" << endl
      << "parse (X& x, " << (sp ? "bool& xs, " : "") << "scanner& s)"
      << "{"
-     << "const char* o (s.next ());"
+     << "std::string o (s.next ());"
      << endl
      << "if (s.more ())"
      << "{"
-     << "const char* v (s.next ());"
+     << "std::string v (s.next ());"
      << "std::istringstream is (v);"
      << "if (!(is >> x && is.eof ()))" << endl
      << "throw invalid_value (o, v);"
@@ -582,7 +582,7 @@ generate_runtime_source (context& ctx)
      << "parse (std::map<K, V>& m, " << (sp ? "bool& xs, " : "") <<
     "scanner& s)"
      << "{"
-     << "const char* o (s.next ());"
+     << "std::string o (s.next ());"
      << endl
      << "if (s.more ())"
      << "{"
