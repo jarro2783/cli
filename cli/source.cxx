@@ -312,7 +312,11 @@ namespace
           if (d[i] == ' ' || d[i] == '\n')
             e = i;
 
-          if (d[i] == '\n' || i - b == 79 - length_)
+          // Assume we have 78 characters instead of 79 per line to make
+          // sure we get the same output on Windows (which has two character
+          // for a newline).
+          //
+          if (d[i] == '\n' || i - b == 78 - length_)
           {
             if (b != 0)
             {
