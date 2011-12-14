@@ -150,6 +150,7 @@ namespace
         case expression::float_lit:
           {
             os << "std::string dv (\"" << i.value () << "\");";
+            break;
           }
         case expression::identifier:
         case expression::call_expr:
