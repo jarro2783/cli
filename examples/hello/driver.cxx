@@ -10,11 +10,11 @@
 using namespace std;
 
 void
-usage ()
+usage (ostream& os)
 {
-  cerr << "usage: driver [options] <names>" << endl
-       << "options:" << endl;
-  options::print_usage (cerr);
+  os << "usage: driver [options] <names>" << endl
+     << "options:" << endl;
+  options::print_usage (os);
 }
 
 int
@@ -27,14 +27,14 @@ main (int argc, char* argv[])
 
     if (o.help ())
     {
-      usage ();
+      usage (cout);
       return 0;
     }
 
     if (end == argc)
     {
       cerr << "no names provided" << endl;
-      usage ();
+      usage (cerr);
       return 1;
     }
 
@@ -53,7 +53,7 @@ main (int argc, char* argv[])
   catch (const cli::exception& e)
   {
     cerr << e << endl;
-    usage ();
+    usage (cerr);
     return 1;
   }
 }

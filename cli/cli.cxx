@@ -31,10 +31,12 @@ main (int argc, char* argv[])
     //
     if (ops.version ())
     {
-      e << "CodeSynthesis CLI command line interface compiler 1.1.0" << endl
+      ostream& o (cout);
+
+      o << "CodeSynthesis CLI command line interface compiler 1.1.0" << endl
         << "Copyright (c) 2009-2011 Code Synthesis Tools CC" << endl;
 
-      e << "This is free software; see the source for copying conditions. "
+      o << "This is free software; see the source for copying conditions. "
         << "There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS "
         << "FOR A PARTICULAR PURPOSE." << endl;
 
@@ -45,10 +47,12 @@ main (int argc, char* argv[])
     //
     if (ops.help ())
     {
-      e << "Usage: " << argv[0] << " [options] file" << endl
+      ostream& o (cout);
+
+      o << "Usage: " << argv[0] << " [options] file" << endl
         << "Options:" << endl;
 
-      options::print_usage (e);
+      options::print_usage (o);
 
       return 0;
     }

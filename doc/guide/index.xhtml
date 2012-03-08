@@ -343,11 +343,11 @@ private:
 using namespace std;
 
 void
-usage ()
+usage (ostream&amp; os)
 {
-  cerr &lt;&lt; "usage: driver [options] &lt;names>" &lt;&lt; endl
-       &lt;&lt; "options:" &lt;&lt; endl;
-  options::print_usage (cerr);
+  os &lt;&lt; "usage: driver [options] &lt;names>" &lt;&lt; endl
+     &lt;&lt; "options:" &lt;&lt; endl;
+  options::print_usage (os);
 }
 
 int
@@ -360,14 +360,14 @@ main (int argc, char* argv[])
 
     if (o.help ())
     {
-      usage ();
+      usage (cout);
       return 0;
     }
 
     if (end == argc)
     {
       cerr &lt;&lt; "no names provided" &lt;&lt; endl;
-      usage ();
+      usage (cerr);
       return 1;
     }
 
@@ -386,7 +386,7 @@ main (int argc, char* argv[])
   catch (const cli::exception&amp; e)
   {
     cerr &lt;&lt; e &lt;&lt; endl;
-    usage ();
+    usage (cerr);
     return 1;
   }
 }
