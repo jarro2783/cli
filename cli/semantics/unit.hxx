@@ -24,21 +24,29 @@ namespace semantics
   class includes: public edge
   {
   public:
+    enum kind_type {quote, bracket};
+
     cli_unit&
     includer () const
     {
       return *includer_;
     }
 
-    string const&
+    kind_type
+    kind () const
+    {
+      return kind_;
+    }
+
+    path const&
     file () const
     {
       return file_;
     }
 
   public:
-    includes (string const& file)
-        : file_ (file)
+    includes (kind_type kind, path const& file)
+        : kind_ (kind), file_ (file)
     {
     }
 
@@ -49,7 +57,8 @@ namespace semantics
     }
 
   protected:
-    string file_;
+    kind_type kind_;
+    path file_;
     cli_unit* includer_;
   };
 
@@ -65,8 +74,8 @@ namespace semantics
     }
 
   public:
-    cli_includes (string const& file)
-        : includes (file)
+    cli_includes (kind_type kind, path const& file)
+        : includes (kind, file)
     {
     }
 
@@ -92,8 +101,8 @@ namespace semantics
     }
 
   public:
-    cxx_includes (string const& file)
-        : includes (file)
+    cxx_includes (kind_type kind, path const& file)
+        : includes (kind, file)
     {
     }
 
@@ -147,8 +156,8 @@ namespace semantics
     }
 
   public:
-    cli_unit (path const& file)
-        : node (file, 1, 1), graph_ (*this)
+    cli_unit (path const& file, size_t line, size_t column)
+        : node (file, line, column), graph_ (*this)
     {
       // Use a special edge to get this->name() return the global
       // namespace name ("").

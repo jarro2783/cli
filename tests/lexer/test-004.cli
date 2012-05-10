@@ -1,2 +1,5 @@
 include "foo/abc.hxx";
 include <vector>;
+include "c++:map";
+include <cli:map>;
+include "map.cli"

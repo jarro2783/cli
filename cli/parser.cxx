@@ -3,6 +3,7 @@
 // copyright : Copyright (c) 2009-2011 Code Synthesis Tools CC
 // license   : MIT; see accompanying LICENSE file
 
+#include <fstream>
 #include <iostream>
 
 #include "token.hxx"
@@ -60,9 +61,14 @@ operator<< (std::ostream& os, token const& t)
       os << "'" << punctuation[t.punctuation ()] << "'";
       break;
     }
-  case token::t_path_lit:
+  case token::t_cxx_path_lit:
     {
-      os << "path literal";
+      os << "c++ path literal";
+      break;
+    }
+  case token::t_cli_path_lit:
+    {
+      os << "cli path literal";
       break;
     }
   case token::t_string_lit:
@@ -105,6 +111,29 @@ operator<< (std::ostream& os, token const& t)
   return os;
 }
 
+// RAII-style set new value on construction, restore old one on destruction.
+//
+template <typename T>
+struct auto_restore
+{
+  auto_restore (T*& var, T* new_val = 0)
+      : var_ (var), old_val_ (var_)
+  {
+    if (new_val != 0)
+      var_ = new_val;
+  }
+
+  void
+  set (T* new_val) {var_ = new_val;}
+
+  ~auto_restore () {var_ = old_val_;}
+
+private:
+  T*& var_;
+  T* old_val_;
+};
+
+
 void parser::
 recover (token& t)
 {
@@ -126,8 +155,16 @@ recover (token& t)
 auto_ptr<cli_unit> parser::
 parse (std::istream& is, path const& p)
 {
-  auto_ptr<cli_unit> unit (new cli_unit (p));
-  unit_ = unit.get ();
+  auto_ptr<cli_unit> unit (new cli_unit (p, 1, 1));
+
+  {
+    path ap (p);
+    ap.absolute ();
+    ap.normalize ();
+    include_map_[ap] = unit.get ();
+  }
+
+  root_ = cur_ = unit.get ();
 
   lexer l (is, p.string ());
   lexer_ = &l;
@@ -164,8 +201,7 @@ def_unit ()
     }
   }
 
-  scope* old (scope_);
-  scope_ = unit_;
+  auto_restore<scope> new_scope (scope_, cur_);
 
   // decl-seq
   //
@@ -190,26 +226,97 @@ def_unit ()
       break; // Non-recoverable error.
     }
   }
-
-  scope_ = old;
 }
 
 void parser::
 include_decl ()
 {
   token t (lexer_->next ());
+  token::token_type tt (t.type ());
 
-  if (t.type () != token::t_path_lit)
+  if (tt != token::t_cxx_path_lit && tt != token::t_cli_path_lit)
   {
     cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
          << "expected path literal instead of " << t << endl;
     throw error ();
   }
 
+  string const& l (t.literal ());
+  includes::kind_type ik (l[0] == '<' ? includes::bracket : includes::quote);
+
+  path f;
+  try
+  {
+    f = path (string (l, 1, l.size () - 2));
+  }
+  catch (const invalid_path& e)
+  {
+    cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
+         << "'" << e.path () << "' is not a valid filesystem path" << endl;
+    valid_ = false;
+  }
+
   if (valid_)
   {
-    cxx_unit& n (unit_->new_node<cxx_unit> (*path_, t.line (), t.column ()));
-    unit_->new_edge<cxx_includes> (*unit_, n, t.literal ());
+    if (tt == token::t_cxx_path_lit)
+    {
+      cxx_unit& n (
+        root_->new_node<cxx_unit> (*path_, t.line (), t.column ()));
+      root_->new_edge<cxx_includes> (*cur_, n, ik, f);
+    }
+    else
+    {
+      // For now we only support inclusion relative to the current file.
+      //
+      path p (path_->directory () / f);
+      p.normalize ();
+
+      // Detect and ignore multiple inclusions.
+      //
+      path ap (p);
+      ap.absolute ();
+      ap.normalize ();
+
+      include_map::iterator it (include_map_.find (ap));
+      if (it == include_map_.end ())
+      {
+        cli_unit& n (root_->new_node<cli_unit> (p, 1, 1));
+        root_->new_edge<cli_includes> (*cur_, n, ik, f);
+        include_map_[ap] = &n;
+
+        auto_restore<cli_unit> new_cur (cur_, &n);
+        auto_restore<path const> new_path (path_, &p);
+
+        ifstream ifs (p.string ().c_str ());
+        if (ifs.is_open ())
+        {
+          ifs.exceptions (ifstream::failbit | ifstream::badbit);
+
+          try
+          {
+            lexer l (ifs, p.string ());
+            auto_restore<lexer> new_lexer (lexer_, &l);
+
+            def_unit ();
+
+            if (!l.valid ())
+              valid_ = false;
+          }
+          catch (std::ios_base::failure const&)
+          {
+            cerr << p << ": error: read failure" << endl;
+            valid_ = false;
+          }
+        }
+        else
+        {
+          cerr << p << ": error: unable to open in read mode" << endl;
+          valid_ = false;
+        }
+      }
+      else
+        root_->new_edge<cli_includes> (*cur_, *it->second, ik, f);
+    }
   }
 
   t = lexer_->next ();
@@ -258,14 +365,14 @@ namespace_def ()
     throw error ();
   }
 
-  scope* old (scope_);
+  auto_restore<scope> new_scope (scope_);
 
   if (valid_)
   {
     namespace_& n (
-      unit_->new_node<namespace_> (*path_, t.line (), t.column ()));
-    unit_->new_edge<names> (*scope_, n, t.identifier ());
-    scope_ = &n;
+      root_->new_node<namespace_> (*path_, t.line (), t.column ()));
+    root_->new_edge<names> (*scope_, n, t.identifier ());
+    new_scope.set (&n);
   }
 
   t = lexer_->next ();
@@ -283,8 +390,6 @@ namespace_def ()
 
   while (decl (t))
     t = lexer_->next ();
-
-  scope_ = old;
 
   if (t.punctuation () != token::p_rcbrace)
   {
@@ -307,13 +412,13 @@ class_def ()
     throw error ();
   }
 
-  scope* old (scope_);
+  auto_restore<scope> new_scope (scope_);
 
   if (valid_)
   {
-    class_& n (unit_->new_node<class_> (*path_, t.line (), t.column ()));
-    unit_->new_edge<names> (*scope_, n, t.identifier ());
-    scope_ = &n;
+    class_& n (root_->new_node<class_> (*path_, t.line (), t.column ()));
+    root_->new_edge<names> (*scope_, n, t.identifier ());
+    new_scope.set (&n);
   }
 
   t = lexer_->next ();
@@ -344,8 +449,6 @@ class_def ()
       recover (t);
     }
   }
-
-  scope_ = old;
 
   if (t.punctuation () != token::p_rcbrace)
   {
@@ -383,9 +486,9 @@ option_def (token& t)
 
   if (valid_)
   {
-    o = &unit_->new_node<option> (*path_, l, c);
-    type& t (unit_->new_type (*path_, l, c, type_name));
-    unit_->new_edge<belongs> (*o, t);
+    o = &root_->new_node<option> (*path_, l, c);
+    type& t (root_->new_type (*path_, l, c, type_name));
+    root_->new_edge<belongs> (*o, t);
   }
 
   // option-name-seq
@@ -450,7 +553,7 @@ option_def (token& t)
   }
 
   if (valid_)
-    unit_->new_edge<names> (*scope_, *o, nl);
+    root_->new_edge<names> (*scope_, *o, nl);
 
   // initializer
   //
@@ -539,8 +642,8 @@ option_def (token& t)
 
   if (valid_ && !ev.empty ())
   {
-    expression& e (unit_->new_node<expression> (*path_, l, c, et, ev));
-    unit_->new_edge<initialized> (*o, e);
+    expression& e (root_->new_node<expression> (*path_, l, c, et, ev));
+    root_->new_edge<initialized> (*o, e);
   }
 
   if (t.punctuation () == token::p_lcbrace)

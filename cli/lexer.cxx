@@ -495,7 +495,32 @@ path_literal (xchar c)
       break;
   }
 
-  return token (token::t_path_lit, lexeme, ln, cl);
+  token::token_type tt;
+
+  if (lexeme.compare (1, 4, "c++:") == 0)
+  {
+    tt = token::t_cxx_path_lit;
+    lexeme = lexeme[0] + string (lexeme, 5, string::npos);
+  }
+  else if (lexeme.compare (1, 4, "cli:") == 0)
+  {
+    tt = token::t_cli_path_lit;
+    lexeme = lexeme[0] + string (lexeme, 5, string::npos);
+  }
+  else
+  {
+    // See if the path ends with .cli. If not, then we assume this is
+    // a C++ inclusion.
+    //
+    size_t n (lexeme.size ());
+
+    if (n > 5 && lexeme.compare (n - 5, 4, ".cli") == 0)
+      tt = token::t_cli_path_lit;
+    else
+      tt = token::t_cxx_path_lit;
+  }
+
+  return token (tt, lexeme, ln, cl);
 }
 
 token lexer::

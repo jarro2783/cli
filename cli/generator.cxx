@@ -158,6 +158,19 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
         process_names (ctx);
       }
 
+      // Check if we need to generate the runtime code. If we include
+      // another options file, then we assume the runtime is generated
+      // there.
+      //
+      bool runtime (true);
+      for (semantics::cli_unit::includes_iterator i (unit.includes_begin ());
+           runtime && i != unit.includes_end ();
+           ++i)
+      {
+        if (i->is_a<semantics::cli_includes> ())
+          runtime = false;
+      }
+
       //
       //
       ofstream hxx (hxx_path.string ().c_str ());
@@ -237,7 +250,9 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
             << "#define " << guard << endl
             << endl;
 
-        generate_runtime_header (ctx);
+        if (runtime)
+          generate_runtime_header (ctx);
+
         generate_header (ctx);
 
         if (inl)
@@ -256,7 +271,10 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
       {
         cxx_filter filt (ixx);
         context ctx (ixx, unit, ops);
-        generate_runtime_inline (ctx);
+
+        if (runtime)
+          generate_runtime_inline (ctx);
+
         generate_inline (ctx);
       }
 
@@ -270,10 +288,13 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
           (br ? '>' : '"') << endl
             << endl;
 
-        if (!inl)
-          generate_runtime_inline (ctx);
+        if (runtime)
+        {
+          if (!inl)
+            generate_runtime_inline (ctx);
 
-        generate_runtime_source (ctx);
+          generate_runtime_source (ctx);
+        }
 
         if (!inl)
           generate_inline (ctx);

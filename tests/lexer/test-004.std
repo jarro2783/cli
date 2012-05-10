@@ -1,7 +1,15 @@
 keyword: include
-path: "foo/abc.hxx"
+c++ path: "foo/abc.hxx"
 ;
 keyword: include
-path: <vector>
+c++ path: <vector>
 ;
+keyword: include
+c++ path: "map"
+;
+keyword: include
+cli path: <map>
+;
+keyword: include
+cli path: "map.cli"
 <EOS>

@@ -1,8 +1,9 @@
 Token types:
       keyword
       identifier
-      punctuation      (";" "{" "}" "(" ")" "," "|" "=" ":")
-      path-literal
+      punctuation       (";" "{" "}" "(" ")" "," "|" "=" ":")
+      cxx-path-literal  ("c++:path", <c++:path>, "path", <path>)
+      cli-path-literal  ("cli:path", <cli:path>, "path.cli", <path.cli>)
       char-literal
       string-literal
       bool-literal
@@ -20,7 +21,11 @@ include-decl-seq:
 	include-decl-seq include-decl
 
 include-decl:
-	"include" path-literal ";"
+	"include" include-path ";"
+
+include-path:
+	cxx-path-literal
+	cli-path-literal
 
 decl-seq:
 	decl

@@ -185,14 +185,38 @@ namespace
 
   //
   //
-  struct includes: traversal::cxx_includes, context
+  struct includes: traversal::cxx_includes,
+                   traversal::cli_includes,
+                   context
   {
     includes (context& c) : context (c) {}
 
     virtual void
     traverse (semantics::cxx_includes& i)
     {
-      os << "#include " << i.file () << endl
+      generate (i.kind (), i.file ().string ());
+    }
+
+    virtual void
+    traverse (semantics::cli_includes& i)
+    {
+      generate (i.kind (),
+                i.file ().base ().string () + options.hxx_suffix ());
+    }
+
+    void
+    generate (semantics::includes::kind_type k, string const& f)
+    {
+      char b, e;
+      if (k == semantics::includes::quote)
+        b = e = '"';
+      else
+      {
+        b = '<';
+        e = '>';
+      }
+
+      os << "#include " << b << f << e << endl
          << endl;
     }
   };

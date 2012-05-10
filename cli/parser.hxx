@@ -6,6 +6,7 @@
 #ifndef CLI_PARSER_HXX
 #define CLI_PARSER_HXX
 
+#include <map>
 #include <string>
 #include <memory> // std::auto_ptr
 #include <istream>
@@ -61,8 +62,12 @@ private:
 
   lexer* lexer_;
 
-  semantics::cli_unit* unit_;
+  semantics::cli_unit* root_;
+  semantics::cli_unit* cur_;
   semantics::scope* scope_;
+
+  typedef std::map<semantics::path, semantics::cli_unit*> include_map;
+  include_map include_map_;
 };
 
 #endif // CLI_PARSER_HXX

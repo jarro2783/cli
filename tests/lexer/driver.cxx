@@ -71,9 +71,14 @@ main (int argc, char* argv[])
         cout << punctuation[t.punctuation ()] << endl;
         break;
       }
-    case token::t_path_lit:
+    case token::t_cxx_path_lit:
       {
-        cout << "path: " << t.literal () << endl;
+        cout << "c++ path: " << t.literal () << endl;
+        break;
+      }
+    case token::t_cli_path_lit:
+      {
+        cout << "cli path: " << t.literal () << endl;
         break;
       }
     case token::t_string_lit:
