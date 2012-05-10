@@ -1,9 +1,9 @@
 Token types:
       keyword
-      identifier      
+      identifier
       punctuation      (";" "{" "}" "(" ")" "," "|" "=" ":")
       path-literal
-      char-literal     
+      char-literal
       string-literal
       bool-literal
       int-literal
