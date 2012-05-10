@@ -2,5 +2,5 @@
 //
 include <string>;
 include "types.hxx";
-include "common.cli";
-include "../parser/base.cli";
+include "test-001-common.cli";
+include "../parser/test-001-base.cli";

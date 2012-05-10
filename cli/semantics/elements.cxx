@@ -9,6 +9,19 @@
 
 namespace semantics
 {
+  // nameable
+  //
+  string nameable::
+  fq_name () const
+  {
+    string const& n (name ());
+
+    if (n.empty ())
+      return n;
+    else
+      return scope ().fq_name () + "::" + n;
+  }
+
   // scope
   //
 

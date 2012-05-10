@@ -28,7 +28,8 @@ const char* keywords[] =
   "double"
 };
 
-const char* punctuation[] = {";", ",", "::", "{", "}", /*"(", ")",*/ "=", "|"};
+const char* punctuation[] = {
+  ";", ",", ":", "::", "{", "}", /*"(", ")",*/ "=", "|"};
 
 int
 main (int argc, char* argv[])

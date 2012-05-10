@@ -279,7 +279,7 @@ namespace
 
       // If we have both the long and the short descriptions, use
       // the short one. Otherwise, use the first sentence from the
-      // long one ubless --long-usage was specified.
+      // long one unless --long-usage was specified.
       //
       string d;
 
@@ -429,11 +429,66 @@ namespace
 
   //
   //
+  struct base_parse: traversal::class_, context
+  {
+    base_parse (context& c): context (c) {}
+
+    virtual void
+    traverse (type& c)
+    {
+      os << "// " << escape (c.name ()) << " base" << endl
+         << "//" << endl
+         << "if (" << fq_name (c) << "::_parse (o, s))" << endl
+         << "return true;"
+         << endl;
+    }
+  };
+
+  //
+  //
+  struct base_desc: traversal::class_, context
+  {
+    base_desc (context& c): context (c) {}
+
+    virtual void
+    traverse (type& c)
+    {
+      os << "// " << escape (c.name ()) << " base" << endl
+         << "//" << endl
+         << fq_name (c) << "::fill (os);"
+         << endl;
+    }
+  };
+
+  struct base_usage: traversal::class_, context
+  {
+    base_usage (context& c): context (c) {}
+
+    virtual void
+    traverse (type& c)
+    {
+      os << "// " << escape (c.name ()) << " base" << endl
+         << "//" << endl
+         << fq_name (c) << "::print_usage (os);"
+         << endl;
+    }
+  };
+
+  //
+  //
   struct class_: traversal::class_, context
   {
     class_ (context& c)
-        : context (c), option_map_ (c), option_desc_ (c)
+        : context (c),
+          base_parse_ (c),
+          base_desc_ (c),
+          base_usage_ (c),
+          option_map_ (c),
+          option_desc_ (c)
     {
+      inherits_base_parse_ >> base_parse_;
+      inherits_base_desc_ >> base_desc_;
+      inherits_base_usage_ >> base_usage_;
       names_option_map_ >> option_map_;
       names_option_desc_ >> option_desc_;
     }
@@ -442,7 +497,10 @@ namespace
     traverse (type& c)
     {
       string name (escape (c.name ()));
+
+      bool abst (c.abstract ());
       bool ho (has<semantics::option> (c));
+      bool hb (c.inherits_begin () != c.inherits_end ());
 
       os << "// " << name << endl
          << "//" << endl
@@ -453,94 +511,109 @@ namespace
       string um (cli + "::unknown_mode");
 
       os << name << "::" << endl
-         << name << " (int& argc," << endl
-         << "char** argv," << endl
-         << "bool erase," << endl
-         << um << " opt," << endl
-         << um << " arg)";
+         << name << " ()";
       {
         option_init init (*this);
         traversal::names names_init (init);
         names (c, names_init);
       }
       os << "{"
-         << cli << "::argv_scanner s (argc, argv, erase);"
-         << "_parse (s, opt, arg);"
          << "}";
 
-      os << name << "::" << endl
-         << name << " (int start," << endl
-         << "int& argc," << endl
-         << "char** argv," << endl
-         << "bool erase," << endl
-         << um << " opt," << endl
-         << um << " arg)";
+      if (!abst)
       {
-        option_init init (*this);
-        traversal::names names_init (init);
-        names (c, names_init);
-      }
-      os << "{"
-         << cli << "::argv_scanner s (start, argc, argv, erase);"
-         << "_parse (s, opt, arg);"
-         << "}";
+        os << name << "::" << endl
+           << name << " (int& argc," << endl
+           << "char** argv," << endl
+           << "bool erase," << endl
+           << um << " opt," << endl
+           << um << " arg)";
+        {
+          option_init init (*this);
+          traversal::names names_init (init);
+          names (c, names_init);
+        }
+        os << "{"
+           << cli << "::argv_scanner s (argc, argv, erase);"
+           << "_parse (s, opt, arg);"
+           << "}";
 
-      os << name << "::" << endl
-         << name << " (int& argc," << endl
-         << "char** argv," << endl
-         << "int& end," << endl
-         << "bool erase," << endl
-         << um << " opt," << endl
-         << um << " arg)";
-      {
-        option_init init (*this);
-        traversal::names names_init (init);
-        names (c, names_init);
-      }
-      os << "{"
-         << cli << "::argv_scanner s (argc, argv, erase);"
-         << "_parse (s, opt, arg);"
-         << "end = s.end ();"
-         << "}";
+        os << name << "::" << endl
+           << name << " (int start," << endl
+           << "int& argc," << endl
+           << "char** argv," << endl
+           << "bool erase," << endl
+           << um << " opt," << endl
+           << um << " arg)";
+        {
+          option_init init (*this);
+          traversal::names names_init (init);
+          names (c, names_init);
+        }
+        os << "{"
+           << cli << "::argv_scanner s (start, argc, argv, erase);"
+           << "_parse (s, opt, arg);"
+           << "}";
 
-      os << name << "::" << endl
-         << name << " (int start," << endl
-         << "int& argc," << endl
-         << "char** argv," << endl
-         << "int& end," << endl
-         << "bool erase," << endl
-         << um << " opt," << endl
-         << um << " arg)";
-      {
-        option_init init (*this);
-        traversal::names names_init (init);
-        names (c, names_init);
-      }
-      os << "{"
-         << cli << "::argv_scanner s (start, argc, argv, erase);"
-         << "_parse (s, opt, arg);"
-         << "end = s.end ();"
-         << "}";
+        os << name << "::" << endl
+           << name << " (int& argc," << endl
+           << "char** argv," << endl
+           << "int& end," << endl
+           << "bool erase," << endl
+           << um << " opt," << endl
+           << um << " arg)";
+        {
+          option_init init (*this);
+          traversal::names names_init (init);
+          names (c, names_init);
+        }
+        os << "{"
+           << cli << "::argv_scanner s (argc, argv, erase);"
+           << "_parse (s, opt, arg);"
+           << "end = s.end ();"
+           << "}";
 
-      os << name << "::" << endl
-         << name << " (" << cli << "::scanner& s," << endl
-         << um << " opt," << endl
-         << um << " arg)";
-      {
-        option_init init (*this);
-        traversal::names names_init (init);
-        names (c, names_init);
+        os << name << "::" << endl
+           << name << " (int start," << endl
+           << "int& argc," << endl
+           << "char** argv," << endl
+           << "int& end," << endl
+           << "bool erase," << endl
+           << um << " opt," << endl
+           << um << " arg)";
+        {
+          option_init init (*this);
+          traversal::names names_init (init);
+          names (c, names_init);
+        }
+        os << "{"
+           << cli << "::argv_scanner s (start, argc, argv, erase);"
+           << "_parse (s, opt, arg);"
+           << "end = s.end ();"
+           << "}";
+
+        os << name << "::" << endl
+           << name << " (" << cli << "::scanner& s," << endl
+           << um << " opt," << endl
+           << um << " arg)";
+        {
+          option_init init (*this);
+          traversal::names names_init (init);
+          names (c, names_init);
+        }
+        os << "{"
+           << "_parse (s, opt, arg);"
+           << "}";
       }
-      os << "{"
-         << "_parse (s, opt, arg);"
-         << "}";
 
       // Usage.
       //
       if (usage)
       {
+        bool b (hb && !options.exclude_base ());
+
         os << "void " << name << "::" << endl
-           << "print_usage (::std::ostream&" << (ho ? " os" : "") << ")"
+           << "print_usage (::std::ostream&" << (ho || b ? " os" : "") << ")"
            << "{";
 
         // Calculate option length.
@@ -548,11 +621,60 @@ namespace
         size_t len (0);
         {
           semantics::option* o (0);
-          option_length t (*this, len, o);
-          traversal::names n (t);
-          names (c, n);
-
           size_t max (options.option_length ());
+
+          // We need to go into our bases unless --exclude-base was
+          // specified.
+          //
+          {
+            traversal::class_ ct;
+            option_length olt (*this, len, o);
+            traversal::inherits i;
+            traversal::names n;
+
+            if (b)
+              ct >> i >> ct;
+
+            ct >> n >> olt;
+            ct.traverse (c);
+
+            // Now do the same for each base and issue a warning if any
+            // base has shorter option length than derived.
+            //
+            if (b && max == 0)
+            {
+              size_t d_len (len);
+              semantics::option* d_o (o);
+
+              for (type::inherits_iterator i (c.inherits_begin ());
+                   i != c.inherits_end (); ++i)
+              {
+                type& b (i->base ());
+
+                len = 0;
+                ct.traverse (b);
+
+                if (len == d_len)
+                  continue;
+
+                cerr << c.file () << ":" << c.line () << ":" << c.column ()
+                     << " warning: derived class option length is greater "
+                     << "than that of a base class '" << b.name () << "'"
+                     << endl;
+
+                cerr << b.file () << ":" << b.line () << ":" << b.column ()
+                     << " note: class '" << b.name () << "' is defined here"
+                     << endl;
+
+                cerr << c.file () << ":" << c.line () << ":" << c.column ()
+                     << " note: use --option-length to specify uniform length"
+                     << endl;
+              }
+
+              len = d_len;
+              o = d_o;
+            }
+          }
 
           if (max != 0)
           {
@@ -567,6 +689,11 @@ namespace
             len = max;
           }
         }
+
+        // Call our bases.
+        //
+        if (b)
+          inherits (c, inherits_base_usage_);
 
         // Print option usage.
         //
@@ -591,15 +718,26 @@ namespace
         os << "struct " << desc << "_init"
            << "{"
            << desc << "_init (" << cli << "::options& os)"
-           << "{";
+           << "{"
+           << name << "::fill (os);"
+           << "}"
+           << "};";
 
-        names (c, names_option_desc_);
-
-        os << "}"
-           << "};"
-           << "static " << desc << "_init " << desc << "_init_ (" <<
+        os << "static " << desc << "_init " << desc << "_init_ (" <<
           desc << "_);"
            << endl;
+
+        os << "void " << name << "::" << endl
+           << "fill (" << cli << "::options& " << (ho || hb ? " os)" : ")")
+           << "{";
+
+        // Add the entries from our bases first so that our entires
+        // override any conflicts.
+        //
+        inherits (c, inherits_base_desc_);
+        names (c, names_option_desc_);
+
+        os << "}";
 
         os << "const " << cli << "::options& " << name << "::" << endl
            << "description ()"
@@ -608,7 +746,7 @@ namespace
            << "};";
       }
 
-      // _parse()
+      // _parse ()
       //
       string map ("_cli_" + name + "_map");
 
@@ -632,57 +770,93 @@ namespace
          << "static " << map << "_init " << map << "_init_;"
          << endl;
 
-      bool pfx (!opt_prefix.empty ());
-      bool sep (!opt_sep.empty ());
-
-      os << "void " << name << "::" << endl
-         << "_parse (" << cli << "::scanner& s," << endl
-         << um << " opt_mode," << endl
-         << um << " arg_mode)"
-         << "{";
-
-      if (sep)
-        os << "bool opt = true;" // Still recognizing options.
-           << endl;
-
-      os << "while (s.more ())"
+      os << "bool " << name << "::" << endl
+         << "_parse (const char* o, " << cli << "::scanner& s)"
          << "{"
-         << "const char* o = s.peek ();";
-
-      if (sep)
-        os << endl
-           << "if (std::strcmp (o, \"" << opt_sep << "\") == 0)"
-           << "{"
-           << "s.skip ();" // We don't want to remove the separator.
-           << "opt = false;"
-           << "continue;"
-           << "}"
-           << map << "::const_iterator i (" << endl
-           << "opt ? " << map << "_.find (o) : " << map << "_.end ());";
-      else
-        os << map << "::const_iterator i (" << map << "_.find (o));";
-
-      os << endl
+         << map << "::const_iterator i (" << map << "_.find (o));"
+         << endl
          << "if (i != " << map << "_.end ())"
          << "{"
          << "(*(i->second)) (*this, s);"
+         << "return true;"
          << "}";
 
-      // Unknown option.
+      // Try our bases, from left-to-right.
       //
-      if (pfx)
-      {
-        size_t n (opt_prefix.size ());
+      inherits (c, inherits_base_parse_);
 
-        os << "else if (";
+      os << "return false;"
+         << "}";
+
+      if (!abst)
+      {
+        bool pfx (!opt_prefix.empty ());
+        bool sep (!opt_sep.empty ());
+
+        os << "void " << name << "::" << endl
+           << "_parse (" << cli << "::scanner& s," << endl
+           << um << " opt_mode," << endl
+           << um << " arg_mode)"
+           << "{";
 
         if (sep)
-          os << "opt && ";
+          os << "bool opt = true;" // Still recognizing options.
+             << endl;
 
-        os << "std::strncmp (o, \"" << opt_prefix << "\", " <<
-          n << ") == 0 && o[" << n << "] != '\\0')"
+        os << "while (s.more ())"
            << "{"
-           << "switch (opt_mode)"
+           << "const char* o = s.peek ();";
+
+        if (sep)
+          os << endl
+             << "if (std::strcmp (o, \"" << opt_sep << "\") == 0)"
+             << "{"
+             << "s.skip ();" // We don't want to remove the separator.
+             << "opt = false;"
+             << "continue;"
+             << "}";
+
+        os << "if (" << (sep ? "opt && " : "") << "_parse (o, s));";
+
+        // Unknown option.
+        //
+        if (pfx)
+        {
+          size_t n (opt_prefix.size ());
+
+          os << "else if (";
+
+          if (sep)
+            os << "opt && ";
+
+          os << "std::strncmp (o, \"" << opt_prefix << "\", " <<
+            n << ") == 0 && o[" << n << "] != '\\0')"
+             << "{"
+             << "switch (opt_mode)"
+             << "{"
+             << "case " << cli << "::unknown_mode::skip:" << endl
+             << "{"
+             << "s.skip ();"
+             << "continue;"
+             << "}"
+             << "case " << cli << "::unknown_mode::stop:" << endl
+             << "{"
+             << "break;"
+             << "}"
+             << "case " << cli << "::unknown_mode::fail:" << endl
+             << "{"
+             << "throw " << cli << "::unknown_option (o);"
+             << "}"
+             << "}" // switch
+             << "break;" // The stop case.
+             << "}";
+        }
+
+        // Unknown argument.
+        //
+        os << "else"
+           << "{"
+           << "switch (arg_mode)"
            << "{"
            << "case " << cli << "::unknown_mode::skip:" << endl
            << "{"
@@ -695,41 +869,27 @@ namespace
            << "}"
            << "case " << cli << "::unknown_mode::fail:" << endl
            << "{"
-           << "throw " << cli << "::unknown_option (o);"
+           << "throw " << cli << "::unknown_argument (o);"
            << "}"
            << "}" // switch
            << "break;" // The stop case.
+           << "}"
+
+           << "}" // for
            << "}";
       }
-
-      // Unknown argument.
-      //
-      os << "else"
-         << "{"
-         << "switch (arg_mode)"
-         << "{"
-         << "case " << cli << "::unknown_mode::skip:" << endl
-         << "{"
-         << "s.skip ();"
-         << "continue;"
-         << "}"
-         << "case " << cli << "::unknown_mode::stop:" << endl
-         << "{"
-         << "break;"
-         << "}"
-         << "case " << cli << "::unknown_mode::fail:" << endl
-         << "{"
-         << "throw " << cli << "::unknown_argument (o);"
-         << "}"
-         << "}" // switch
-         << "break;" // The stop case.
-         << "}"
-
-         << "}" // for
-         << "}";
     }
 
   private:
+    base_parse base_parse_;
+    traversal::inherits inherits_base_parse_;
+
+    base_desc base_desc_;
+    traversal::inherits inherits_base_desc_;
+
+    base_usage base_usage_;
+    traversal::inherits inherits_base_usage_;
+
     option_map option_map_;
     traversal::names names_option_map_;
 

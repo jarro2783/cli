@@ -19,9 +19,21 @@ namespace semantics
       {
         using compiler::type_info;
 
-        type_info ti (typeid (class_));
-        ti.add_base (typeid (scope));
-        insert (ti);
+        // inherits
+        //
+        {
+          type_info ti (typeid (inherits));
+          ti.add_base (typeid (edge));
+          insert (ti);
+        }
+
+        // class_
+        //
+        {
+          type_info ti (typeid (class_));
+          ti.add_base (typeid (scope));
+          insert (ti);
+        }
       }
     } init_;
   }

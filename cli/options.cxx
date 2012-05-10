@@ -214,15 +214,24 @@ namespace cli
       // See if the next argument is the file option.
       //
       const char* a (base::peek ());
+      const option_info* oi;
 
-      if (!skip_ && a == option_)
+      if (!skip_ && (oi = find (a)))
       {
         base::next ();
 
         if (!base::more ())
-          throw missing_value (option_);
+          throw missing_value (oi->option);
 
-        load (base::next ());
+        if (oi->search_func != 0)
+        {
+          std::string f (oi->search_func (base::next (), oi->arg));
+
+          if (!f.empty ())
+            load (f);
+        }
+        else
+          load (base::next ());
 
         if (!args_.empty ())
           return true;
@@ -276,12 +285,22 @@ namespace cli
       args_.pop_front ();
   }
 
+  const argv_file_scanner::option_info* argv_file_scanner::
+  find (const char* a) const
+  {
+    for (std::size_t i (0); i < options_count_; ++i)
+      if (std::strcmp (a, options_[i].option) == 0)
+        return &options_[i];
+
+    return 0;
+  }
+
   void argv_file_scanner::
-  load (const char* file)
+  load (const std::string& file)
   {
     using namespace std;
 
-    ifstream is (file);
+    ifstream is (file.c_str ());
 
     if (!is.is_open ())
       throw file_io_failure (file);
@@ -361,8 +380,22 @@ namespace cli
           s2 = string (s2, 1, n - 2);
         }
 
-        if (!skip_ && s1 == option_)
-          load (s2.c_str ());
+        const option_info* oi;
+        if (!skip_ && (oi = find (s1.c_str ())))
+        {
+          if (s2.empty ())
+            throw missing_value (oi->option);
+
+          if (oi->search_func != 0)
+          {
+            std::string f (oi->search_func (s2.c_str (), oi->arg));
+
+            if (!f.empty ())
+              load (f);
+          }
+          else
+            load (s2);
+        }
         else
         {
           args_.push_back (s1);
@@ -378,11 +411,11 @@ namespace cli
     static void
     parse (X& x, scanner& s)
     {
-      const char* o (s.next ());
+      std::string o (s.next ());
 
       if (s.more ())
       {
-        const char* v (s.next ());
+        std::string v (s.next ());
         std::istringstream is (v);
         if (!(is >> x && is.eof ()))
           throw invalid_value (o, v);
@@ -425,8 +458,7 @@ namespace cli
     parse (std::vector<X>& c, scanner& s)
     {
       X x;
-      bool dummy;
-      parser<X>::parse (x, dummy, s);
+      parser<X>::parse (x, s);
       c.push_back (x);
     }
   };
@@ -438,8 +470,7 @@ namespace cli
     parse (std::set<X>& c, scanner& s)
     {
       X x;
-      bool dummy;
-      parser<X>::parse (x, dummy, s);
+      parser<X>::parse (x, s);
       c.insert (x);
     }
   };
@@ -450,7 +481,7 @@ namespace cli
     static void
     parse (std::map<K, V>& m, scanner& s)
     {
-      const char* o (s.next ());
+      std::string o (s.next ());
 
       if (s.more ())
       {
@@ -517,6 +548,46 @@ namespace cli
 //
 
 options::
+options ()
+: help_ (),
+  version_ (),
+  output_dir_ (),
+  generate_modifier_ (),
+  generate_specifier_ (),
+  generate_description_ (),
+  generate_file_scanner_ (),
+  suppress_inline_ (),
+  suppress_undocumented_ (),
+  suppress_usage_ (),
+  long_usage_ (),
+  option_length_ (0),
+  exclude_base_ (),
+  cli_namespace_ ("::cli"),
+  generate_cxx_ (),
+  generate_man_ (),
+  generate_html_ (),
+  man_prologue_ (),
+  man_epilogue_ (),
+  html_prologue_ (),
+  html_epilogue_ (),
+  class__ (),
+  stdout__ (),
+  hxx_suffix_ (".hxx"),
+  ixx_suffix_ (".ixx"),
+  cxx_suffix_ (".cxx"),
+  man_suffix_ (".1"),
+  html_suffix_ (".html"),
+  option_prefix_ ("-"),
+  option_separator_ ("--"),
+  include_with_brackets_ (),
+  include_prefix_ (),
+  guard_prefix_ (),
+  reserved_name_ (),
+  options_file_ ()
+{
+}
+
+options::
 options (int& argc,
          char** argv,
          bool erase,
@@ -534,6 +605,7 @@ options (int& argc,
   suppress_usage_ (),
   long_usage_ (),
   option_length_ (0),
+  exclude_base_ (),
   cli_namespace_ ("::cli"),
   generate_cxx_ (),
   generate_man_ (),
@@ -580,6 +652,7 @@ options (int start,
   suppress_usage_ (),
   long_usage_ (),
   option_length_ (0),
+  exclude_base_ (),
   cli_namespace_ ("::cli"),
   generate_cxx_ (),
   generate_man_ (),
@@ -626,6 +699,7 @@ options (int& argc,
   suppress_usage_ (),
   long_usage_ (),
   option_length_ (0),
+  exclude_base_ (),
   cli_namespace_ ("::cli"),
   generate_cxx_ (),
   generate_man_ (),
@@ -674,6 +748,7 @@ options (int start,
   suppress_usage_ (),
   long_usage_ (),
   option_length_ (0),
+  exclude_base_ (),
   cli_namespace_ ("::cli"),
   generate_cxx_ (),
   generate_man_ (),
@@ -718,6 +793,7 @@ options (::cli::scanner& s,
   suppress_usage_ (),
   long_usage_ (),
   option_length_ (0),
+  exclude_base_ (),
   cli_namespace_ ("::cli"),
   generate_cxx_ (),
   generate_man_ (),
@@ -770,13 +846,17 @@ print_usage (::std::ostream& os)
   os << "--suppress-undocumented      Suppress the generation of documentation entries" << ::std::endl
      << "                             for undocumented options." << ::std::endl;
 
-  os << "--suppress-usage             Suppress the generation of the usage printing code." << ::std::endl;
+  os << "--suppress-usage             Suppress the generation of the usage printing" << ::std::endl
+     << "                             code." << ::std::endl;
 
   os << "--long-usage                 If no short documentation string is provided, use" << ::std::endl
      << "                             the complete long documentation string in usage." << ::std::endl;
 
   os << "--option-length <len>        Indent option descriptions <len> characters when" << ::std::endl
      << "                             printing usage." << ::std::endl;
+
+  os << "--exclude-base               Exclude base class information from usage and" << ::std::endl
+     << "                             documentation." << ::std::endl;
 
   os << "--cli-namespace <ns>         Generate the CLI support types in the <ns>" << ::std::endl
      << "                             namespace ('cli' by default)." << ::std::endl;
@@ -796,8 +876,8 @@ print_usage (::std::ostream& os)
   os << "--html-prologue <file>       Insert the content of <file> at the beginning of" << ::std::endl
      << "                             the HTML file." << ::std::endl;
 
-  os << "--html-epilogue <file>       Insert the content of <file> at the end of the HTML" << ::std::endl
-     << "                             file." << ::std::endl;
+  os << "--html-epilogue <file>       Insert the content of <file> at the end of the" << ::std::endl
+     << "                             HTML file." << ::std::endl;
 
   os << "--class <fq-name>            Generate the man page or HTML documentation only" << ::std::endl
      << "                             for the <fq-name> options class." << ::std::endl;
@@ -879,6 +959,8 @@ struct _cli_options_map_init
     &::cli::thunk< options, bool, &options::long_usage_ >;
     _cli_options_map_["--option-length"] = 
     &::cli::thunk< options, std::size_t, &options::option_length_ >;
+    _cli_options_map_["--exclude-base"] = 
+    &::cli::thunk< options, bool, &options::exclude_base_ >;
     _cli_options_map_["--cli-namespace"] = 
     &::cli::thunk< options, std::string, &options::cli_namespace_ >;
     _cli_options_map_["--generate-cxx"] = 
@@ -928,6 +1010,20 @@ struct _cli_options_map_init
 
 static _cli_options_map_init _cli_options_map_init_;
 
+bool options::
+_parse (const char* o, ::cli::scanner& s)
+{
+  _cli_options_map::const_iterator i (_cli_options_map_.find (o));
+
+  if (i != _cli_options_map_.end ())
+  {
+    (*(i->second)) (*this, s);
+    return true;
+  }
+
+  return false;
+}
+
 void options::
 _parse (::cli::scanner& s,
         ::cli::unknown_mode opt_mode,
@@ -946,13 +1042,7 @@ _parse (::cli::scanner& s,
       continue;
     }
 
-    _cli_options_map::const_iterator i (
-      opt ? _cli_options_map_.find (o) : _cli_options_map_.end ());
-
-    if (i != _cli_options_map_.end ())
-    {
-      (*(i->second)) (*this, s);
-    }
+    if (opt && _parse (o, s));
     else if (opt && std::strncmp (o, "-", 1) == 0 && o[1] != '\0')
     {
       switch (opt_mode)

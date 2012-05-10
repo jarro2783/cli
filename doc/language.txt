@@ -42,7 +42,17 @@ namespace-body:
 	decl-seq(opt)
 
 class-def:
-	"class" identifier "{" option-def-seq(opt) "};"
+	"class" identifier inheritance-spec(opt) abstract-spec(opt) "{" option-def-seq(opt) "};"
+
+inheritance-spec:
+	":" base-seq
+
+base-seq:
+	qualified-name
+	base-seq "," qualified-name
+
+abstract-spec:
+        "=" "0"
 
 option-def-seq:
 	option-def

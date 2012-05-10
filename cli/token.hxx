@@ -77,6 +77,7 @@ public:
   {
     p_semi,
     p_comma,
+    p_colon,
     p_dcolon,
     p_lcbrace,
     p_rcbrace,

@@ -364,7 +364,7 @@ generate_runtime_header (context& ctx)
        << "bool flag," << endl
        << "const std::string& default_value);"
        << endl
-       << "private:"
+       << "private:" << endl
        << "std::string name_;"
        << "option_names aliases_;"
        << "bool flag_;"
@@ -381,7 +381,7 @@ generate_runtime_header (context& ctx)
        << endl
        << "void" << endl
        << "push_back (const option&);"
-       << "private:"
+       << "private:" << endl
        << "typedef std::map<std::string, container_type::size_type> map_type;"
        << "map_type map_;"
        << "};";

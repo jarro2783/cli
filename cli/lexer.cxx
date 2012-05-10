@@ -155,7 +155,8 @@ next ()
             get ();
             return token (token::p_dcolon, c.line (), c.column ());
           }
-          break;
+
+          return token (token::p_colon, c.line (), c.column ());
         }
       case '{':
         {

@@ -141,8 +141,12 @@ namespace cli
                      bool erase)
   : argv_scanner (argc, argv, erase),
     option_ (option),
+    options_ (&option_info_),
+    options_count_ (1),
     skip_ (false)
   {
+    option_info_.option = option_.c_str ();
+    option_info_.search_func = 0;
   }
 
   inline argv_file_scanner::
@@ -153,6 +157,37 @@ namespace cli
                      bool erase)
   : argv_scanner (start, argc, argv, erase),
     option_ (option),
+    options_ (&option_info_),
+    options_count_ (1),
+    skip_ (false)
+  {
+    option_info_.option = option_.c_str ();
+    option_info_.search_func = 0;
+  }
+
+  inline argv_file_scanner::
+  argv_file_scanner (int& argc,
+                     char** argv,
+                     const option_info* options,
+                     std::size_t options_count,
+                     bool erase)
+  : argv_scanner (argc, argv, erase),
+    options_ (options),
+    options_count_ (options_count),
+    skip_ (false)
+  {
+  }
+
+  inline argv_file_scanner::
+  argv_file_scanner (int start,
+                     int& argc,
+                     char** argv,
+                     const option_info* options,
+                     std::size_t options_count,
+                     bool erase)
+  : argv_scanner (start, argc, argv, erase),
+    options_ (options),
+    options_count_ (options_count),
     skip_ (false)
   {
   }
@@ -231,6 +266,12 @@ inline const std::size_t& options::
 option_length () const
 {
   return this->option_length_;
+}
+
+inline const bool& options::
+exclude_base () const
+{
+  return this->exclude_base_;
 }
 
 inline const std::string& options::

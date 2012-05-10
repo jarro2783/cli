@@ -254,8 +254,17 @@ namespace semantics
       return named_->name ();
     }
 
+    string
+    fq_name () const;
+
     scope_type&
     scope ()
+    {
+      return named_->scope ();
+    }
+
+    scope_type const&
+    scope () const
     {
       return named_->scope ();
     }

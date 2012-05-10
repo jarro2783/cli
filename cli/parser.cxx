@@ -32,7 +32,8 @@ const char* keywords[] =
   "double"
 };
 
-const char* punctuation[] = {";", ",", "::", "{", "}", /*"(", ")",*/ "=", "|"};
+const char* punctuation[] = {
+  ";", ",", ":", "::", "{", "}", /*"(", ")",*/ "=", "|"};
 
 // Output the token type and value in a format suitable for diagnostics.
 //
@@ -412,16 +413,74 @@ class_def ()
     throw error ();
   }
 
-  auto_restore<scope> new_scope (scope_);
-
+  class_* n (0);
   if (valid_)
   {
-    class_& n (root_->new_node<class_> (*path_, t.line (), t.column ()));
-    root_->new_edge<names> (*scope_, n, t.identifier ());
-    new_scope.set (&n);
+    n = &root_->new_node<class_> (*path_, t.line (), t.column ());
+    root_->new_edge<names> (*scope_, *n, t.identifier ());
   }
 
   t = lexer_->next ();
+
+  // inheritance-spec
+  //
+  if (t.punctuation () == token::p_colon)
+  {
+    for (;;)
+    {
+      t = lexer_->next ();
+      size_t line (t.line ()), col (t.column ());
+
+      string name;
+      if (!qualified_name (t, name))
+      {
+        cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
+             << "expected qualified name instead of " << t << endl;
+        throw error ();
+      }
+
+      string ns;
+
+      // If it is a fully-qualifed name, then start from the global namespace.
+      // Otherwise, from the current scope.
+      //
+      if (name[0] == ':')
+        name = string (name, 2, string::npos);
+      else
+        ns = scope_->fq_name ();
+
+      if (class_* b = lookup<class_> (ns, name))
+        root_->new_edge<inherits> (*n, *b);
+      else
+      {
+        cerr << *path_ << ':' << line << ':' << col << ": error: "
+             << "unable to resolve base class '" << name << "'" << endl;
+        valid_ = false;
+      }
+
+      if (t.punctuation () != token::p_comma)
+        break;
+    }
+  }
+
+  // abstract-spec
+  //
+  if (t.punctuation () == token::p_eq)
+  {
+    t = lexer_->next ();
+
+    if (t.type () != token::t_int_lit || t.literal () != "0")
+    {
+      cerr << *path_ << ':' << t.line () << ':' << t.column () << ": error: "
+           << "expected '0' instead of " << t << endl;
+      throw error ();
+    }
+
+    if (n != 0)
+      n->abstract (true);
+
+    t = lexer_->next ();
+  }
 
   if (t.punctuation () != token::p_lcbrace)
   {
@@ -430,11 +489,13 @@ class_def ()
     throw error ();
   }
 
+  auto_restore<scope> new_scope (scope_, n);
+
   // decl-seq
   //
   t = lexer_->next ();
 
-  while (true)
+  for (;;)
   {
     try
     {
@@ -494,7 +555,7 @@ option_def (token& t)
   // option-name-seq
   //
   names::name_list nl;
-  while (true)
+  for (;;)
   {
     switch (t.type ())
     {
@@ -780,7 +841,7 @@ qualified_name (token& t, string& r)
     t = lexer_->next ();
   }
 
-  while (true)
+  for (;;)
   {
     if (t.type () != token::t_identifier)
     {
@@ -1188,4 +1249,109 @@ fundamental_type (token& t, string& r)
   }
 
   return true;
+}
+
+template <typename T>
+T* parser::
+lookup (string const& ss, string const& name, cli_unit* unit, bool outer)
+{
+  if (unit == 0)
+    unit = cur_;
+
+  // Resolve the starting scope in this unit, if any.
+  //
+  string::size_type b (0), e;
+  scope* s (0);
+
+  do
+  {
+    e = ss.find ("::", b);
+    string n (ss, b, e == string::npos ? e : e - b);
+
+    if (n.empty ())
+      s = unit;
+    else
+    {
+      scope::names_iterator_pair ip (s->find (n));
+
+      for (s = 0; ip.first != ip.second; ++ip.first)
+        if (s = dynamic_cast<scope*> (&ip.first->named ()))
+          break;
+
+      if (s == 0)
+        break; // No such scope in this unit.
+    }
+
+    b = e;
+
+    if (b == string::npos)
+      break;
+
+    b += 2;
+  } while (true);
+
+  // If we have the starting scope, then try to resolve the name in it.
+  //
+  if (s != 0)
+  {
+    b = 0;
+
+    do
+    {
+      e = name.find ("::", b);
+      string n (name, b, e == string::npos ? e : e - b);
+
+      scope::names_iterator_pair ip (s->find (n));
+
+      // If this is the last name, then see if we have the desired type.
+      //
+      if (e == string::npos)
+      {
+        for (; ip.first != ip.second; ++ip.first)
+          if (T* r = dynamic_cast<T*> (&ip.first->named ()))
+            return r;
+      }
+      // Otherwise, this should be a scope.
+      //
+      else
+      {
+        for (s = 0; ip.first != ip.second; ++ip.first)
+          if (s = dynamic_cast<scope*> (&ip.first->named ()))
+            break;
+
+        if (s == 0)
+          break; // No such inner scope.
+      }
+
+      b = e;
+
+      if (b == string::npos)
+        break;
+
+      b += 2;
+    } while (true);
+  }
+
+  // If we are here, then that means the lookup didn't find anything in
+  // this unit. The next step is to examine all the included units.
+  //
+  for (cli_unit::includes_iterator i (unit->includes_begin ());
+       i != unit->includes_end ();
+       ++i)
+  {
+    if (cli_includes* ci = dynamic_cast<cli_includes*> (&*i))
+      if (T* r = lookup<T> (ss, name, &ci->includee (), false))
+        return r;
+  }
+
+  // If we still haven't found anything, then the next step is to search
+  // one-outer scope, unless it is the global namespace.
+  //
+  if (outer && !ss.empty ())
+  {
+    string n (ss, 0, ss.rfind ("::"));
+    return lookup<T> (n, name, unit, false);
+  }
+
+  return 0;
 }

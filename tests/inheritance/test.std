@@ -1,0 +1,4 @@
+--very-long-flag  Long flag.
+-i <num>          Integer.
+-s <str>          Short string.
+--string <str>    Long string.

@@ -8,6 +8,7 @@
 #include <deque>
 #include <iosfwd>
 #include <string>
+#include <cstddef>
 #include <exception>
 
 namespace cli
@@ -239,13 +240,37 @@ namespace cli
     public:
     argv_file_scanner (int& argc,
                        char** argv,
-                       const std::string& file_option,
+                       const std::string& option,
                        bool erase = false);
 
     argv_file_scanner (int start,
                        int& argc,
                        char** argv,
-                       const std::string& file_option,
+                       const std::string& option,
+                       bool erase = false);
+
+    struct option_info
+    {
+      // If search_func is not NULL, it is called, with the arg
+      // value as the second argument, to locate the options file.
+      // If it returns an empty string, then the file is ignored.
+      //
+      const char* option;
+      std::string (*search_func) (const char*, void* arg);
+      void* arg;
+    };
+
+    argv_file_scanner (int& argc,
+                        char** argv,
+                        const option_info* options,
+                        std::size_t options_count,
+                        bool erase = false);
+
+    argv_file_scanner (int start,
+                       int& argc,
+                       char** argv,
+                       const option_info* options,
+                       std::size_t options_count,
                        bool erase = false);
 
     virtual bool
@@ -261,12 +286,19 @@ namespace cli
     skip ();
 
     private:
+    const option_info*
+    find (const char*) const;
+
     void
-    load (const char* file);
+    load (const std::string& file);
 
     typedef argv_scanner base;
 
     const std::string option_;
+    option_info option_info_;
+    const option_info* options_;
+    std::size_t options_count_;
+
     std::string hold_;
     std::deque<std::string> args_;
     bool skip_;
@@ -284,7 +316,6 @@ namespace cli
 class options
 {
   public:
-
   options (int& argc,
            char** argv,
            bool erase = false,
@@ -319,7 +350,6 @@ class options
 
   // Option accessors.
   //
-
   const bool&
   help () const;
 
@@ -355,6 +385,9 @@ class options
 
   const std::size_t&
   option_length () const;
+
+  const bool&
+  exclude_base () const;
 
   const std::string&
   cli_namespace () const;
@@ -427,6 +460,14 @@ class options
   static void
   print_usage (::std::ostream&);
 
+  // Implementation details.
+  //
+  protected:
+  options ();
+
+  bool
+  _parse (const char*, ::cli::scanner&);
+
   private:
   void
   _parse (::cli::scanner&,
@@ -446,6 +487,7 @@ class options
   bool suppress_usage_;
   bool long_usage_;
   std::size_t option_length_;
+  bool exclude_base_;
   std::string cli_namespace_;
   bool generate_cxx_;
   bool generate_man_;

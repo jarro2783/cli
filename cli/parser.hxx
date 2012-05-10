@@ -56,6 +56,25 @@ private:
   void
   recover (token& t);
 
+  // Lookup a name in the specified starting scope. Empty scope denotes
+  // the global namespace. Starting scope should be a fully-qualified
+  // name while name can be qualified but should not be fully-qualified
+  // (to lookup a fully-qualified name use the global namespace as the
+  // starting scope).
+  //
+  // If starting unit is not specified, the lookup is performed in the
+  // current unit. It then continues in all the units that the starting
+  // unit includes, transitively.
+  //
+  // The outer flag specifies whether to search the outer scopes.
+  //
+  template <typename T>
+  T*
+  lookup (std::string const& scope,
+          std::string const& name,
+          semantics::cli_unit* unit = 0,
+          bool outer = true);
+
 private:
   bool valid_;
   semantics::path const* path_;

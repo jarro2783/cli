@@ -11,6 +11,15 @@
 
 namespace traversal
 {
+  struct inherits: edge<semantics::inherits>
+  {
+    inherits () {}
+    inherits (node_dispatcher& n) {node_traverser (n);}
+
+    virtual void
+    traverse (type&);
+  };
+
   struct class_: scope_template<semantics::class_>
   {
     virtual void
@@ -18,6 +27,12 @@ namespace traversal
 
     virtual void
     pre (type&);
+
+    virtual void
+    inherits (type&);
+
+    virtual void
+    inherits (type&, edge_dispatcher&);
 
     virtual void
     post (type&);

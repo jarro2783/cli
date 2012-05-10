@@ -1,0 +1,11 @@
+class b1 {};
+
+namespace n1
+{
+  class b2 {};
+
+  namespace i1
+  {
+    class b3 {};
+  }
+}

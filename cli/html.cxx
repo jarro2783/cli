@@ -160,6 +160,9 @@ namespace
     class_ (context& c)
         : context (c), option_ (c)
     {
+      *this >> inherits_base_ >> base_ >> inherits_base_;
+      base_ >> names_option_;
+
       names_option_ >> option_;
     }
 
@@ -179,15 +182,20 @@ namespace
 
       os << "<dl class=\"options\">" << endl;
 
+      if (!options.exclude_base ())
+        inherits (c, inherits_base_);
+
       names (c, names_option_);
 
       os << "</dl>" << endl;
     }
 
   private:
-    bool generated_;
     option option_;
     traversal::names names_option_;
+
+    traversal::class_ base_;
+    traversal::inherits inherits_base_;
   };
 }
 

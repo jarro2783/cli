@@ -65,6 +65,31 @@ namespace
 
   //
   //
+  struct base: traversal::class_, context
+  {
+    base (context& c): context (c), first_ (true) {}
+
+    virtual void
+    traverse (type& c)
+    {
+      if (first_)
+      {
+        os << ": ";
+        first_ = false;
+      }
+      else
+        os << "," << endl
+           << "  ";
+
+      os << "public " << fq_name (c);
+    }
+
+  private:
+    bool first_;
+  };
+
+  //
+  //
   struct class_: traversal::class_, context
   {
     class_ (context& c)
@@ -79,59 +104,67 @@ namespace
     virtual void
     traverse (type& c)
     {
+      bool abst (c.abstract ());
       string name (escape (c.name ()));
+      string um (cli + "::unknown_mode");
 
-      os << "class " << name
-         << "{"
-         << "public:" << endl
-         << endl;
+      os << "class " << name;
+
+      {
+        base b (*this);
+        traversal::inherits i (b);
+        inherits (c, i);
+      }
+
+      os << "{"
+         << "public:" << endl;
 
       // c-tors
       //
-      string um (cli + "::unknown_mode");
+      if (!abst)
+      {
+        os << name << " (int& argc," << endl
+           << "char** argv," << endl
+           << "bool erase = false," << endl
+           << um << " option = " << um << "::fail," << endl
+           << um << " argument = " << um << "::stop);"
+           << endl;
 
-      os << name << " (int& argc," << endl
-         << "char** argv," << endl
-         << "bool erase = false," << endl
-         << um << " option = " << um << "::fail," << endl
-         << um << " argument = " << um << "::stop);"
-         << endl;
+        os << name << " (int start," << endl
+           << "int& argc," << endl
+           << "char** argv," << endl
+           << "bool erase = false," << endl
+           << um << " option = " << um << "::fail," << endl
+           << um << " argument = " << um << "::stop);"
+           << endl;
 
-      os << name << " (int start," << endl
-         << "int& argc," << endl
-         << "char** argv," << endl
-         << "bool erase = false," << endl
-         << um << " option = " << um << "::fail," << endl
-         << um << " argument = " << um << "::stop);"
-         << endl;
+        os << name << " (int& argc," << endl
+           << "char** argv," << endl
+           << "int& end," << endl
+           << "bool erase = false," << endl
+           << um << " option = " << um << "::fail," << endl
+           << um << " argument = " << um << "::stop);"
+           << endl;
 
-      os << name << " (int& argc," << endl
-         << "char** argv," << endl
-         << "int& end," << endl
-         << "bool erase = false," << endl
-         << um << " option = " << um << "::fail," << endl
-         << um << " argument = " << um << "::stop);"
-         << endl;
+        os << name << " (int start," << endl
+           << "int& argc," << endl
+           << "char** argv," << endl
+           << "int& end," << endl
+           << "bool erase = false," << endl
+           << um << " option = " << um << "::fail," << endl
+           << um << " argument = " << um << "::stop);"
+           << endl;
 
-      os << name << " (int start," << endl
-         << "int& argc," << endl
-         << "char** argv," << endl
-         << "int& end," << endl
-         << "bool erase = false," << endl
-         << um << " option = " << um << "::fail," << endl
-         << um << " argument = " << um << "::stop);"
-         << endl;
-
-      os << name << " (" << cli << "::scanner&," << endl
-         << um << " option = " << um << "::fail," << endl
-         << um << " argument = " << um << "::stop);"
-         << endl;
+        os << name << " (" << cli << "::scanner&," << endl
+           << um << " option = " << um << "::fail," << endl
+           << um << " argument = " << um << "::stop);"
+           << endl;
+      }
 
       //
       //
       os << "// Option accessors" << (modifier ? " and modifiers." : ".") << endl
-         << "//" << endl
-         << endl;
+         << "//" << endl;
 
       names (c, names_option_);
 
@@ -157,14 +190,39 @@ namespace
            << endl;
       }
 
-      // _parse()
+      os << "// Implementation details." << endl
+         << "//" << endl
+         << "protected:" << endl;
+
+      // default c-tor
       //
-      os << "private:" << endl
-         << "void" << endl
-         << "_parse (" << cli << "::scanner&," << endl
-         << um << " option," << endl
-         << um << " argument);"
+      os << name << " ();"
          << endl;
+
+      // fill ()
+      //
+      if (options.generate_description ())
+        os << "friend struct _cli_" + name + "_desc_init;"
+           << endl
+           << "static void" << endl
+           << "fill (" << cli << "::options&);"
+           << endl;
+
+      // _parse ()
+      //
+      os << "bool" << endl
+         << "_parse (const char*, " << cli << "::scanner&);"
+         << endl;
+
+      // _parse ()
+      //
+      if (!abst)
+        os << "private:" << endl
+           << "void" << endl
+           << "_parse (" << cli << "::scanner&," << endl
+           << um << " option," << endl
+           << um << " argument);"
+           << endl;
 
       // Data members.
       //

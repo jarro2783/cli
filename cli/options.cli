@@ -78,6 +78,11 @@ class options
      files, and would like their usage to have the same indentation level."
   };
 
+  bool --exclude-base
+  {
+    "Exclude base class information from usage and documentation."
+  };
+
   std::string --cli-namespace = "::cli"
   {
     "<ns>",
