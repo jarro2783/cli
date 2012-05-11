@@ -788,13 +788,13 @@ option_def (token& t)
         if (t1.size () != 0)
         {
           bool more (true);
-          size_t b (0), e;
+          size_t b (0), e, p;
 
           while (more)
           {
-            e = t1.find ('\n', b);
+            p = e = t1.find ('\n', b);
 
-            if (e == string::npos)
+            if (p == string::npos)
             {
               e = t1.size ();
               more = false;
@@ -814,7 +814,7 @@ option_def (token& t)
             if (more)
             {
               t2 += '\n';
-              b = e + 2;
+              b = p + 1;
             }
           }
         }
