@@ -180,14 +180,10 @@ namespace
           return;
       }
 
-      os << "<dl class=\"options\">" << endl;
-
       if (!options.exclude_base ())
         inherits (c, inherits_base_);
 
       names (c, names_option_);
-
-      os << "</dl>" << endl;
     }
 
   private:
@@ -215,5 +211,9 @@ generate_html (context& ctx)
   ns >> ns_names >> ns;
   ns_names >> cl;
 
+  ctx.os << "<dl class=\"options\">" << endl;
+
   unit.dispatch (ctx.unit);
+
+  ctx.os << "</dl>" << endl;
 }
