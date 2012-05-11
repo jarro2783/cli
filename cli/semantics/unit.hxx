@@ -8,6 +8,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 #include <semantics/elements.hxx>
 #include <semantics/namespace.hxx>
@@ -137,6 +138,24 @@ namespace semantics
   class cli_unit: public graph<node, edge>, public namespace_
   {
     typedef std::vector<includes*> includes_list;
+
+  public:
+    // Lookup a name in the specified starting scope. Empty scope denotes
+    // the global namespace. Starting scope should be a fully-qualified
+    // name while name can be qualified but should not be fully-qualified
+    // (to lookup a fully-qualified name use the global namespace as the
+    // starting scope).
+    //
+    // The lookup starts in this unit and continues in all the units that
+    // this unit includes, transitively.
+    //
+    // The outer flag specifies whether to search the outer scopes.
+    //
+    template <typename T>
+    T*
+    lookup (std::string const& scope,
+            std::string const& name,
+            bool outer = true);
 
   public:
     typedef
@@ -285,5 +304,7 @@ namespace semantics
     type_map types_;
   };
 }
+
+#include <semantics/unit.txx>
 
 #endif // CLI_SEMANTICS_UNIT_HXX

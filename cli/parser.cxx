@@ -488,7 +488,7 @@ class_def ()
       else
         ns = scope_->fq_name ();
 
-      if (class_* b = lookup<class_> (ns, name))
+      if (class_* b = cur_->lookup<class_> (ns, name))
         root_->new_edge<inherits> (*n, *b);
       else
       {
@@ -1288,109 +1288,4 @@ fundamental_type (token& t, string& r)
   }
 
   return true;
-}
-
-template <typename T>
-T* parser::
-lookup (string const& ss, string const& name, cli_unit* unit, bool outer)
-{
-  if (unit == 0)
-    unit = cur_;
-
-  // Resolve the starting scope in this unit, if any.
-  //
-  string::size_type b (0), e;
-  scope* s (0);
-
-  do
-  {
-    e = ss.find ("::", b);
-    string n (ss, b, e == string::npos ? e : e - b);
-
-    if (n.empty ())
-      s = unit;
-    else
-    {
-      scope::names_iterator_pair ip (s->find (n));
-
-      for (s = 0; ip.first != ip.second; ++ip.first)
-        if (s = dynamic_cast<scope*> (&ip.first->named ()))
-          break;
-
-      if (s == 0)
-        break; // No such scope in this unit.
-    }
-
-    b = e;
-
-    if (b == string::npos)
-      break;
-
-    b += 2;
-  } while (true);
-
-  // If we have the starting scope, then try to resolve the name in it.
-  //
-  if (s != 0)
-  {
-    b = 0;
-
-    do
-    {
-      e = name.find ("::", b);
-      string n (name, b, e == string::npos ? e : e - b);
-
-      scope::names_iterator_pair ip (s->find (n));
-
-      // If this is the last name, then see if we have the desired type.
-      //
-      if (e == string::npos)
-      {
-        for (; ip.first != ip.second; ++ip.first)
-          if (T* r = dynamic_cast<T*> (&ip.first->named ()))
-            return r;
-      }
-      // Otherwise, this should be a scope.
-      //
-      else
-      {
-        for (s = 0; ip.first != ip.second; ++ip.first)
-          if (s = dynamic_cast<scope*> (&ip.first->named ()))
-            break;
-
-        if (s == 0)
-          break; // No such inner scope.
-      }
-
-      b = e;
-
-      if (b == string::npos)
-        break;
-
-      b += 2;
-    } while (true);
-  }
-
-  // If we are here, then that means the lookup didn't find anything in
-  // this unit. The next step is to examine all the included units.
-  //
-  for (cli_unit::includes_iterator i (unit->includes_begin ());
-       i != unit->includes_end ();
-       ++i)
-  {
-    if (cli_includes* ci = dynamic_cast<cli_includes*> (&*i))
-      if (T* r = lookup<T> (ss, name, &ci->includee (), false))
-        return r;
-  }
-
-  // If we still haven't found anything, then the next step is to search
-  // one-outer scope, unless it is the global namespace.
-  //
-  if (outer && !ss.empty ())
-  {
-    string n (ss, 0, ss.rfind ("::"));
-    return lookup<T> (n, name, unit, true);
-  }
-
-  return 0;
 }
