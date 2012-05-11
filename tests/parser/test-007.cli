@@ -19,9 +19,10 @@ namespace n1
 
   namespace i1
   {
-    class c10: c4 {}; // Outer scope.
-    class c11: b3 {}; // From included.
-    class c12: b2 {}; // Outer scope from included.
+    class c10: c4 {};    // Outer scope.
+    class c11: b3 {};    // From included.
+    class c12: b2 {};    // Outer scope from included.
+    class c4: n1::c4 {}; // Qualified name from outer scope.
   }
 }
 

@@ -1350,7 +1350,7 @@ lookup (string const& ss, string const& name, cli_unit* unit, bool outer)
   if (outer && !ss.empty ())
   {
     string n (ss, 0, ss.rfind ("::"));
-    return lookup<T> (n, name, unit, false);
+    return lookup<T> (n, name, unit, true);
   }
 
   return 0;
