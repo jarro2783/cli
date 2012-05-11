@@ -612,10 +612,6 @@ namespace
       {
         bool b (hb && !options.exclude_base ());
 
-        os << "void " << name << "::" << endl
-           << "print_usage (::std::ostream&" << (ho || b ? " os" : "") << ")"
-           << "{";
-
         // Calculate option length.
         //
         size_t len (0);
@@ -676,7 +672,7 @@ namespace
             }
           }
 
-          if (max != 0)
+          if (len != 0 && max != 0)
           {
             if (len > max)
             {
@@ -689,6 +685,12 @@ namespace
             len = max;
           }
         }
+
+        // If len is 0 then it means we have no options to print.
+        //
+        os << "void " << name << "::" << endl
+           << "print_usage (::std::ostream&" << (len != 0 || b ? " os)" : ")")
+           << "{";
 
         // Call our bases.
         //
