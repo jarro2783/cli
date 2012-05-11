@@ -551,6 +551,7 @@ options::
 options ()
 : help_ (),
   version_ (),
+  include_path_ (),
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
@@ -595,6 +596,7 @@ options (int& argc,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
+  include_path_ (),
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
@@ -642,6 +644,7 @@ options (int start,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
+  include_path_ (),
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
@@ -689,6 +692,7 @@ options (int& argc,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
+  include_path_ (),
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
@@ -738,6 +742,7 @@ options (int start,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
+  include_path_ (),
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
@@ -783,6 +788,7 @@ options (::cli::scanner& s,
          ::cli::unknown_mode arg)
 : help_ (),
   version_ (),
+  include_path_ (),
   output_dir_ (),
   generate_modifier_ (),
   generate_specifier_ (),
@@ -826,6 +832,9 @@ print_usage (::std::ostream& os)
   os << "--help                       Print usage information and exit." << ::std::endl;
 
   os << "--version                    Print version and exit." << ::std::endl;
+
+  os << "--include-path|-I <dir>      Search <dir> for bracket-included ('<>') option" << ::std::endl
+     << "                             files." << ::std::endl;
 
   os << "--output-dir|-o <dir>        Write the generated files to <dir> instead of the" << ::std::endl
      << "                             current directory." << ::std::endl;
@@ -937,6 +946,10 @@ struct _cli_options_map_init
     &::cli::thunk< options, bool, &options::help_ >;
     _cli_options_map_["--version"] = 
     &::cli::thunk< options, bool, &options::version_ >;
+    _cli_options_map_["--include-path"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::include_path_ >;
+    _cli_options_map_["-I"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::include_path_ >;
     _cli_options_map_["--output-dir"] = 
     &::cli::thunk< options, std::string, &options::output_dir_ >;
     _cli_options_map_["-o"] = 

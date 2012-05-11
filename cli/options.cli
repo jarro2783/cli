@@ -17,6 +17,12 @@ class options
   bool --help {"Print usage information and exit."};
   bool --version {"Print version and exit."};
 
+  std::vector<std::string> --include-path | -I
+  {
+    "<dir>",
+    "Search <dir> for bracket-included (\cb{<>}) option files."
+  };
+
   std::string --output-dir | -o
   {
     "<dir>",

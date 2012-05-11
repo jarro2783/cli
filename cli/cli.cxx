@@ -3,6 +3,8 @@
 // copyright : Copyright (c) 2009-2011 Code Synthesis Tools CC
 // license   : MIT; see accompanying LICENSE file
 
+#include <vector>
+#include <string>
 #include <memory>   // std::auto_ptr
 #include <fstream>
 #include <iostream>
@@ -65,6 +67,19 @@ main (int argc, char* argv[])
       return 1;
     }
 
+    // Extract include search paths.
+    //
+    parser::paths include_paths;
+    for (vector<string>::const_iterator i (ops.include_path ().begin ());
+         i != ops.include_path ().end (); ++i)
+    {
+      // Invalid path exception is handled below.
+      //
+      include_paths.push_back (semantics::path (*i));
+    }
+
+    // Open the input file.
+    //
     file = scan.next ();
     semantics::path path (file);
 
@@ -77,7 +92,9 @@ main (int argc, char* argv[])
 
     ifs.exceptions (ifstream::failbit | ifstream::badbit);
 
-    parser p;
+    // Parse and generate.
+    //
+    parser p (include_paths);
     auto_ptr<semantics::cli_unit> unit (p.parse (ifs, path));
 
     generator g;

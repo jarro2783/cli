@@ -356,6 +356,9 @@ class options
   const bool&
   version () const;
 
+  const std::vector<std::string>&
+  include_path () const;
+
   const std::string&
   output_dir () const;
 
@@ -477,6 +480,7 @@ class options
   public:
   bool help_;
   bool version_;
+  std::vector<std::string> include_path_;
   std::string output_dir_;
   bool generate_modifier_;
   bool generate_specifier_;

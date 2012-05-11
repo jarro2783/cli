@@ -208,6 +208,12 @@ version () const
   return this->version_;
 }
 
+inline const std::vector<std::string>& options::
+include_path () const
+{
+  return this->include_path_;
+}
+
 inline const std::string& options::
 output_dir () const
 {

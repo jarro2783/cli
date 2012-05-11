@@ -3,6 +3,10 @@
 // copyright : Copyright (c) 2009-2011 Code Synthesis Tools CC
 // license   : MIT; see accompanying LICENSE file
 
+#include <unistd.h>    // stat
+#include <sys/types.h> // stat
+#include <sys/stat.h>  // stat
+
 #include <fstream>
 #include <iostream>
 
@@ -267,56 +271,91 @@ include_decl ()
     }
     else
     {
-      // For now we only support inclusion relative to the current file.
+      path p;
+      // If this is a quote include, then include relative to the current
+      // file.
       //
-      path p (path_->directory () / f);
-      p.normalize ();
-
-      // Detect and ignore multiple inclusions.
-      //
-      path ap (p);
-      ap.absolute ();
-      ap.normalize ();
-
-      include_map::iterator it (include_map_.find (ap));
-      if (it == include_map_.end ())
+      if (ik == includes::quote)
       {
-        cli_unit& n (root_->new_node<cli_unit> (p, 1, 1));
-        root_->new_edge<cli_includes> (*cur_, n, ik, f);
-        include_map_[ap] = &n;
-
-        auto_restore<cli_unit> new_cur (cur_, &n);
-        auto_restore<path const> new_path (path_, &p);
-
-        ifstream ifs (p.string ().c_str ());
-        if (ifs.is_open ())
+        p = path_->directory () / f;
+        p.normalize ();
+      }
+      // Otherwise search the include directories (-I).
+      //
+      else
+      {
+        struct stat s;
+        for (paths::const_iterator i (include_paths_.begin ());
+             i != include_paths_.end (); ++i)
         {
-          ifs.exceptions (ifstream::failbit | ifstream::badbit);
+          p = *i / f;
+          p.normalize ();
 
-          try
+          // Check that the file exist without checking for permissions, etc.
+          //
+          if (stat (p.string ().c_str (), &s) == 0 && S_ISREG (s.st_mode))
+            break;
+
+          p.clear ();
+        }
+
+        if (p.empty ())
+        {
+          cerr << *path_ << ':' << t.line () << ':' << t.column () << ": "
+               << "error: file '" << f << "' not found in any of the "
+               << "include search directories (-I)" << endl;
+          valid_ = false;
+        }
+      }
+
+      if (valid_)
+      {
+        // Detect and ignore multiple inclusions.
+        //
+        path ap (p);
+        ap.absolute ();
+        ap.normalize ();
+
+        include_map::iterator it (include_map_.find (ap));
+        if (it == include_map_.end ())
+        {
+          cli_unit& n (root_->new_node<cli_unit> (p, 1, 1));
+          root_->new_edge<cli_includes> (*cur_, n, ik, f);
+          include_map_[ap] = &n;
+
+          auto_restore<cli_unit> new_cur (cur_, &n);
+          auto_restore<path const> new_path (path_, &p);
+
+          ifstream ifs (p.string ().c_str ());
+          if (ifs.is_open ())
           {
-            lexer l (ifs, p.string ());
-            auto_restore<lexer> new_lexer (lexer_, &l);
+            ifs.exceptions (ifstream::failbit | ifstream::badbit);
 
-            def_unit ();
+            try
+            {
+              lexer l (ifs, p.string ());
+              auto_restore<lexer> new_lexer (lexer_, &l);
 
-            if (!l.valid ())
+              def_unit ();
+
+              if (!l.valid ())
+                valid_ = false;
+            }
+            catch (std::ios_base::failure const&)
+            {
+              cerr << p << ": error: read failure" << endl;
               valid_ = false;
+            }
           }
-          catch (std::ios_base::failure const&)
+          else
           {
-            cerr << p << ": error: read failure" << endl;
+            cerr << p << ": error: unable to open in read mode" << endl;
             valid_ = false;
           }
         }
         else
-        {
-          cerr << p << ": error: unable to open in read mode" << endl;
-          valid_ = false;
-        }
+          root_->new_edge<cli_includes> (*cur_, *it->second, ik, f);
       }
-      else
-        root_->new_edge<cli_includes> (*cur_, *it->second, ik, f);
     }
   }
 

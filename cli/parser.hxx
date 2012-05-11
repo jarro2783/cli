@@ -8,6 +8,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 #include <memory> // std::auto_ptr
 #include <istream>
 
@@ -20,6 +21,10 @@ class lexer;
 class parser
 {
 public:
+  typedef std::vector<semantics::path> paths;
+
+  parser (paths const& include_paths): include_paths_ (include_paths) {}
+
   struct invalid_input {};
 
   std::auto_ptr<semantics::cli_unit>
@@ -76,6 +81,8 @@ private:
           bool outer = true);
 
 private:
+  paths const include_paths_;
+
   bool valid_;
   semantics::path const* path_;
 

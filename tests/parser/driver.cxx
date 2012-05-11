@@ -29,7 +29,8 @@ main (int argc, char* argv[])
     ifs.exceptions (ifstream::failbit | ifstream::badbit);
     ifs.open (path.string ().c_str ());
 
-    parser p;
+    parser::paths include_paths;
+    parser p (include_paths);
     p.parse (ifs, path);
   }
   catch (semantics::invalid_path const& e)
