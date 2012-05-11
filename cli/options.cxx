@@ -833,7 +833,7 @@ print_usage (::std::ostream& os)
 
   os << "--version                    Print version and exit." << ::std::endl;
 
-  os << "--include-path|-I <dir>      Search <dir> for bracket-included ('<>') option" << ::std::endl
+  os << "--include-path|-I <dir>      Search <dir> for bracket-included ('<>') options" << ::std::endl
      << "                             files." << ::std::endl;
 
   os << "--output-dir|-o <dir>        Write the generated files to <dir> instead of the" << ::std::endl
@@ -991,7 +991,7 @@ struct _cli_options_map_init
     _cli_options_map_["--html-epilogue"] = 
     &::cli::thunk< options, std::string, &options::html_epilogue_ >;
     _cli_options_map_["--class"] = 
-    &::cli::thunk< options, std::string, &options::class__ >;
+    &::cli::thunk< options, std::vector<std::string>, &options::class__ >;
     _cli_options_map_["--stdout"] = 
     &::cli::thunk< options, bool, &options::stdout__ >;
     _cli_options_map_["--hxx-suffix"] = 

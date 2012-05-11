@@ -328,7 +328,7 @@ html_epilogue () const
   return this->html_epilogue_;
 }
 
-inline const std::string& options::
+inline const std::vector<std::string>& options::
 class_ () const
 {
   return this->class__;

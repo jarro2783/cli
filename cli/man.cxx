@@ -3,7 +3,12 @@
 // copyright : Copyright (c) 2009-2011 Code Synthesis Tools CC
 // license   : MIT; see accompanying LICENSE file
 
+#include <vector>
+#include <iostream>
+
 #include "man.hxx"
+
+using namespace std;
 
 namespace
 {
@@ -129,17 +134,6 @@ namespace
     virtual void
     traverse (type& c)
     {
-      string const& n (options.class_ ());
-
-      if (!n.empty ())
-      {
-        string fqn (fq_name (c, false));
-        fqn = string (fqn, 2, fqn.size () - 2); // Get rid of leading ::.
-
-        if (n != fqn)
-          return;
-      }
-
       if (!options.exclude_base ())
         inherits (c, inherits_base_);
 
@@ -171,5 +165,27 @@ generate_man (context& ctx)
   ns >> ns_names >> ns;
   ns_names >> cl;
 
-  unit.dispatch (ctx.unit);
+  if (ctx.options.class_ ().empty ())
+    unit.dispatch (ctx.unit);
+  else
+  {
+    for (vector<string>::const_iterator i (ctx.options.class_ ().begin ());
+         i != ctx.options.class_ ().end (); ++i)
+    {
+      string n (*i);
+
+      // Strip leading :: if present.
+      //
+      if (n.size () > 2 && n[0] == ':' && n[1] == ':')
+        n = string (n, 2, string::npos);
+
+      if (semantics::class_* c = ctx.unit.lookup<semantics::class_> ("", n))
+        cl.traverse (*c);
+      else
+      {
+        cerr << "error: class '" << *i << "' not found" << endl;
+        throw generation_failed ();
+      }
+    }
+  }
 }

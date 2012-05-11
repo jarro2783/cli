@@ -416,7 +416,7 @@ class options
   const std::string&
   html_epilogue () const;
 
-  const std::string&
+  const std::vector<std::string>&
   class_ () const;
 
   const bool&
@@ -500,7 +500,7 @@ class options
   std::string man_epilogue_;
   std::string html_prologue_;
   std::string html_epilogue_;
-  std::string class__;
+  std::vector<std::string> class__;
   bool stdout__;
   std::string hxx_suffix_;
   std::string ixx_suffix_;
