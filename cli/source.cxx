@@ -208,7 +208,7 @@ namespace
         l++; // ' ' seperator
 
         if (doc.size () > 0)
-          l += doc[0].size ();
+          l += format (doc[0], ot_plain).size ();
         else
           l += 5; // <arg>
       }
@@ -267,8 +267,9 @@ namespace
 
         if (doc.size () > 0)
         {
-          os << escape_str (format (doc[0], ot_plain));
-          l += doc[0].size ();
+          string s (format (doc[0], ot_plain));
+          os << escape_str (s);
+          l += s.size ();
         }
         else
         {
