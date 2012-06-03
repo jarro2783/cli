@@ -160,7 +160,9 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
 
       // Check if we need to generate the runtime code. If we include
       // another options file, then we assume the runtime is generated
-      // there.
+      // there. However, to reduce the number of standard headers we
+      // have to include in the generated header file, we will still
+      // need to generate some template code in the source file.
       //
       bool runtime (true);
       for (semantics::cli_unit::includes_iterator i (unit.includes_begin ());
@@ -288,13 +290,10 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
           (br ? '>' : '"') << endl
             << endl;
 
-        if (runtime)
-        {
-          if (!inl)
-            generate_runtime_inline (ctx);
+        if (runtime && !inl)
+          generate_runtime_inline (ctx);
 
-          generate_runtime_source (ctx);
-        }
+        generate_runtime_source (ctx, runtime);
 
         if (!inl)
           generate_inline (ctx);

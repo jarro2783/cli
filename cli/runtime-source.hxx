@@ -9,6 +9,6 @@
 #include "context.hxx"
 
 void
-generate_runtime_source (context&);
+generate_runtime_source (context&, bool complete);
 
 #endif // CLI_RUNTIME_SOURCE_HXX
