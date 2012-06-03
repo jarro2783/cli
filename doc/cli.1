@@ -68,7 +68,7 @@ Print usage information and exit\.
 Print version and exit\.
 
 .IP "\fB--include-path\fP|\fB-I\fP \fIdir\fP"
-Search \fIdir\fP for bracket-included (\fB<>\fP) option files\.
+Search \fIdir\fP for bracket-included (\fB<>\fP) options files\.
 
 .IP "\fB--output-dir\fP|\fB-o\fP \fIdir\fP"
 Write the generated files to \fIdir\fP instead of the current directory\.
@@ -142,9 +142,11 @@ Insert the content of \fIfile\fP at the end of the HTML file\.
 .IP "\fB--class\fP \fIfq-name\fP"
 Generate the man page or HTML documentation only for the \fIfq-name\fP
 options class\. The \fIfq-name\fP name should be a fully-qualified options
-class name, for example, \fBapp::options\fP\. This functionality is useful
-if you need to insert custom documentation between options belonging to
-different classes\.
+class name, for example, \fBapp::options\fP\. To generate documentation for
+multiple classes, repeat this option and the documentation will be produced
+in the order specified\. This functionality is useful if you need to
+assemble documentation from multiple classes in a specific order or to
+insert custom documentation between options belonging to different classes\.
 
 .IP "\fB--stdout\fP"
 Write output to STDOUT instead of a file\. This option is not valid when

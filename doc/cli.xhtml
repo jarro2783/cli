@@ -91,7 +91,7 @@
   <dd>Print version and exit.</dd>
 
   <dt><code><b>--include-path</b></code>|<code><b>-I</b></code> <i>dir</i></dt>
-  <dd>Search <i>dir</i> for bracket-included (<code><b>&lt;></b></code>) option
+  <dd>Search <i>dir</i> for bracket-included (<code><b>&lt;></b></code>) options
   files.</dd>
 
   <dt><code><b>--output-dir</b></code>|<code><b>-o</b></code> <i>dir</i></dt>
@@ -167,9 +167,12 @@
   <dt><code><b>--class</b></code> <i>fq-name</i></dt>
   <dd>Generate the man page or HTML documentation only for the <i>fq-name</i>
   options class. The <i>fq-name</i> name should be a fully-qualified options
-  class name, for example, <code><b>app::options</b></code>. This
-  functionality is useful if you need to insert custom documentation between
-  options belonging to different classes.</dd>
+  class name, for example, <code><b>app::options</b></code>. To generate
+  documentation for multiple classes, repeat this option and the documentation
+  will be produced in the order specified. This functionality is useful if you
+  need to assemble documentation from multiple classes in a specific order or
+  to insert custom documentation between options belonging to different
+  classes.</dd>
 
   <dt><code><b>--stdout</b></code></dt>
   <dd>Write output to STDOUT instead of a file. This option is not valid when
