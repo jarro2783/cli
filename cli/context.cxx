@@ -297,6 +297,11 @@ translate (string const& s, std::set<string> const& set)
     r += s[i];
   }
 
+  // If we found the opening '<' but no closing '>', add the rest.
+  //
+  if (p != string::npos)
+    r.append (s, p, string::npos);
+
   return r;
 }
 
