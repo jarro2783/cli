@@ -519,8 +519,6 @@ format (string const& s, output_type ot)
 
             break;
           }
-        default:
-          break;
         }
       }
 
