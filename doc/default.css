@@ -177,7 +177,6 @@ ul.multiline li, ol.multiline li, dl.multiline dd {
 }
 
 
-
 /* C++ code snippet */
 pre.cxx {
   margin-top       : 0em;
@@ -186,7 +185,13 @@ pre.cxx {
   margin-left      : 1em;
 }
 
+/* CLI code snippet */
+pre.cli {
+  margin-top       : 0em;
+  margin-bottom    : 2em;
 
+  margin-left      : 1em;
+}
 
 /* make code snippet */
 pre.make {
@@ -195,8 +200,6 @@ pre.make {
 
   margin-left      : 1em;
 }
-
-
 
 /* terminal output */
 pre.term {

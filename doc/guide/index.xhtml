@@ -259,7 +259,7 @@
   <p>We can now write a description of the above command line interface
      in the CLI language and save it into <code>hello.cli</code>:</p>
 
-  <pre>
+  <pre class="cli">
 include &lt;string>;
 
 class options
@@ -284,7 +284,7 @@ class options
      a command prompt (Windows):
   </p>
 
-  <pre class="terminal">
+  <pre class="term">
 $ cli hello.cli
   </pre>
 
@@ -298,7 +298,7 @@ $ cli hello.cli
   <p>The following code fragment is taken from <code>hello.hxx</code>; it
      should give you an idea about what gets generated:</p>
 
-  <pre class="c++">
+  <pre class="cxx">
 #include &lt;string>
 
 class options
@@ -336,7 +336,7 @@ private:
   <p>At this point we have everything we need to implement our
      application:</p>
 
-  <pre class="c++">
+  <pre class="cxx">
 #include &lt;iostream>
 #include "hello.hxx"
 
@@ -407,7 +407,7 @@ main (int argc, char* argv[])
      <code>driver.cxx</code>, we are ready to build and run our program.
      On UNIX this can be done with the following commands:</p>
 
-  <pre class="terminal">
+  <pre class="term">
 $ c++ -o driver driver.cxx hello.cxx
 
 $ ./driver world
@@ -420,7 +420,7 @@ Hi, Jane!!!
 
   <p>We can also test the error handling:</p>
 
-  <pre class="terminal">
+  <pre class="term">
 $ ./driver -n 3 Jane
 unknown option '-n'
 usage: driver [options] &lt;names>
@@ -446,7 +446,7 @@ options:
      information is very basic and does not include any description of
      the purpose of each option:</p>
 
-  <pre class="terminal">
+  <pre class="term">
 $ ./driver --help
 usage: driver [options] &lt;names>
 options:
@@ -460,7 +460,7 @@ options:
      also be used to automatically generate program documentation in various
      formats, such as HTML and man page. For example:</p>
 
-  <pre>
+  <pre class="cli">
 include &lt;string>;
 
 class options
@@ -485,7 +485,7 @@ class options
      <code>hello.cli</code> and recompile our application, the usage
      information printed by the program will look like this:</p>
 
-  <pre class="terminal">
+  <pre class="term">
 usage: driver [options] &lt;names>
 options:
 --help               Print usage information and exit.
@@ -499,7 +499,7 @@ options:
      (<code>--generate-html</code> CLI option) and man page
      (<code>--generate-man</code> CLI option) formats. For example:</p>
 
-  <pre class="terminal">
+  <pre class="term">
 $ cli --generate-html hello.cli
   </pre>
 
@@ -546,7 +546,7 @@ $ cli --generate-html hello.cli
    option class contains one or more <em>option</em> definitions, for
    example:</p>
 
-  <pre>
+  <pre class="cli">
 class options
 {
   bool --help;
@@ -557,7 +557,7 @@ class options
   <p>If we translate the above CLI fragment to C++, we will get a C++
      class with the following interface:</p>
 
-  <pre>
+  <pre class="cli">
 class options
 {
 public:
@@ -640,7 +640,7 @@ public:
      is part of the generated CLI runtime support code. It has the
      following interface:</p>
 
-  <pre>
+  <pre class="cxx">
 namespace cli
 {
   class unknown_mode
@@ -673,7 +673,7 @@ namespace cli
      of the generated CLI runtime support code and has the following
      abstract interface:</p>
 
-  <pre>
+  <pre class="cxx">
 namespace cli
 {
   class scanner
@@ -700,7 +700,7 @@ namespace cli
      array (it is used internally by all the other constructors) and has the
      following interface:</p>
 
-  <pre>
+  <pre class="cxx">
 namespace cli
 {
   class argv_scanner
@@ -724,7 +724,7 @@ namespace cli
      <code>--generate-file-scanner</code> CLI compiler option and has
      the following interface:</p>
 
-  <pre>
+  <pre class="cxx">
 namespace cli
 {
   class argv_file_scanner
@@ -821,7 +821,7 @@ namespace cli
   <p>The exceptions described above are part of the generated CLI runtime
      support code and have the following interfaces:</p>
 
-  <pre>
+  <pre class="cxx">
 #include &lt;exception>
 
 namespace cli
@@ -970,7 +970,7 @@ namespace cli
    characters in other places with underscores. For example, the following
    option definition:</p>
 
-  <pre>
+  <pre class="cli">
 class options
 {
   int --compression-level | --comp | -c;
@@ -979,7 +979,7 @@ class options
 
   <p>Will result in the following accessor function:</p>
 
-  <pre>
+  <pre class="cli">
 class options
 {
   int
@@ -993,7 +993,7 @@ class options
   <p>If the option name conflicts with one of the CLI language keywords,
      it can be specified as a string literal:</p>
 
-  <pre>
+  <pre class="cli">
 class options
 {
   bool "int";
@@ -1012,7 +1012,7 @@ class options
      that the constructor initialization can be used with multiple arguments,
      for example:</p>
 
-  <pre>
+  <pre class="cli">
 include &lt;string>;
 
 class options
@@ -1030,7 +1030,7 @@ class options
      as identifiers. For more complex expressions use the constructor
      initialization or wrap the expressions in parenthesis, for example:</p>
 
-  <pre>
+  <pre class="cli">
 include "constants.hxx"; // Defines default_value.
 
 class options
@@ -1055,7 +1055,7 @@ class options
      duplicates while <code>std::set</code> will contain all the unique
      values. For example:</p>
 
-  <pre>
+  <pre class="cli">
 include &lt;set>;
 include &lt;vector>;
 
@@ -1078,7 +1078,7 @@ class options
      by <code>=</code>. All the option values are then parsed into key/value
      pairs and inserted into the map. For example:</p>
 
-  <pre>
+  <pre class="cli">
 include &lt;map>;
 include &lt;string>;
 
@@ -1101,7 +1101,7 @@ class options
      it is enclosed in <code>{}</code> and consists of one or more
      documentation strings separated by a comma, for example:</p>
 
-  <pre>
+  <pre class="cli">
 class options
 {
   int --compression = 5
@@ -1151,7 +1151,7 @@ class options
      <code><i>level</i></code>. Here is another example using the
      <code>std::map</code> type:</p>
 
-  <pre>
+  <pre class="cli">
 include &lt;map>;
 include &lt;string>;
 
@@ -1187,7 +1187,7 @@ class options
      <code>\c{int a[] = {1, 2\}}</code>. The following example shows how we
      can use these mechanisms:</p>
 
-  <pre>
+  <pre class="cli">
 class options
 {
   int --compression = 5
@@ -1223,7 +1223,7 @@ class options
      in the generated C++ header file. For example, the following CLI
      definition:</p>
 
-  <pre>
+  <pre class="cli">
 include &lt;string>;
 include "types.hxx"; // Defines the name_type class.
 
@@ -1236,7 +1236,7 @@ class options
 
   <p>Will result in the following C++ header file:</p>
 
-  <pre>
+  <pre class="cli">
 #include &lt;string>
 #include "types.hxx"
 
@@ -1263,7 +1263,7 @@ class options
   <p>Option classes can be placed into namespaces which are translated
      directly to C++ namespaces. For example:</p>
 
-  <pre>
+  <pre class="cli">
 namespace compiler
 {
   namespace lexer
@@ -1295,7 +1295,7 @@ namespace compiler
   <p>The above CLI namespace structure would result in the equivalent C++
      namespaces structure:</p>
 
-  <pre>
+  <pre class="cxx">
 namespace compiler
 {
   namespace lexer
