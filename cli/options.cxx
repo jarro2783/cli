@@ -558,6 +558,7 @@ options ()
   generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  ostream_type_ ("::std::ostream"),
   suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -603,6 +604,7 @@ options (int& argc,
   generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  ostream_type_ ("::std::ostream"),
   suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -651,6 +653,7 @@ options (int start,
   generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  ostream_type_ ("::std::ostream"),
   suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -699,6 +702,7 @@ options (int& argc,
   generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  ostream_type_ ("::std::ostream"),
   suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -749,6 +753,7 @@ options (int start,
   generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  ostream_type_ ("::std::ostream"),
   suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -795,6 +800,7 @@ options (::cli::scanner& s,
   generate_description_ (),
   generate_file_scanner_ (),
   suppress_inline_ (),
+  ostream_type_ ("::std::ostream"),
   suppress_undocumented_ (),
   suppress_usage_ (),
   long_usage_ (),
@@ -851,6 +857,10 @@ print_usage (::std::ostream& os)
   os << "--generate-file-scanner      Generate the 'argv_file_scanner' implementation." << ::std::endl;
 
   os << "--suppress-inline            Generate all functions non-inline." << ::std::endl;
+
+  os << "--ostream-type <type>        Output stream type instead of the default" << ::std::endl
+     << "                             'std::ostream' that should be used to print usage" << ::std::endl
+     << "                             and exception information." << ::std::endl;
 
   os << "--suppress-undocumented      Suppress the generation of documentation entries" << ::std::endl
      << "                             for undocumented options." << ::std::endl;
@@ -964,6 +974,8 @@ struct _cli_options_map_init
     &::cli::thunk< options, bool, &options::generate_file_scanner_ >;
     _cli_options_map_["--suppress-inline"] = 
     &::cli::thunk< options, bool, &options::suppress_inline_ >;
+    _cli_options_map_["--ostream-type"] = 
+    &::cli::thunk< options, std::string, &options::ostream_type_ >;
     _cli_options_map_["--suppress-undocumented"] = 
     &::cli::thunk< options, bool, &options::suppress_undocumented_ >;
     _cli_options_map_["--suppress-usage"] = 

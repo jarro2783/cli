@@ -690,7 +690,8 @@ namespace
         // If len is 0 then it means we have no options to print.
         //
         os << "void " << name << "::" << endl
-           << "print_usage (::std::ostream&" << (len != 0 || b ? " os)" : ")")
+           << "print_usage (" << options.ostream_type () << "&" <<
+          (len != 0 || b ? " os)" : ")")
            << "{";
 
         // Call our bases.

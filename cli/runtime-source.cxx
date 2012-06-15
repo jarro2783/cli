@@ -29,6 +29,8 @@ generate_runtime_source (context& ctx, bool complete)
 
   if (complete)
   {
+    string const& os_type (ctx.options.ostream_type ());
+
     // unknown_option
     //
     os << "// unknown_option" << endl
@@ -39,9 +41,9 @@ generate_runtime_source (context& ctx, bool complete)
        << "}"
 
        << "void unknown_option::" << endl
-       << "print (std::ostream& os) const"
+       << "print (" << os_type << "& os) const"
        << "{"
-       << "os << \"unknown option '\" << option () << \"'\";"
+       << "os << \"unknown option '\" << option ().c_str () << \"'\";"
        << "}"
 
        << "const char* unknown_option::" << endl
@@ -60,9 +62,9 @@ generate_runtime_source (context& ctx, bool complete)
        << "}"
 
        << "void unknown_argument::" << endl
-       << "print (std::ostream& os) const"
+       << "print (" << os_type << "& os) const"
        << "{"
-       << "os << \"unknown argument '\" << argument () << \"'\";"
+       << "os << \"unknown argument '\" << argument ().c_str () << \"'\";"
        << "}"
 
        << "const char* unknown_argument::" << endl
@@ -81,9 +83,9 @@ generate_runtime_source (context& ctx, bool complete)
        << "}"
 
        << "void missing_value::" << endl
-       << "print (std::ostream& os) const"
+       << "print (" << os_type << "& os) const"
        << "{"
-       << "os << \"missing value for option '\" << option () << \"'\";"
+       << "os << \"missing value for option '\" << option ().c_str () << \"'\";"
        << "}"
 
        << "const char* missing_value::" << endl
@@ -102,10 +104,11 @@ generate_runtime_source (context& ctx, bool complete)
        << "}"
 
        << "void invalid_value::" << endl
-       << "print (std::ostream& os) const"
+       << "print (" << os_type << "& os) const"
        << "{"
-       << "os << \"invalid value '\" << value () << \"' for option '\"" << endl
-       << "   << option () << \"'\";"
+       << "os << \"invalid value '\" << value ().c_str () << \"' for " <<
+      "option '\"" << endl
+       << "   << option ().c_str () << \"'\";"
        << "}"
 
        << "const char* invalid_value::" << endl
@@ -119,7 +122,7 @@ generate_runtime_source (context& ctx, bool complete)
     os << "// eos_reached" << endl
        << "//" << endl
        << "void eos_reached::" << endl
-       << "print (std::ostream& os) const"
+       << "print (" << os_type << "& os) const"
        << "{"
        << "os << what ();"
        << "}"
@@ -142,10 +145,10 @@ generate_runtime_source (context& ctx, bool complete)
          << "}"
 
          << "void file_io_failure::" << endl
-         << "print (std::ostream& os) const"
+         << "print (" << os_type << "& os) const"
          << "{"
-         << "os << \"unable to open file '\" << file () << \"' or read " <<
-        "failure\";"
+         << "os << \"unable to open file '\" << file ().c_str () << " <<
+        "\"' or read failure\";"
          << "}"
 
          << "const char* file_io_failure::" << endl
@@ -164,9 +167,10 @@ generate_runtime_source (context& ctx, bool complete)
          << "}"
 
          << "void unmatched_quote::" << endl
-         << "print (std::ostream& os) const"
+         << "print (" << os_type << "& os) const"
          << "{"
-         << "os << \"unmatched quote in argument '\" << argument () << \"'\";"
+         << "os << \"unmatched quote in argument '\" << " <<
+        "argument ().c_str () << \"'\";"
          << "}"
 
          << "const char* unmatched_quote::" << endl

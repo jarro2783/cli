@@ -377,6 +377,9 @@ class options
   const bool&
   suppress_inline () const;
 
+  const std::string&
+  ostream_type () const;
+
   const bool&
   suppress_undocumented () const;
 
@@ -487,6 +490,7 @@ class options
   bool generate_description_;
   bool generate_file_scanner_;
   bool suppress_inline_;
+  std::string ostream_type_;
   bool suppress_undocumented_;
   bool suppress_usage_;
   bool long_usage_;

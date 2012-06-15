@@ -48,6 +48,8 @@ generate_runtime_header (context& ctx)
   // Exceptions.
   //
 
+  string const& os_type (ctx.options.ostream_type ());
+
   os << "// Exceptions." << endl
      << "//" << endl
      << endl;
@@ -56,11 +58,11 @@ generate_runtime_header (context& ctx)
      << "{"
      << "public:" << endl
      << "virtual void" << endl
-     << "print (std::ostream&) const = 0;"
+     << "print (" << os_type << "&) const = 0;"
      << "};";
 
-  os << "std::ostream&" << endl
-     << "operator<< (std::ostream&, const exception&);"
+  os << os_type << "&" << endl
+     << "operator<< (" << os_type << "&, const exception&);"
      << endl;
 
   os << "class unknown_option: public exception"
@@ -75,7 +77,7 @@ generate_runtime_header (context& ctx)
      << "option () const;"
      << endl
      << "virtual void" << endl
-     << "print (std::ostream&) const;"
+     << "print (" << os_type << "&) const;"
      << endl
      << "virtual const char*" << endl
      << "what () const throw ();"
@@ -96,7 +98,7 @@ generate_runtime_header (context& ctx)
      << "argument () const;"
      << endl
      << "virtual void" << endl
-     << "print (std::ostream&) const;"
+     << "print (" << os_type << "&) const;"
      << endl
      << "virtual const char*" << endl
      << "what () const throw ();"
@@ -117,7 +119,7 @@ generate_runtime_header (context& ctx)
      << "option () const;"
      << endl
      << "virtual void" << endl
-     << "print (std::ostream&) const;"
+     << "print (" << os_type << "&) const;"
      << endl
      << "virtual const char*" << endl
      << "what () const throw ();"
@@ -142,7 +144,7 @@ generate_runtime_header (context& ctx)
      << "value () const;"
      << endl
      << "virtual void" << endl
-     << "print (std::ostream&) const;"
+     << "print (" << os_type << "&) const;"
      << endl
      << "virtual const char*" << endl
      << "what () const throw ();"
@@ -156,7 +158,7 @@ generate_runtime_header (context& ctx)
      << "{"
      << "public:" << endl
      << "virtual void" << endl
-     << "print (std::ostream&) const;"
+     << "print (" << os_type << "&) const;"
      << endl
      << "virtual const char*" << endl
      << "what () const throw ();"
@@ -176,7 +178,7 @@ generate_runtime_header (context& ctx)
        << "file () const;"
        << endl
        << "virtual void" << endl
-       << "print (std::ostream&) const;"
+       << "print (" << os_type << "&) const;"
        << endl
        << "virtual const char*" << endl
        << "what () const throw ();"
@@ -197,7 +199,7 @@ generate_runtime_header (context& ctx)
        << "argument () const;"
        << endl
        << "virtual void" << endl
-       << "print (std::ostream&) const;"
+       << "print (" << os_type << "&) const;"
        << endl
        << "virtual const char*" << endl
        << "what () const throw ();"

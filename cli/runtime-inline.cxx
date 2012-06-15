@@ -12,6 +12,7 @@ generate_runtime_inline (context& ctx)
 {
   ostream& os (ctx.os);
   string const& inl (ctx.inl);
+  string const& os_type (ctx.options.ostream_type ());
 
   ctx.cli_open ();
 
@@ -31,8 +32,8 @@ generate_runtime_inline (context& ctx)
   os << "// exception" << endl
      << "//" << endl
 
-     << inl << "std::ostream&" << endl
-     << "operator<< (std::ostream& os, const exception& e)"
+     << inl << os_type << "&" << endl
+     << "operator<< (" << os_type << "& os, const exception& e)"
      << "{"
      << "e.print (os);"
      << "return os;"

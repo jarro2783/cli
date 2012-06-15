@@ -58,6 +58,13 @@ class options
      made inline. This option suppresses creation of the inline file."
   };
 
+  std::string --ostream-type = "::std::ostream"
+  {
+    "<type>",
+    "Output stream type instead of the default \cb{std::ostream} that
+     should be used to print usage and exception information."
+  };
+
   bool --suppress-undocumented
   {
     "Suppress the generation of documentation entries for undocumented

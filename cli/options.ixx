@@ -250,6 +250,12 @@ suppress_inline () const
   return this->suppress_inline_;
 }
 
+inline const std::string& options::
+ostream_type () const
+{
+  return this->ostream_type_;
+}
+
 inline const bool& options::
 suppress_undocumented () const
 {

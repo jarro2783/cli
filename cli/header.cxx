@@ -175,7 +175,7 @@ namespace
         os << "// Print usage information." << endl
            << "//" << endl
            << "static void" << endl
-           << "print_usage (::std::ostream&);"
+           << "print_usage (" << options.ostream_type () << "&);"
            << endl;
       }
 
