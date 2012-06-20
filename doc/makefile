@@ -17,16 +17,16 @@ $(out_base)/cli.xhtml: $(src_root)/cli/options.cli    \
                        $(src_base)/cli-prologue.xhtml \
                        $(src_base)/cli-epilogue.xhtml
 	$(call message,cli-html $<,$(out_root)/cli/cli --generate-html \
---output-dir $(out_base) --html-prologue $(src_base)/cli-prologue.xhtml \
---html-epilogue $(src_base)/cli-epilogue.xhtml $<)
+--output-dir $(out_base) --html-prologue-file $(src_base)/cli-prologue.xhtml \
+--html-epilogue-file $(src_base)/cli-epilogue.xhtml $<)
 	$(call message,,mv $(out_base)/options.html $(out_base)/cli.xhtml)
 
 $(out_base)/cli.1: $(src_root)/cli/options.cli    \
                        $(src_base)/cli-prologue.1 \
                        $(src_base)/cli-epilogue.1
 	$(call message,cli-man $<,$(out_root)/cli/cli --generate-man \
---output-dir $(out_base) --man-prologue $(src_base)/cli-prologue.1 \
---man-epilogue $(src_base)/cli-epilogue.1 $<)
+--output-dir $(out_base) --man-prologue-file $(src_base)/cli-prologue.1 \
+--man-epilogue-file $(src_base)/cli-epilogue.1 $<)
 	$(call message,,mv $(out_base)/options.1 $(out_base)/cli.1)
 
 # Install.

@@ -121,25 +121,25 @@ class options
     "Generate documentation in the HTML format."
   };
 
-  std::string --man-prologue
+  std::string --man-prologue-file
   {
     "<file>",
     "Insert the content of <file> at the beginning of the man page file."
   };
 
-  std::string --man-epilogue
+  std::string --man-epilogue-file
   {
     "<file>",
     "Insert the content of <file> at the end of the man page file."
   };
 
-  std::string --html-prologue
+  std::string --html-prologue-file
   {
     "<file>",
     "Insert the content of <file> at the beginning of the HTML file."
   };
 
-  std::string --html-epilogue
+  std::string --html-epilogue-file
   {
     "<file>",
     "Insert the content of <file> at the end of the HTML file."

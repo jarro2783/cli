@@ -310,14 +310,14 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
       //
       ifstream prologue, epilogue;
       {
-        string file (ops.man_prologue ());
+        string file (ops.man_prologue_file ());
 
         if (!file.empty ())
           open (prologue, file);
       }
 
       {
-        string file (ops.man_epilogue ());
+        string file (ops.man_epilogue_file ());
 
         if (!file.empty ())
           open (epilogue, file);
@@ -368,14 +368,14 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
       //
       ifstream prologue, epilogue;
       {
-        string file (ops.html_prologue ());
+        string file (ops.html_prologue_file ());
 
         if (!file.empty ())
           open (prologue, file);
       }
 
       {
-        string file (ops.html_epilogue ());
+        string file (ops.html_epilogue_file ());
 
         if (!file.empty ())
           open (epilogue, file);

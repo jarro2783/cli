@@ -41,11 +41,11 @@ namespace cli
   {
     public:
     virtual void
-    print (std::ostream&) const = 0;
+    print (::std::ostream&) const = 0;
   };
 
-  std::ostream&
-  operator<< (std::ostream&, const exception&);
+  ::std::ostream&
+  operator<< (::std::ostream&, const exception&);
 
   class unknown_option: public exception
   {
@@ -59,7 +59,7 @@ namespace cli
     option () const;
 
     virtual void
-    print (std::ostream&) const;
+    print (::std::ostream&) const;
 
     virtual const char*
     what () const throw ();
@@ -80,7 +80,7 @@ namespace cli
     argument () const;
 
     virtual void
-    print (std::ostream&) const;
+    print (::std::ostream&) const;
 
     virtual const char*
     what () const throw ();
@@ -101,7 +101,7 @@ namespace cli
     option () const;
 
     virtual void
-    print (std::ostream&) const;
+    print (::std::ostream&) const;
 
     virtual const char*
     what () const throw ();
@@ -126,7 +126,7 @@ namespace cli
     value () const;
 
     virtual void
-    print (std::ostream&) const;
+    print (::std::ostream&) const;
 
     virtual const char*
     what () const throw ();
@@ -140,7 +140,7 @@ namespace cli
   {
     public:
     virtual void
-    print (std::ostream&) const;
+    print (::std::ostream&) const;
 
     virtual const char*
     what () const throw ();
@@ -158,7 +158,7 @@ namespace cli
     file () const;
 
     virtual void
-    print (std::ostream&) const;
+    print (::std::ostream&) const;
 
     virtual const char*
     what () const throw ();
@@ -179,7 +179,7 @@ namespace cli
     argument () const;
 
     virtual void
-    print (std::ostream&) const;
+    print (::std::ostream&) const;
 
     virtual const char*
     what () const throw ();
@@ -408,16 +408,16 @@ class options
   generate_html () const;
 
   const std::string&
-  man_prologue () const;
+  man_prologue_file () const;
 
   const std::string&
-  man_epilogue () const;
+  man_epilogue_file () const;
 
   const std::string&
-  html_prologue () const;
+  html_prologue_file () const;
 
   const std::string&
-  html_epilogue () const;
+  html_epilogue_file () const;
 
   const std::vector<std::string>&
   class_ () const;
@@ -500,10 +500,10 @@ class options
   bool generate_cxx_;
   bool generate_man_;
   bool generate_html_;
-  std::string man_prologue_;
-  std::string man_epilogue_;
-  std::string html_prologue_;
-  std::string html_epilogue_;
+  std::string man_prologue_file_;
+  std::string man_epilogue_file_;
+  std::string html_prologue_file_;
+  std::string html_epilogue_file_;
   std::vector<std::string> class__;
   bool stdout__;
   std::string hxx_suffix_;

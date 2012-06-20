@@ -23,9 +23,9 @@ namespace cli
   }
 
   void unknown_option::
-  print (std::ostream& os) const
+  print (::std::ostream& os) const
   {
-    os << "unknown option '" << option () << "'";
+    os << "unknown option '" << option ().c_str () << "'";
   }
 
   const char* unknown_option::
@@ -42,9 +42,9 @@ namespace cli
   }
 
   void unknown_argument::
-  print (std::ostream& os) const
+  print (::std::ostream& os) const
   {
-    os << "unknown argument '" << argument () << "'";
+    os << "unknown argument '" << argument ().c_str () << "'";
   }
 
   const char* unknown_argument::
@@ -61,9 +61,9 @@ namespace cli
   }
 
   void missing_value::
-  print (std::ostream& os) const
+  print (::std::ostream& os) const
   {
-    os << "missing value for option '" << option () << "'";
+    os << "missing value for option '" << option ().c_str () << "'";
   }
 
   const char* missing_value::
@@ -80,10 +80,10 @@ namespace cli
   }
 
   void invalid_value::
-  print (std::ostream& os) const
+  print (::std::ostream& os) const
   {
-    os << "invalid value '" << value () << "' for option '"
-       << option () << "'";
+    os << "invalid value '" << value ().c_str () << "' for option '"
+       << option ().c_str () << "'";
   }
 
   const char* invalid_value::
@@ -95,7 +95,7 @@ namespace cli
   // eos_reached
   //
   void eos_reached::
-  print (std::ostream& os) const
+  print (::std::ostream& os) const
   {
     os << what ();
   }
@@ -114,9 +114,9 @@ namespace cli
   }
 
   void file_io_failure::
-  print (std::ostream& os) const
+  print (::std::ostream& os) const
   {
-    os << "unable to open file '" << file () << "' or read failure";
+    os << "unable to open file '" << file ().c_str () << "' or read failure";
   }
 
   const char* file_io_failure::
@@ -133,9 +133,9 @@ namespace cli
   }
 
   void unmatched_quote::
-  print (std::ostream& os) const
+  print (::std::ostream& os) const
   {
-    os << "unmatched quote in argument '" << argument () << "'";
+    os << "unmatched quote in argument '" << argument ().c_str () << "'";
   }
 
   const char* unmatched_quote::
@@ -568,10 +568,10 @@ options ()
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
-  man_prologue_ (),
-  man_epilogue_ (),
-  html_prologue_ (),
-  html_epilogue_ (),
+  man_prologue_file_ (),
+  man_epilogue_file_ (),
+  html_prologue_file_ (),
+  html_epilogue_file_ (),
   class__ (),
   stdout__ (),
   hxx_suffix_ (".hxx"),
@@ -614,10 +614,10 @@ options (int& argc,
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
-  man_prologue_ (),
-  man_epilogue_ (),
-  html_prologue_ (),
-  html_epilogue_ (),
+  man_prologue_file_ (),
+  man_epilogue_file_ (),
+  html_prologue_file_ (),
+  html_epilogue_file_ (),
   class__ (),
   stdout__ (),
   hxx_suffix_ (".hxx"),
@@ -663,10 +663,10 @@ options (int start,
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
-  man_prologue_ (),
-  man_epilogue_ (),
-  html_prologue_ (),
-  html_epilogue_ (),
+  man_prologue_file_ (),
+  man_epilogue_file_ (),
+  html_prologue_file_ (),
+  html_epilogue_file_ (),
   class__ (),
   stdout__ (),
   hxx_suffix_ (".hxx"),
@@ -712,10 +712,10 @@ options (int& argc,
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
-  man_prologue_ (),
-  man_epilogue_ (),
-  html_prologue_ (),
-  html_epilogue_ (),
+  man_prologue_file_ (),
+  man_epilogue_file_ (),
+  html_prologue_file_ (),
+  html_epilogue_file_ (),
   class__ (),
   stdout__ (),
   hxx_suffix_ (".hxx"),
@@ -763,10 +763,10 @@ options (int start,
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
-  man_prologue_ (),
-  man_epilogue_ (),
-  html_prologue_ (),
-  html_epilogue_ (),
+  man_prologue_file_ (),
+  man_epilogue_file_ (),
+  html_prologue_file_ (),
+  html_epilogue_file_ (),
   class__ (),
   stdout__ (),
   hxx_suffix_ (".hxx"),
@@ -810,10 +810,10 @@ options (::cli::scanner& s,
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
-  man_prologue_ (),
-  man_epilogue_ (),
-  html_prologue_ (),
-  html_epilogue_ (),
+  man_prologue_file_ (),
+  man_epilogue_file_ (),
+  html_prologue_file_ (),
+  html_epilogue_file_ (),
   class__ (),
   stdout__ (),
   hxx_suffix_ (".hxx"),
@@ -886,16 +886,16 @@ print_usage (::std::ostream& os)
 
   os << "--generate-html              Generate documentation in the HTML format." << ::std::endl;
 
-  os << "--man-prologue <file>        Insert the content of <file> at the beginning of" << ::std::endl
+  os << "--man-prologue-file <file>   Insert the content of <file> at the beginning of" << ::std::endl
      << "                             the man page file." << ::std::endl;
 
-  os << "--man-epilogue <file>        Insert the content of <file> at the end of the man" << ::std::endl
+  os << "--man-epilogue-file <file>   Insert the content of <file> at the end of the man" << ::std::endl
      << "                             page file." << ::std::endl;
 
-  os << "--html-prologue <file>       Insert the content of <file> at the beginning of" << ::std::endl
+  os << "--html-prologue-file <file>  Insert the content of <file> at the beginning of" << ::std::endl
      << "                             the HTML file." << ::std::endl;
 
-  os << "--html-epilogue <file>       Insert the content of <file> at the end of the" << ::std::endl
+  os << "--html-epilogue-file <file>  Insert the content of <file> at the end of the" << ::std::endl
      << "                             HTML file." << ::std::endl;
 
   os << "--class <fq-name>            Generate the man page or HTML documentation only" << ::std::endl
@@ -994,14 +994,14 @@ struct _cli_options_map_init
     &::cli::thunk< options, bool, &options::generate_man_ >;
     _cli_options_map_["--generate-html"] = 
     &::cli::thunk< options, bool, &options::generate_html_ >;
-    _cli_options_map_["--man-prologue"] = 
-    &::cli::thunk< options, std::string, &options::man_prologue_ >;
-    _cli_options_map_["--man-epilogue"] = 
-    &::cli::thunk< options, std::string, &options::man_epilogue_ >;
-    _cli_options_map_["--html-prologue"] = 
-    &::cli::thunk< options, std::string, &options::html_prologue_ >;
-    _cli_options_map_["--html-epilogue"] = 
-    &::cli::thunk< options, std::string, &options::html_epilogue_ >;
+    _cli_options_map_["--man-prologue-file"] = 
+    &::cli::thunk< options, std::string, &options::man_prologue_file_ >;
+    _cli_options_map_["--man-epilogue-file"] = 
+    &::cli::thunk< options, std::string, &options::man_epilogue_file_ >;
+    _cli_options_map_["--html-prologue-file"] = 
+    &::cli::thunk< options, std::string, &options::html_prologue_file_ >;
+    _cli_options_map_["--html-epilogue-file"] = 
+    &::cli::thunk< options, std::string, &options::html_epilogue_file_ >;
     _cli_options_map_["--class"] = 
     &::cli::thunk< options, std::vector<std::string>, &options::class__ >;
     _cli_options_map_["--stdout"] = 

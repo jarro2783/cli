@@ -14,8 +14,8 @@ namespace cli
 
   // exception
   //
-  inline std::ostream&
-  operator<< (std::ostream& os, const exception& e)
+  inline ::std::ostream&
+  operator<< (::std::ostream& os, const exception& e)
   {
     e.print (os);
     return os;
@@ -311,27 +311,27 @@ generate_html () const
 }
 
 inline const std::string& options::
-man_prologue () const
+man_prologue_file () const
 {
-  return this->man_prologue_;
+  return this->man_prologue_file_;
 }
 
 inline const std::string& options::
-man_epilogue () const
+man_epilogue_file () const
 {
-  return this->man_epilogue_;
+  return this->man_epilogue_file_;
 }
 
 inline const std::string& options::
-html_prologue () const
+html_prologue_file () const
 {
-  return this->html_prologue_;
+  return this->html_prologue_file_;
 }
 
 inline const std::string& options::
-html_epilogue () const
+html_epilogue_file () const
 {
-  return this->html_epilogue_;
+  return this->html_epilogue_file_;
 }
 
 inline const std::vector<std::string>& options::
