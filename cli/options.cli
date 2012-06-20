@@ -121,28 +121,140 @@ class options
     "Generate documentation in the HTML format."
   };
 
+  // Prologues.
+  //
+  std::vector<std::string> --hxx-prologue
+  {
+    "<text>",
+    "Insert <text> at the beginning of the generated C++ header file."
+  };
+
+  std::vector<std::string> --ixx-prologue
+  {
+    "<text>",
+    "Insert <text> at the beginning of the generated C++ inline file."
+  };
+
+  std::vector<std::string> --cxx-prologue
+  {
+    "<text>",
+    "Insert <text> at the beginning of the generated C++ source file."
+  };
+
+  std::vector<std::string> --man-prologue
+  {
+    "<text>",
+    "Insert <text> at the beginning of the generated man page file."
+  };
+
+  std::vector<std::string> --html-prologue
+  {
+    "<text>",
+    "Insert <text> at the beginning of the generated HTML file."
+  };
+
+  // Epilogues.
+  //
+  std::vector<std::string> --hxx-epilogue
+  {
+    "<text>",
+    "Insert <text> at the end of the generated C++ header file."
+  };
+
+  std::vector<std::string> --ixx-epilogue
+  {
+    "<text>",
+    "Insert <text> at the end of the generated C++ inline file."
+  };
+
+  std::vector<std::string> --cxx-epilogue
+  {
+    "<text>",
+    "Insert <text> at the end of the generated C++ source file."
+  };
+
+  std::vector<std::string> --man-epilogue
+  {
+    "<text>",
+    "Insert <text> at the end of the generated man page text."
+  };
+
+  std::vector<std::string> --html-epilogue
+  {
+    "<text>",
+    "Insert <text> at the end of the generated HTML text."
+  };
+
+  // Prologue files.
+  //
+  std::string --hxx-prologue-file
+  {
+    "<file>",
+    "Insert the content of <file> at the beginning of the generated C++
+     header file."
+  };
+
+  std::string --ixx-prologue-file
+  {
+    "<file>",
+    "Insert the content of <file> at the beginning of the generated C++
+     inline file."
+  };
+
+  std::string --cxx-prologue-file
+  {
+    "<file>",
+    "Insert the content of <file> at the beginning of the generated C++
+     source file."
+  };
+
   std::string --man-prologue-file
   {
     "<file>",
-    "Insert the content of <file> at the beginning of the man page file."
-  };
-
-  std::string --man-epilogue-file
-  {
-    "<file>",
-    "Insert the content of <file> at the end of the man page file."
+    "Insert the content of <file> at the beginning of the generated man
+     page file."
   };
 
   std::string --html-prologue-file
   {
     "<file>",
-    "Insert the content of <file> at the beginning of the HTML file."
+    "Insert the content of <file> at the beginning of the generated HTML
+     file."
+  };
+
+  // Epilogue files.
+  //
+  std::string --hxx-epilogue-file
+  {
+    "<file>",
+    "Insert the content of <file> at the end of the generated C++ header
+     file."
+  };
+
+  std::string --ixx-epilogue-file
+  {
+    "<file>",
+    "Insert the content of <file> at the end of the generated C++ inline
+     file."
+  };
+
+  std::string --cxx-epilogue-file
+  {
+    "<file>",
+    "Insert the content of <file> at the end of the generated C++ source
+     file."
+  };
+
+  std::string --man-epilogue-file
+  {
+    "<file>",
+    "Insert the content of <file> at the end of the generated man page file."
   };
 
   std::string --html-epilogue-file
   {
     "<file>",
-    "Insert the content of <file> at the end of the HTML file."
+    "Insert the content of <file> at the end of the generated HTML file."
   };
 
   std::vector<std::string> --class

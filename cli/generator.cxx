@@ -88,6 +88,23 @@ namespace
       throw generator::failed ();
     }
   }
+
+  void
+  append (ostream& os, vector<string> const& text, string const& file)
+  {
+    for (vector<string>::const_iterator i (text.begin ());
+         i != text.end (); ++i)
+    {
+      os << *i << endl;
+    }
+
+    if (!file.empty ())
+    {
+      ifstream ifs;
+      open (ifs, file);
+      os << ifs.rdbuf ();
+    }
+  }
 }
 
 generator::
@@ -243,7 +260,6 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
       // HXX
       //
       {
-        cxx_filter filt (hxx);
         context ctx (hxx, unit, ops);
 
         string guard (make_guard (gp + hxx_name, ctx));
@@ -252,10 +268,25 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
             << "#define " << guard << endl
             << endl;
 
-        if (runtime)
-          generate_runtime_header (ctx);
+        // Copy prologue.
+        //
+        hxx << "// Begin prologue." << endl
+            << "//" << endl;
+        append (hxx, ops.hxx_prologue (), ops.hxx_prologue_file ());
+        hxx << "//" << endl
+            << "// End prologue." << endl
+            << endl;
 
-        generate_header (ctx);
+        {
+          // We don't want to indent prologues/epilogues.
+          //
+          cxx_filter filt (ctx.os);
+
+          if (runtime)
+            generate_runtime_header (ctx);
+
+          generate_header (ctx);
+        }
 
         if (inl)
         {
@@ -264,6 +295,15 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
               << endl;
         }
 
+        // Copy epilogue.
+        //
+        hxx << "// Begin epilogue." << endl
+            << "//" << endl;
+        append (hxx, ops.hxx_epilogue (), ops.hxx_epilogue_file ());
+        hxx << "//" << endl
+            << "// End epilogue." << endl
+            << endl;
+
         hxx << "#endif // " << guard << endl;
       }
 
@@ -271,34 +311,79 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
       //
       if (inl)
       {
-        cxx_filter filt (ixx);
         context ctx (ixx, unit, ops);
 
-        if (runtime)
-          generate_runtime_inline (ctx);
+        // Copy prologue.
+        //
+        ixx << "// Begin prologue." << endl
+            << "//" << endl;
+        append (ixx, ops.ixx_prologue (), ops.ixx_prologue_file ());
+        ixx << "//" << endl
+            << "// End prologue." << endl
+            << endl;
 
-        generate_inline (ctx);
+        {
+          // We don't want to indent prologues/epilogues.
+          //
+          cxx_filter filt (ctx.os);
+
+          if (runtime)
+            generate_runtime_inline (ctx);
+
+          generate_inline (ctx);
+        }
+
+        // Copy epilogue.
+        //
+        ixx << "// Begin epilogue." << endl
+            << "//" << endl;
+        append (ixx, ops.ixx_epilogue (), ops.ixx_epilogue_file ());
+        ixx << "//" << endl
+            << "// End epilogue." << endl;
       }
 
       // CXX
       //
       {
-        cxx_filter filt (cxx);
         context ctx (cxx, unit, ops);
+
+        // Copy prologue.
+        //
+        cxx << "// Begin prologue." << endl
+            << "//" << endl;
+        append (cxx, ops.cxx_prologue (), ops.cxx_prologue_file ());
+        cxx << "//" << endl
+            << "// End prologue." << endl
+            << endl;
 
         cxx << "#include " << (br ? '<' : '"') << ip << hxx_name <<
           (br ? '>' : '"') << endl
             << endl;
 
-        if (runtime && !inl)
-          generate_runtime_inline (ctx);
+        {
+          // We don't want to indent prologues/epilogues.
+          //
+          cxx_filter filt (ctx.os);
 
-        generate_runtime_source (ctx, runtime);
+          if (runtime && !inl)
+            generate_runtime_inline (ctx);
 
-        if (!inl)
-          generate_inline (ctx);
+          generate_runtime_source (ctx, runtime);
 
-        generate_source (ctx);
+          if (!inl)
+            generate_inline (ctx);
+
+          generate_source (ctx);
+        }
+
+        // Copy epilogue.
+        //
+        cxx << "// Begin epilogue." << endl
+            << "//" << endl;
+        append (cxx, ops.cxx_epilogue (), ops.cxx_epilogue_file ());
+        cxx << "//" << endl
+            << "// End epilogue." << endl
+            << endl;
       }
     }
 
@@ -306,23 +391,6 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
     //
     if (gen_man)
     {
-      // Prologue & epilogue.
-      //
-      ifstream prologue, epilogue;
-      {
-        string file (ops.man_prologue_file ());
-
-        if (!file.empty ())
-          open (prologue, file);
-      }
-
-      {
-        string file (ops.man_epilogue_file ());
-
-        if (!file.empty ())
-          open (epilogue, file);
-      }
-
       ofstream man;
 
       if (!ops.stdout_ ())
@@ -348,39 +416,20 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
       //
       ostream& os (ops.stdout_ () ? cout : static_cast<ostream&> (man));
 
-      if (prologue.is_open ())
-        os << prologue.rdbuf ();
+      append (os, ops.man_prologue (), ops.man_prologue_file ());
 
       os << man_header;
 
       context ctx (os, unit, ops);
       generate_man (ctx);
 
-      if (epilogue.is_open ())
-        os << epilogue.rdbuf ();
+      append (os, ops.man_epilogue (), ops.man_epilogue_file ());
     }
 
     // HTML output
     //
     if (gen_html)
     {
-      // Prologue & epilogue.
-      //
-      ifstream prologue, epilogue;
-      {
-        string file (ops.html_prologue_file ());
-
-        if (!file.empty ())
-          open (prologue, file);
-      }
-
-      {
-        string file (ops.html_epilogue_file ());
-
-        if (!file.empty ())
-          open (epilogue, file);
-      }
-
       ofstream html;
 
       if (!ops.stdout_ ())
@@ -406,16 +455,14 @@ generate (options const& ops, semantics::cli_unit& unit, path const& p)
       //
       ostream& os (ops.stdout_ () ? cout : static_cast<ostream&> (html));
 
-      if (prologue.is_open ())
-        os << prologue.rdbuf ();
+      append (os, ops.html_prologue (), ops.html_prologue_file ());
 
       os << html_header;
 
       context ctx (os, unit, ops);
       generate_html (ctx);
 
-      if (epilogue.is_open ())
-        os << epilogue.rdbuf ();
+      append (os, ops.html_epilogue (), ops.html_epilogue_file ());
     }
 
     auto_rm.cancel ();

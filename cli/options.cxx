@@ -568,9 +568,25 @@ options ()
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
+  hxx_prologue_ (),
+  ixx_prologue_ (),
+  cxx_prologue_ (),
+  man_prologue_ (),
+  html_prologue_ (),
+  hxx_epilogue_ (),
+  ixx_epilogue_ (),
+  cxx_epilogue_ (),
+  man_epilogue_ (),
+  html_epilogue_ (),
+  hxx_prologue_file_ (),
+  ixx_prologue_file_ (),
+  cxx_prologue_file_ (),
   man_prologue_file_ (),
-  man_epilogue_file_ (),
   html_prologue_file_ (),
+  hxx_epilogue_file_ (),
+  ixx_epilogue_file_ (),
+  cxx_epilogue_file_ (),
+  man_epilogue_file_ (),
   html_epilogue_file_ (),
   class__ (),
   stdout__ (),
@@ -614,9 +630,25 @@ options (int& argc,
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
+  hxx_prologue_ (),
+  ixx_prologue_ (),
+  cxx_prologue_ (),
+  man_prologue_ (),
+  html_prologue_ (),
+  hxx_epilogue_ (),
+  ixx_epilogue_ (),
+  cxx_epilogue_ (),
+  man_epilogue_ (),
+  html_epilogue_ (),
+  hxx_prologue_file_ (),
+  ixx_prologue_file_ (),
+  cxx_prologue_file_ (),
   man_prologue_file_ (),
-  man_epilogue_file_ (),
   html_prologue_file_ (),
+  hxx_epilogue_file_ (),
+  ixx_epilogue_file_ (),
+  cxx_epilogue_file_ (),
+  man_epilogue_file_ (),
   html_epilogue_file_ (),
   class__ (),
   stdout__ (),
@@ -663,9 +695,25 @@ options (int start,
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
+  hxx_prologue_ (),
+  ixx_prologue_ (),
+  cxx_prologue_ (),
+  man_prologue_ (),
+  html_prologue_ (),
+  hxx_epilogue_ (),
+  ixx_epilogue_ (),
+  cxx_epilogue_ (),
+  man_epilogue_ (),
+  html_epilogue_ (),
+  hxx_prologue_file_ (),
+  ixx_prologue_file_ (),
+  cxx_prologue_file_ (),
   man_prologue_file_ (),
-  man_epilogue_file_ (),
   html_prologue_file_ (),
+  hxx_epilogue_file_ (),
+  ixx_epilogue_file_ (),
+  cxx_epilogue_file_ (),
+  man_epilogue_file_ (),
   html_epilogue_file_ (),
   class__ (),
   stdout__ (),
@@ -712,9 +760,25 @@ options (int& argc,
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
+  hxx_prologue_ (),
+  ixx_prologue_ (),
+  cxx_prologue_ (),
+  man_prologue_ (),
+  html_prologue_ (),
+  hxx_epilogue_ (),
+  ixx_epilogue_ (),
+  cxx_epilogue_ (),
+  man_epilogue_ (),
+  html_epilogue_ (),
+  hxx_prologue_file_ (),
+  ixx_prologue_file_ (),
+  cxx_prologue_file_ (),
   man_prologue_file_ (),
-  man_epilogue_file_ (),
   html_prologue_file_ (),
+  hxx_epilogue_file_ (),
+  ixx_epilogue_file_ (),
+  cxx_epilogue_file_ (),
+  man_epilogue_file_ (),
   html_epilogue_file_ (),
   class__ (),
   stdout__ (),
@@ -763,9 +827,25 @@ options (int start,
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
+  hxx_prologue_ (),
+  ixx_prologue_ (),
+  cxx_prologue_ (),
+  man_prologue_ (),
+  html_prologue_ (),
+  hxx_epilogue_ (),
+  ixx_epilogue_ (),
+  cxx_epilogue_ (),
+  man_epilogue_ (),
+  html_epilogue_ (),
+  hxx_prologue_file_ (),
+  ixx_prologue_file_ (),
+  cxx_prologue_file_ (),
   man_prologue_file_ (),
-  man_epilogue_file_ (),
   html_prologue_file_ (),
+  hxx_epilogue_file_ (),
+  ixx_epilogue_file_ (),
+  cxx_epilogue_file_ (),
+  man_epilogue_file_ (),
   html_epilogue_file_ (),
   class__ (),
   stdout__ (),
@@ -810,9 +890,25 @@ options (::cli::scanner& s,
   generate_cxx_ (),
   generate_man_ (),
   generate_html_ (),
+  hxx_prologue_ (),
+  ixx_prologue_ (),
+  cxx_prologue_ (),
+  man_prologue_ (),
+  html_prologue_ (),
+  hxx_epilogue_ (),
+  ixx_epilogue_ (),
+  cxx_epilogue_ (),
+  man_epilogue_ (),
+  html_epilogue_ (),
+  hxx_prologue_file_ (),
+  ixx_prologue_file_ (),
+  cxx_prologue_file_ (),
   man_prologue_file_ (),
-  man_epilogue_file_ (),
   html_prologue_file_ (),
+  hxx_epilogue_file_ (),
+  ixx_epilogue_file_ (),
+  cxx_epilogue_file_ (),
+  man_epilogue_file_ (),
   html_epilogue_file_ (),
   class__ (),
   stdout__ (),
@@ -886,17 +982,65 @@ print_usage (::std::ostream& os)
 
   os << "--generate-html              Generate documentation in the HTML format." << ::std::endl;
 
-  os << "--man-prologue-file <file>   Insert the content of <file> at the beginning of" << ::std::endl
-     << "                             the man page file." << ::std::endl;
+  os << "--hxx-prologue <text>        Insert <text> at the beginning of the generated" << ::std::endl
+     << "                             C++ header file." << ::std::endl;
 
-  os << "--man-epilogue-file <file>   Insert the content of <file> at the end of the man" << ::std::endl
-     << "                             page file." << ::std::endl;
+  os << "--ixx-prologue <text>        Insert <text> at the beginning of the generated" << ::std::endl
+     << "                             C++ inline file." << ::std::endl;
+
+  os << "--cxx-prologue <text>        Insert <text> at the beginning of the generated" << ::std::endl
+     << "                             C++ source file." << ::std::endl;
+
+  os << "--man-prologue <text>        Insert <text> at the beginning of the generated" << ::std::endl
+     << "                             man page file." << ::std::endl;
+
+  os << "--html-prologue <text>       Insert <text> at the beginning of the generated" << ::std::endl
+     << "                             HTML file." << ::std::endl;
+
+  os << "--hxx-epilogue <text>        Insert <text> at the end of the generated C++" << ::std::endl
+     << "                             header file." << ::std::endl;
+
+  os << "--ixx-epilogue <text>        Insert <text> at the end of the generated C++" << ::std::endl
+     << "                             inline file." << ::std::endl;
+
+  os << "--cxx-epilogue <text>        Insert <text> at the end of the generated C++" << ::std::endl
+     << "                             source file." << ::std::endl;
+
+  os << "--man-epilogue <text>        Insert <text> at the end of the generated man page" << ::std::endl
+     << "                             text." << ::std::endl;
+
+  os << "--html-epilogue <text>       Insert <text> at the end of the generated HTML" << ::std::endl
+     << "                             text." << ::std::endl;
+
+  os << "--hxx-prologue-file <file>   Insert the content of <file> at the beginning of" << ::std::endl
+     << "                             the generated C++ header file." << ::std::endl;
+
+  os << "--ixx-prologue-file <file>   Insert the content of <file> at the beginning of" << ::std::endl
+     << "                             the generated C++ inline file." << ::std::endl;
+
+  os << "--cxx-prologue-file <file>   Insert the content of <file> at the beginning of" << ::std::endl
+     << "                             the generated C++ source file." << ::std::endl;
+
+  os << "--man-prologue-file <file>   Insert the content of <file> at the beginning of" << ::std::endl
+     << "                             the generated man page file." << ::std::endl;
 
   os << "--html-prologue-file <file>  Insert the content of <file> at the beginning of" << ::std::endl
-     << "                             the HTML file." << ::std::endl;
+     << "                             the generated HTML file." << ::std::endl;
+
+  os << "--hxx-epilogue-file <file>   Insert the content of <file> at the end of the" << ::std::endl
+     << "                             generated C++ header file." << ::std::endl;
+
+  os << "--ixx-epilogue-file <file>   Insert the content of <file> at the end of the" << ::std::endl
+     << "                             generated C++ inline file." << ::std::endl;
+
+  os << "--cxx-epilogue-file <file>   Insert the content of <file> at the end of the" << ::std::endl
+     << "                             generated C++ source file." << ::std::endl;
+
+  os << "--man-epilogue-file <file>   Insert the content of <file> at the end of the" << ::std::endl
+     << "                             generated man page file." << ::std::endl;
 
   os << "--html-epilogue-file <file>  Insert the content of <file> at the end of the" << ::std::endl
-     << "                             HTML file." << ::std::endl;
+     << "                             generated HTML file." << ::std::endl;
 
   os << "--class <fq-name>            Generate the man page or HTML documentation only" << ::std::endl
      << "                             for the <fq-name> options class." << ::std::endl;
@@ -994,12 +1138,44 @@ struct _cli_options_map_init
     &::cli::thunk< options, bool, &options::generate_man_ >;
     _cli_options_map_["--generate-html"] = 
     &::cli::thunk< options, bool, &options::generate_html_ >;
+    _cli_options_map_["--hxx-prologue"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::hxx_prologue_ >;
+    _cli_options_map_["--ixx-prologue"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::ixx_prologue_ >;
+    _cli_options_map_["--cxx-prologue"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::cxx_prologue_ >;
+    _cli_options_map_["--man-prologue"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::man_prologue_ >;
+    _cli_options_map_["--html-prologue"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::html_prologue_ >;
+    _cli_options_map_["--hxx-epilogue"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::hxx_epilogue_ >;
+    _cli_options_map_["--ixx-epilogue"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::ixx_epilogue_ >;
+    _cli_options_map_["--cxx-epilogue"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::cxx_epilogue_ >;
+    _cli_options_map_["--man-epilogue"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::man_epilogue_ >;
+    _cli_options_map_["--html-epilogue"] = 
+    &::cli::thunk< options, std::vector<std::string>, &options::html_epilogue_ >;
+    _cli_options_map_["--hxx-prologue-file"] = 
+    &::cli::thunk< options, std::string, &options::hxx_prologue_file_ >;
+    _cli_options_map_["--ixx-prologue-file"] = 
+    &::cli::thunk< options, std::string, &options::ixx_prologue_file_ >;
+    _cli_options_map_["--cxx-prologue-file"] = 
+    &::cli::thunk< options, std::string, &options::cxx_prologue_file_ >;
     _cli_options_map_["--man-prologue-file"] = 
     &::cli::thunk< options, std::string, &options::man_prologue_file_ >;
-    _cli_options_map_["--man-epilogue-file"] = 
-    &::cli::thunk< options, std::string, &options::man_epilogue_file_ >;
     _cli_options_map_["--html-prologue-file"] = 
     &::cli::thunk< options, std::string, &options::html_prologue_file_ >;
+    _cli_options_map_["--hxx-epilogue-file"] = 
+    &::cli::thunk< options, std::string, &options::hxx_epilogue_file_ >;
+    _cli_options_map_["--ixx-epilogue-file"] = 
+    &::cli::thunk< options, std::string, &options::ixx_epilogue_file_ >;
+    _cli_options_map_["--cxx-epilogue-file"] = 
+    &::cli::thunk< options, std::string, &options::cxx_epilogue_file_ >;
+    _cli_options_map_["--man-epilogue-file"] = 
+    &::cli::thunk< options, std::string, &options::man_epilogue_file_ >;
     _cli_options_map_["--html-epilogue-file"] = 
     &::cli::thunk< options, std::string, &options::html_epilogue_file_ >;
     _cli_options_map_["--class"] = 

@@ -303,6 +303,9 @@ namespace cli
     std::deque<std::string> args_;
     bool skip_;
   };
+
+  template <typename X>
+  struct parser;
 }
 
 #include <map>
@@ -407,14 +410,62 @@ class options
   const bool&
   generate_html () const;
 
+  const std::vector<std::string>&
+  hxx_prologue () const;
+
+  const std::vector<std::string>&
+  ixx_prologue () const;
+
+  const std::vector<std::string>&
+  cxx_prologue () const;
+
+  const std::vector<std::string>&
+  man_prologue () const;
+
+  const std::vector<std::string>&
+  html_prologue () const;
+
+  const std::vector<std::string>&
+  hxx_epilogue () const;
+
+  const std::vector<std::string>&
+  ixx_epilogue () const;
+
+  const std::vector<std::string>&
+  cxx_epilogue () const;
+
+  const std::vector<std::string>&
+  man_epilogue () const;
+
+  const std::vector<std::string>&
+  html_epilogue () const;
+
+  const std::string&
+  hxx_prologue_file () const;
+
+  const std::string&
+  ixx_prologue_file () const;
+
+  const std::string&
+  cxx_prologue_file () const;
+
   const std::string&
   man_prologue_file () const;
 
   const std::string&
-  man_epilogue_file () const;
+  html_prologue_file () const;
 
   const std::string&
-  html_prologue_file () const;
+  hxx_epilogue_file () const;
+
+  const std::string&
+  ixx_epilogue_file () const;
+
+  const std::string&
+  cxx_epilogue_file () const;
+
+  const std::string&
+  man_epilogue_file () const;
 
   const std::string&
   html_epilogue_file () const;
@@ -500,9 +551,25 @@ class options
   bool generate_cxx_;
   bool generate_man_;
   bool generate_html_;
+  std::vector<std::string> hxx_prologue_;
+  std::vector<std::string> ixx_prologue_;
+  std::vector<std::string> cxx_prologue_;
+  std::vector<std::string> man_prologue_;
+  std::vector<std::string> html_prologue_;
+  std::vector<std::string> hxx_epilogue_;
+  std::vector<std::string> ixx_epilogue_;
+  std::vector<std::string> cxx_epilogue_;
+  std::vector<std::string> man_epilogue_;
+  std::vector<std::string> html_epilogue_;
+  std::string hxx_prologue_file_;
+  std::string ixx_prologue_file_;
+  std::string cxx_prologue_file_;
   std::string man_prologue_file_;
-  std::string man_epilogue_file_;
   std::string html_prologue_file_;
+  std::string hxx_epilogue_file_;
+  std::string ixx_epilogue_file_;
+  std::string cxx_epilogue_file_;
+  std::string man_epilogue_file_;
   std::string html_epilogue_file_;
   std::vector<std::string> class__;
   bool stdout__;

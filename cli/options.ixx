@@ -310,6 +310,84 @@ generate_html () const
   return this->generate_html_;
 }
 
+inline const std::vector<std::string>& options::
+hxx_prologue () const
+{
+  return this->hxx_prologue_;
+}
+
+inline const std::vector<std::string>& options::
+ixx_prologue () const
+{
+  return this->ixx_prologue_;
+}
+
+inline const std::vector<std::string>& options::
+cxx_prologue () const
+{
+  return this->cxx_prologue_;
+}
+
+inline const std::vector<std::string>& options::
+man_prologue () const
+{
+  return this->man_prologue_;
+}
+
+inline const std::vector<std::string>& options::
+html_prologue () const
+{
+  return this->html_prologue_;
+}
+
+inline const std::vector<std::string>& options::
+hxx_epilogue () const
+{
+  return this->hxx_epilogue_;
+}
+
+inline const std::vector<std::string>& options::
+ixx_epilogue () const
+{
+  return this->ixx_epilogue_;
+}
+
+inline const std::vector<std::string>& options::
+cxx_epilogue () const
+{
+  return this->cxx_epilogue_;
+}
+
+inline const std::vector<std::string>& options::
+man_epilogue () const
+{
+  return this->man_epilogue_;
+}
+
+inline const std::vector<std::string>& options::
+html_epilogue () const
+{
+  return this->html_epilogue_;
+}
+
+inline const std::string& options::
+hxx_prologue_file () const
+{
+  return this->hxx_prologue_file_;
+}
+
+inline const std::string& options::
+ixx_prologue_file () const
+{
+  return this->ixx_prologue_file_;
+}
+
+inline const std::string& options::
+cxx_prologue_file () const
+{
+  return this->cxx_prologue_file_;
+}
+
 inline const std::string& options::
 man_prologue_file () const
 {
@@ -317,15 +395,33 @@ man_prologue_file () const
 }
 
 inline const std::string& options::
-man_epilogue_file () const
-{
-  return this->man_epilogue_file_;
-}
-
-inline const std::string& options::
 html_prologue_file () const
 {
   return this->html_prologue_file_;
+}
+
+inline const std::string& options::
+hxx_epilogue_file () const
+{
+  return this->hxx_epilogue_file_;
+}
+
+inline const std::string& options::
+ixx_epilogue_file () const
+{
+  return this->ixx_epilogue_file_;
+}
+
+inline const std::string& options::
+cxx_epilogue_file () const
+{
+  return this->cxx_epilogue_file_;
+}
+
+inline const std::string& options::
+man_epilogue_file () const
+{
+  return this->man_epilogue_file_;
 }
 
 inline const std::string& options::
