@@ -389,5 +389,12 @@ generate_runtime_header (context& ctx)
        << "};";
   }
 
+  // Parser class template. Provide a forward declaration to allow
+  // custom specializations.
+  //
+  os << "template <typename X>" << endl
+     << "struct parser;"
+     << endl;
+
   ctx.cli_close ();
 }
