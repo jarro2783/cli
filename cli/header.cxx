@@ -24,9 +24,15 @@ namespace
          << endl;
 
       if (modifier)
+      {
+        os << type << "&" << endl
+           << name << " ();"
+           << endl;
+
         os << "void" << endl
            << name << " (const " << type << "&);"
            << endl;
+      }
 
       if (specifier && type != "bool")
       {

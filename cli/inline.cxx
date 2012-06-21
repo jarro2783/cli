@@ -27,11 +27,19 @@ namespace
          << "}";
 
       if (modifier)
+      {
+        os << inl << type << "& " << scope << "::" << endl
+           << name << " ()"
+           << "{"
+           << "return this->" << emember (o) << ";"
+           << "}";
+
         os << inl << "void " << scope << "::" << endl
            << name << "(const " << type << "& x)"
            << "{"
            << "this->" << emember (o) << " = x;"
            << "}";
+      }
 
       if (specifier && type != "bool")
       {
