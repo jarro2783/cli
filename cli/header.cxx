@@ -159,6 +159,9 @@ namespace
            << um << " option = " << um << "::fail," << endl
            << um << " argument = " << um << "::stop);"
            << endl;
+
+        os << name << " ();"
+           << endl;
       }
 
       //
@@ -194,10 +197,11 @@ namespace
          << "//" << endl
          << "protected:" << endl;
 
-      // default c-tor
+      // default c-tor (abstract)
       //
-      os << name << " ();"
-         << endl;
+      if (abst)
+        os << name << " ();"
+           << endl;
 
       // fill ()
       //
