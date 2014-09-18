@@ -1,15 +1,5 @@
-CLI is a Command Line Interface definition language for C++. This package
-contains the compiler implementation for this language.
+This is a fork of the Code Synthesis CLI library 
 
-See the NEWS file for the user-visible changes from the previous release.
+  http://codesynthesis.com/projects/cli/
 
-See the LICENSE file for distribution conditions.
-
-See the INSTALL file for prerequisites and installation instructions.
-
-See the doc/ directory for documentation.
-
-The project page is at http://codesynthesis.com/projects/cli/.
-
-Send questions, bug reports, or any other feedback to 
-cli-users@codesynthesis.com.
+This fork uses cmake for its build system.

@@ -1,5 +1,0 @@
-This is a fork of the Code Synthesis CLI library 
-
-  http://codesynthesis.com/projects/cli/
-
-This fork uses cmake for its build system.
